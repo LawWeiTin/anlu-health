@@ -1,3 +1,3 @@
-"""HealthBridge application package."""
+"""Anlu Health application package."""
 
 __version__ = "0.1.0"

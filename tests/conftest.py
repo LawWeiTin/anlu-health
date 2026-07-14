@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-_db_file = Path(tempfile.gettempdir()) / "healthbridge-tests.sqlite3"
+_db_file = Path(tempfile.gettempdir()) / "anlu-tests.sqlite3"
 os.environ["APP_ENV"] = "test"
 os.environ["DATABASE_URL"] = f"sqlite:///{_db_file.as_posix()}"
 os.environ["COOKIE_SECURE"] = "false"
@@ -48,4 +48,4 @@ def registered_client(client: TestClient) -> TestClient:
 
 
 def csrf_headers(client: TestClient) -> dict[str, str]:
-    return {"X-CSRF-Token": client.cookies.get("hb_csrf")}
+    return {"X-CSRF-Token": client.cookies.get("anlu_csrf")}

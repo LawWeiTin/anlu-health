@@ -8,14 +8,14 @@ from starlette.requests import Request
 
 from app.config import Settings
 
-logger = logging.getLogger("healthbridge.http")
+logger = logging.getLogger("anlu.http")
 REQUESTS = Counter(
-    "healthbridge_http_requests_total",
+    "anlu_http_requests_total",
     "HTTP requests",
     ("method", "path", "status"),
 )
 LATENCY = Histogram(
-    "healthbridge_http_request_duration_seconds",
+    "anlu_http_request_duration_seconds",
     "HTTP request latency",
     ("method", "path"),
 )

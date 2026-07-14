@@ -1,6 +1,6 @@
-# HealthBridge
+# Anlu Health
 
-HealthBridge is a safety-first, evidence-grounded health information assistant. It combines
+Anlu Health is a safety-first, evidence-grounded health information assistant. It combines
 deterministic emergency triage, hybrid retrieval from approved sources, citation-constrained
 generation, privacy-aware authentication, and an offline evaluation gate. It supports biomedical
 and traditional Chinese medicine questions while clearly separating traditional frameworks from
@@ -19,7 +19,9 @@ clinical evidence.
 - PostgreSQL + pgvector knowledge store with source approval, evidence tiers, expiry dates,
   multilingual embeddings, hybrid reranking, and citation validation.
 - A model-provider interface for a separately hosted open-weight model. The recommended starting
-  point is `google/medgemma-1.5-4b-it`, subject to its terms and only after use-case validation.
+  fine-tuning point is `google/medgemma-1.5-4b-it`, subject to its terms and only after use-case
+  validation. The hosted baseline uses the open-weight `Qwen/Qwen3.5-9B` behind the same safety and
+  retrieval layers until an approved Anlu adapter is promoted.
 - Render Blueprint and Docker deployment; no model weights or large datasets are stored locally.
 - Colab QLoRA notebook, DVC pipeline, dataset/model cards, golden safety cases, CI, and scheduled
   evaluation workflows.
@@ -50,7 +52,13 @@ docker compose exec app python scripts/ingest.py data/seed_knowledge.jsonl
 ## Production inference
 
 Host the tuned model separately on a GPU service using vLLM/TGI or a managed open-model endpoint.
-Configure an OpenAI-compatible chat and embedding endpoint using the variables in `.env.example`.
+Configure an OpenAI-compatible chat endpoint and a compatible embedding endpoint using the variables
+in `.env.example`. The production Blueprint is set up for Hugging Face Inference Providers with a
+fine-grained inference-only token supplied as a Render secret.
+
+User questions and retrieved context are transmitted to that configured inference provider. Review
+and document its current data-retention, processing-location, and privacy terms before opening the
+service to real health information.
 Render hosts the stateless web service and pgvector database; it does not download the 4B model.
 
 Before enabling real users:
@@ -65,16 +73,22 @@ Before enabling real users:
 ## Deployment on Render
 
 1. Push this repository to GitHub and create a Render Blueprint from `render.yaml`.
-2. Enter the model and embedding endpoint secrets when Render prompts for `sync: false` values.
-3. After the database is ready, run `python scripts/ingest.py ...` from a one-off shell or controlled
-   ingestion job.
+2. Enter a fine-grained Hugging Face inference-only token for `HF_TOKEN` when Render prompts. Do not
+   grant repository write access to this token.
+3. The Blueprint migration and ingestion pre-deploy command initializes the approved seed corpus.
 4. Confirm `/health/ready`, then keep auto-deploy gated on passing GitHub checks.
+
+## Google Drive artifact storage
+
+The Colab notebook mounts Drive and writes large checkpoints only beneath
+`MyDrive/Anlu Health/Model Adapters`. Datasets, evaluation reports, and release artifacts have their
+own sibling folders. The workflow is additive: it creates timestamped run directories and does not
+delete, replace, or reorganize existing Drive content.
 
 Render PostgreSQL supports pgvector. Use paid plans with backups and high availability appropriate
 to your risk assessment; the sample plans are starter defaults, not a clinical availability claim.
 
 ## Repository map
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/MLOPS.md](docs/MLOPS.md), and
-[docs/DATA_GOVERNANCE.md](docs/DATA_GOVERNANCE.md).
-
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md),
+[docs/MLOPS.md](docs/MLOPS.md), and [docs/DATA_GOVERNANCE.md](docs/DATA_GOVERNANCE.md).

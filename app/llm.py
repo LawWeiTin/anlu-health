@@ -90,8 +90,9 @@ class OpenAICompatibleModel(ModelProvider):
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
         headers = {"Content-Type": "application/json"}
-        if self.settings.model_api_token:
-            headers["Authorization"] = f"Bearer {self.settings.model_api_token}"
+        token = self.settings.model_api_token or self.settings.hf_token
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         url = self.settings.model_api_url.rstrip("/")
         if not url.endswith("/chat/completions"):
             url += "/chat/completions"

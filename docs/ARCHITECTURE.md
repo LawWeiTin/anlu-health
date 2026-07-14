@@ -1,6 +1,6 @@
 # Architecture
 
-HealthBridge deliberately separates the safety-critical path from probabilistic model output.
+Anlu Health deliberately separates the safety-critical path from probabilistic model output.
 
 ```mermaid
 flowchart LR
@@ -57,4 +57,3 @@ flowchart LR
 - No direct electronic health record integration.
 - No default chat retention.
 - No autonomous model or dataset promotion.
-

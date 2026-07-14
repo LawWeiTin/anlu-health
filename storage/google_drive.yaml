@@ -1,0 +1,21 @@
+provider: google_drive
+owner: lawwt27@gmail.com
+policy: additive_only
+root:
+  name: Anlu Health
+  id: 1QZkoMOmP50f7J4CoKsE0vQ70O7H4Zpkt
+  url: https://drive.google.com/drive/folders/1QZkoMOmP50f7J4CoKsE0vQ70O7H4Zpkt
+folders:
+  datasets:
+    id: 1wnhvCEdRLbhwS_XseSr4v-OOjTAxdaoo
+  model_adapters:
+    id: 1elmXS6BFv5-lIpVe9-YWRqU74BB2e-fp
+  evaluation_reports:
+    id: 1idCFoJUEB9DWKEPwv8qac7tDmB3cQDvU
+  release_artifacts:
+    id: 11LIdEl9XOaex9WCMkiCpVCsNo6OD8isn
+rules:
+  - Never delete or move existing Drive content.
+  - Create a new UTC-timestamped directory for every training or evaluation run.
+  - Never upload raw user conversations.
+  - Keep access private unless the owner explicitly changes sharing.

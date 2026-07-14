@@ -41,5 +41,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build production container
-        run: docker build --tag healthbridge:${{ github.sha }} .
-
+        run: docker build --tag anlu-health:${{ github.sha }} .

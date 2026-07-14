@@ -1,20 +1,23 @@
 # yaml-language-server: $schema=https://render.com/schema/render.yaml.json
 services:
   - type: web
-    name: healthbridge-web
+    name: anlu-health-web
     runtime: docker
     plan: starter
+    region: singapore
     dockerfilePath: ./Dockerfile
-    healthCheckPath: /health/live
+    healthCheckPath: /health/ready
+    preDeployCommand: alembic upgrade head && python scripts/ingest.py data/seed_knowledge.jsonl
+    maxShutdownDelaySeconds: 30
     autoDeployTrigger: checksPass
     envVars:
       - key: APP_ENV
         value: production
-      - key: APP_BASE_URL
-        sync: false
+      - key: APP_NAME
+        value: Anlu Health
       - key: DATABASE_URL
         fromDatabase:
-          name: healthbridge-db
+          name: anlu-health-db
           property: connectionString
       - key: COOKIE_SECURE
         value: "true"
@@ -22,6 +25,8 @@ services:
         value: "true"
       - key: SAVE_CHAT_HISTORY
         value: "false"
+      - key: DATA_ENCRYPTION_KEY
+        generateValue: true
       - key: EMERGENCY_NUMBER
         value: "995"
       - key: EMERGENCY_REGION
@@ -29,27 +34,27 @@ services:
       - key: MODEL_PROVIDER
         value: openai_compatible
       - key: MODEL_API_URL
-        sync: false
-      - key: MODEL_API_TOKEN
+        value: https://router.huggingface.co/v1
+      - key: HF_TOKEN
         sync: false
       - key: MODEL_NAME
-        value: google/medgemma-1.5-4b-it
+        value: Qwen/Qwen3.5-9B:cheapest
       - key: EMBEDDING_PROVIDER
-        value: openai_compatible
+        value: tei
       - key: EMBEDDING_API_URL
-        sync: false
-      - key: EMBEDDING_API_TOKEN
-        sync: false
+        value: https://router.huggingface.co/hf-inference/models/intfloat/multilingual-e5-small
       - key: EMBEDDING_MODEL
-        value: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+        value: intfloat/multilingual-e5-small
+      - key: METRICS_TOKEN
+        generateValue: true
       - key: LOG_LEVEL
         value: INFO
 
 databases:
-  - name: healthbridge-db
+  - name: anlu-health-db
     plan: basic-256mb
-    databaseName: healthbridge
-    user: healthbridge
+    region: singapore
+    databaseName: anlu
+    user: anlu
     postgresMajorVersion: "16"
     ipAllowList: []
-

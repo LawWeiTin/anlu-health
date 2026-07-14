@@ -2,7 +2,7 @@
 
 ## Product claim
 
-HealthBridge provides source-linked health education and care-navigation suggestions. It does not
+Anlu Health provides source-linked health education and care-navigation suggestions. It does not
 provide a diagnosis, personalized treatment, a prescription, or a guarantee of accuracy. The UI,
 API, prompt, and evaluation gates all enforce that scope.
 
@@ -60,4 +60,3 @@ It never labels a photo or text description as benign or malignant.
 - Open-weight models can hallucinate, overstate confidence, or behave differently after fine-tuning.
 - Medical benchmark accuracy does not measure safe consumer symptom triage.
 - Traditional-medicine evidence is uneven; absence of evidence is not proof of benefit or safety.
-

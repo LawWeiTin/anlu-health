@@ -21,7 +21,7 @@ class RateLimiter:
     def check(self, key: str, limit: int, window_seconds: int) -> None:
         if self._redis is not None:
             bucket = int(time.time() // window_seconds)
-            redis_key = f"healthbridge:rate:{key}:{bucket}"
+            redis_key = f"anlu:rate:{key}:{bucket}"
             try:
                 with self._redis.pipeline() as pipe:
                     pipe.incr(redis_key)

@@ -20,9 +20,14 @@ flowchart LR
 - `dvc.yaml` records preparation and offline evaluation stages.
 - `params.yaml` defines release thresholds.
 - `training/medgemma_qlora_colab.ipynb` trains remotely; no weights are downloaded locally.
+- Colab writes checkpoints to a new timestamped directory beneath
+  `MyDrive/Anlu Health/Model Adapters`; evaluation outputs use the matching timestamp beneath
+  `Evaluation Reports`. Existing Drive content is never deleted or replaced by the notebook.
 - `model_registry/production.yaml` pins the base model, adapter, prompt, embedding model, source
   manifest, and evaluation report. Replace placeholders only after validation.
 - MLflow logging is optional and should point to an access-controlled tracking server.
+- The hosted Qwen baseline and an eventual reviewed MedGemma adapter are separate registry entries;
+  promoting a candidate never silently changes the deployed endpoint.
 
 ## Promotion policy
 
@@ -43,4 +48,3 @@ Keep the previous model endpoint and registry manifest available. Roll back on e
 regression, citation failure, unexpected refusal/overconfidence, source corruption, latency SLO
 breach, or a security/privacy incident. Disable generation entirely if retrieval or model integrity
 cannot be established.
-

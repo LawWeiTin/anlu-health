@@ -52,8 +52,9 @@ class OpenAICompatibleEmbeddings(EmbeddingProvider):
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         headers = {"Content-Type": "application/json"}
-        if self.settings.embedding_api_token:
-            headers["Authorization"] = f"Bearer {self.settings.embedding_api_token}"
+        token = self.settings.embedding_api_token or self.settings.hf_token
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         url = self.settings.embedding_api_url.rstrip("/")
         if not url.endswith("/embeddings"):
             url += "/embeddings"
@@ -80,8 +81,9 @@ class TEIEmbeddings(EmbeddingProvider):
 
     def embed(self, texts: list[str]) -> list[list[float]]:
         headers = {"Content-Type": "application/json"}
-        if self.settings.embedding_api_token:
-            headers["Authorization"] = f"Bearer {self.settings.embedding_api_token}"
+        token = self.settings.embedding_api_token or self.settings.hf_token
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         try:
             response = httpx.post(
                 self.settings.embedding_api_url,

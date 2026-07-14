@@ -3,38 +3,190 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Evidence-linked health information and care navigation." />
-    <title>HealthBridge — Evidence before answers</title>
+    <meta
+      name="description"
+      content="Anlu Health offers private, evidence-linked health education and care navigation across biomedical and traditional Chinese medicine perspectives."
+    />
+    <meta name="theme-color" content="#102f2c" />
+    <title>Anlu Health &mdash; Clear evidence. Calmer next steps.</title>
     <link rel="stylesheet" href="/static/styles.css" />
     <script src="/static/app.js" defer></script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="noise" aria-hidden="true"></div>
 
-    <div id="auth-shell" class="auth-shell">
-      <section class="auth-story" aria-label="About HealthBridge">
-        <a class="brand brand-light" href="/" aria-label="HealthBridge home">
-          <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
-          <span>HealthBridge</span>
+    <div id="auth-shell" class="public-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="Anlu Health home">
+          <span class="anlu-mark" aria-hidden="true"><i></i><i></i></span>
+          <span>Anlu <em>Health</em></span>
         </a>
-        <div class="story-copy">
-          <p class="eyebrow">EVIDENCE BEFORE ANSWERS</p>
-          <h1>A calmer way to understand what your body is telling you.</h1>
-          <p>
-            Source-linked health education across biomedical and traditional Chinese medicine—built
-            to know when a chat is not enough.
-          </p>
-          <div class="trust-row">
-            <span><b>01</b> Red-flag triage</span>
-            <span><b>02</b> Reviewed sources</span>
-            <span><b>03</b> Private by default</span>
-          </div>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="#approach">Our approach</a>
+          <a href="#evidence">Evidence</a>
+          <a href="#privacy">Privacy</a>
+        </nav>
+        <div class="header-actions">
+          <button class="header-login" type="button" data-auth-mode="login">Sign in</button>
+          <button class="header-cta" type="button" data-auth-mode="register">
+            Start a private chat <span aria-hidden="true">&rarr;</span>
+          </button>
         </div>
-        <p class="story-foot">Informational guidance · Not a diagnosis</p>
-      </section>
+      </header>
 
-      <section class="auth-panel">
+      <main id="main-content">
+        <section id="top" class="landing-hero">
+          <div class="hero-copy">
+            <p class="landing-eyebrow"><span></span> Evidence, made human</p>
+            <h1>Health questions deserve more than a confident guess.</h1>
+            <p class="hero-lede">
+              Anlu brings reviewed medical evidence, thoughtful triage, and integrative perspectives
+              into one calm, private conversation&mdash;so you can understand what matters and choose
+              a safer next step.
+            </p>
+            <div class="hero-actions">
+              <button class="hero-primary" type="button" data-auth-mode="register">
+                Ask your first question <span aria-hidden="true">&rarr;</span>
+              </button>
+              <a class="hero-secondary" href="#approach">See how Anlu works</a>
+            </div>
+            <ul class="hero-trust" aria-label="Service principles">
+              <li><span aria-hidden="true">&#10003;</span> Private by default</li>
+              <li><span aria-hidden="true">&#10003;</span> Sources with every answer</li>
+              <li><span aria-hidden="true">&#10003;</span> Red-flag detection first</li>
+            </ul>
+          </div>
+
+          <div class="hero-visual" aria-label="Preview of an evidence-grounded Anlu Health answer">
+            <div class="orbit orbit-one" aria-hidden="true"></div>
+            <div class="orbit orbit-two" aria-hidden="true"></div>
+            <div class="visual-glow" aria-hidden="true"></div>
+            <div class="floating-note note-one"><span></span> Reviewed evidence</div>
+            <div class="floating-note note-two"><span></span> Triage complete</div>
+            <article class="answer-preview">
+              <div class="preview-top">
+                <div class="mini-brand"><span class="anlu-mark small" aria-hidden="true"><i></i><i></i></span></div>
+                <div><b>Anlu Health</b><small>Evidence-grounded mode</small></div>
+                <span class="preview-status">Routine</span>
+              </div>
+              <div class="preview-question">I found a small lump. What details should I notice?</div>
+              <div class="preview-answer">
+                <p class="preview-label">A useful first check</p>
+                <p>
+                  Note when it appeared, whether it is changing, its approximate size, tenderness,
+                  mobility, and any skin changes. These details help a clinician decide how soon to assess it.
+                </p>
+                <div class="preview-caution"><span>!</span> Rapid growth, redness with fever, or severe pain needs prompt care.</div>
+              </div>
+              <div class="preview-sources">
+                <span>Sources</span>
+                <b>MedlinePlus</b>
+                <b>HSA Singapore</b>
+                <span class="source-count">+2</span>
+              </div>
+            </article>
+            <div class="visual-caption"><span>01</span> Understand <i></i><span>02</span> Check urgency <i></i><span>03</span> Act</div>
+          </div>
+        </section>
+
+        <section class="evidence-ribbon" aria-label="Evidence publishers used by Anlu Health">
+          <p>Grounded in reviewed public-health sources</p>
+          <div>
+            <span>WHO</span>
+            <span>MedlinePlus</span>
+            <span>NCCIH</span>
+            <span>HSA Singapore</span>
+          </div>
+        </section>
+
+        <section id="approach" class="approach-section landing-section">
+          <div class="section-intro">
+            <p class="landing-eyebrow dark"><span></span> One question, two lenses</p>
+            <h2>Integrative, without blurring the evidence.</h2>
+            <p>
+              Biomedical evidence and traditional Chinese medicine are presented as distinct
+              frameworks. Anlu shows where evidence is strong, where it is limited, and where an
+              interaction or red flag changes the next step.
+            </p>
+          </div>
+          <div class="lens-stage">
+            <article class="lens-card biomedical-card">
+              <div class="lens-number">01</div>
+              <p class="lens-kicker">Biomedical perspective</p>
+              <h3>Symptoms, risk factors, and care pathways</h3>
+              <p>Plain-language explanations linked to approved clinical and public-health sources.</p>
+              <ul><li>Red-flag screening</li><li>Medication context</li><li>Visit preparation</li></ul>
+            </article>
+            <div class="lens-bridge" aria-hidden="true"><span></span><b>+</b><span></span></div>
+            <article class="lens-card tcm-card">
+              <div class="lens-number">02</div>
+              <p class="lens-kicker">TCM perspective</p>
+              <h3>Traditional context, clearly labelled</h3>
+              <p>Educational traditions are separated from clinical claims and checked for safety concerns.</p>
+              <ul><li>Evidence boundaries</li><li>Herb-drug cautions</li><li>Qualified-practitioner prompts</li></ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="evidence" class="process-section landing-section">
+          <div class="process-heading">
+            <p class="landing-eyebrow dark"><span></span> How every answer is built</p>
+            <h2>A careful path from question to next step.</h2>
+          </div>
+          <div class="process-grid">
+            <article><span>01</span><div class="process-icon">&#9675;</div><h3>You describe</h3><p>Share timing, changes, medicines, herbs, and the context that matters.</p></article>
+            <article><span>02</span><div class="process-icon">&#10010;</div><h3>Anlu checks urgency</h3><p>Deterministic safety rules look for emergencies before any model response.</p></article>
+            <article><span>03</span><div class="process-icon">&#8801;</div><h3>Evidence is retrieved</h3><p>Only approved, current source passages can support the generated answer.</p></article>
+            <article><span>04</span><div class="process-icon">&#8599;</div><h3>You get a next step</h3><p>Clear actions, useful follow-up questions, and visible source links.</p></article>
+          </div>
+        </section>
+
+        <section id="privacy" class="privacy-section">
+          <div class="privacy-copy">
+            <p class="landing-eyebrow"><span></span> Designed around restraint</p>
+            <h2>Your health question deserves deliberate handling.</h2>
+            <p>
+              Conversation history is off by default. Health text is excluded from application logs,
+              sessions are revocable, and you can remove your account and stored history from the app.
+              Questions are sent to the configured inference provider for processing.
+            </p>
+            <button type="button" data-auth-mode="register">Open your private workspace <span aria-hidden="true">&rarr;</span></button>
+          </div>
+          <div class="privacy-ledger" aria-label="Privacy controls">
+            <div><span>01</span><p><b>No health text in logs</b><small>Operational telemetry records metadata, not your question.</small></p><i>On</i></div>
+            <div><span>02</span><p><b>History off by default</b><small>Storage requires explicit deployment configuration.</small></p><i>On</i></div>
+            <div><span>03</span><p><b>Account deletion</b><small>Remove account, sessions, and stored conversations.</small></p><i>Ready</i></div>
+          </div>
+        </section>
+
+        <section class="closing-section">
+          <div class="closing-mark" aria-hidden="true"><span class="anlu-mark large"><i></i><i></i></span></div>
+          <p class="landing-eyebrow dark"><span></span> A clearer conversation starts here</p>
+          <h2>Bring the question.<br />Leave with a calmer next step.</h2>
+          <button class="hero-primary" type="button" data-auth-mode="register">
+            Start with Anlu <span aria-hidden="true">&rarr;</span>
+          </button>
+          <p class="closing-note">Educational guidance, not diagnosis or treatment. Emergencies bypass chat.</p>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <a class="brand footer-brand" href="#top"><span class="anlu-mark small"><i></i><i></i></span><span>Anlu <em>Health</em></span></a>
+        <p>Clear evidence. Calmer next steps.</p>
+        <div><a href="#approach">Approach</a><a href="#evidence">Evidence</a><a href="#privacy">Privacy</a></div>
+        <small>&copy; 2026 Anlu Health. Informational use only.</small>
+      </footer>
+    </div>
+
+    <div id="auth-modal" class="auth-modal hidden" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <button id="auth-backdrop" class="auth-backdrop" type="button" aria-label="Close sign-in dialog"></button>
+      <section class="auth-panel auth-modal-panel">
+        <button id="close-auth" class="auth-close" type="button" aria-label="Close">&times;</button>
         <div class="auth-card">
+          <a class="brand auth-brand" href="#top" aria-label="Anlu Health home">
+            <span class="anlu-mark small" aria-hidden="true"><i></i><i></i></span><span>Anlu <em>Health</em></span>
+          </a>
           <p class="eyebrow dark">YOUR PRIVATE HEALTH WORKSPACE</p>
           <h2 id="auth-title">Welcome back</h2>
           <p id="auth-subtitle" class="muted">Sign in to start an evidence-grounded conversation.</p>
@@ -47,141 +199,79 @@
           <form id="auth-form" novalidate>
             <label for="email">Email</label>
             <input id="email" name="email" type="email" autocomplete="email" required />
-
             <label for="password">Password</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              minlength="12"
-              maxlength="128"
-              required
-            />
-            <p id="password-hint" class="field-hint hidden">
-              12+ characters using at least two of uppercase, lowercase, and numbers.
-            </p>
-
+            <input id="password" name="password" type="password" autocomplete="current-password" minlength="12" maxlength="128" required />
+            <p id="password-hint" class="field-hint hidden">12+ characters using at least two of uppercase, lowercase, and numbers.</p>
             <label id="terms-row" class="check-row hidden">
               <input id="terms" type="checkbox" />
-              <span>I understand this is educational information, not medical diagnosis or treatment.</span>
+              <span>I understand this is educational information, not diagnosis or treatment, and that my question is processed by the configured inference provider.</span>
             </label>
-
             <p id="auth-error" class="form-error" role="alert"></p>
-            <button id="auth-submit" class="primary-button" type="submit">
-              <span>Continue securely</span><span aria-hidden="true">→</span>
-            </button>
+            <button id="auth-submit" class="primary-button" type="submit"><span>Continue securely</span><span aria-hidden="true">&rarr;</span></button>
           </form>
-
-          <p class="privacy-note">
-            <span class="lock" aria-hidden="true">⌑</span>
-            Chat history is off by default. Health text is never written to application logs.
-          </p>
+          <p class="privacy-note"><span class="lock" aria-hidden="true">&#9671;</span> Chat history is off by default. Health text is never written to application logs.</p>
         </div>
       </section>
     </div>
 
     <div id="app-shell" class="app-shell hidden">
       <aside class="sidebar">
-        <a class="brand" href="/" aria-label="HealthBridge home">
-          <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
-          <span>HealthBridge</span>
+        <a class="brand" href="/" aria-label="Anlu Health home">
+          <span class="anlu-mark small" aria-hidden="true"><i></i><i></i></span><span>Anlu <em>Health</em></span>
         </a>
-
-        <button id="new-chat" class="new-chat" type="button"><span>＋</span> New conversation</button>
-
+        <button id="new-chat" class="new-chat" type="button"><span>+</span> New conversation</button>
         <nav aria-label="Conversation navigation">
           <p class="nav-label">TODAY</p>
-          <button class="nav-item active" type="button">
-            <span class="nav-dot"></span><span>Current health question</span>
-          </button>
+          <button class="nav-item active" type="button"><span class="nav-dot"></span><span>Current health question</span></button>
         </nav>
-
         <div class="sidebar-foot">
           <div class="privacy-chip"><span></span> History off</div>
-          <button id="settings-button" class="text-button" type="button">Privacy & account</button>
+          <button id="settings-button" class="text-button" type="button">Privacy &amp; account</button>
           <button id="logout-button" class="user-row" type="button">
-            <span id="avatar" class="avatar">H</span>
-            <span><b id="user-email">Account</b><small>Sign out</small></span>
+            <span id="avatar" class="avatar">A</span><span><b id="user-email">Account</b><small>Sign out</small></span>
           </button>
         </div>
       </aside>
 
       <main class="chat-main">
         <header class="topbar">
-          <button id="menu-button" class="menu-button" type="button" aria-label="Open menu">☰</button>
-          <div>
-            <span class="status-dot"></span>
-            <span>Evidence-grounded mode</span>
-          </div>
-          <label class="mode-select">
-            <span>Perspective</span>
-            <select id="care-mode">
-              <option value="integrative">Biomedical + TCM</option>
-              <option value="biomedical">Biomedical only</option>
-            </select>
-          </label>
+          <button id="menu-button" class="menu-button" type="button" aria-label="Open menu">&#9776;</button>
+          <div><span class="status-dot"></span><span>Evidence-grounded mode</span></div>
+          <label class="mode-select"><span>Perspective</span><select id="care-mode"><option value="integrative">Biomedical + TCM</option><option value="biomedical">Biomedical only</option></select></label>
         </header>
-
         <section id="chat-scroll" class="chat-scroll">
           <div id="welcome" class="welcome">
             <div class="welcome-mark" aria-hidden="true"><span></span></div>
             <p class="eyebrow dark">ASK WITH CONTEXT</p>
             <h2>What would you like to understand?</h2>
-            <p>
-              Describe what you notice, when it began, what makes it better or worse, and any medicines,
-              supplements, or herbs you take.
-            </p>
+            <p>Describe what you notice, when it began, what makes it better or worse, and any medicines, supplements, or herbs you take.</p>
             <div class="prompt-grid">
-              <button class="prompt-card" type="button" data-prompt="I found a lump. What details should I check before seeing a doctor?">
-                <span class="prompt-icon coral">◌</span><b>A lump or swelling</b><small>Know which details and red flags matter</small>
-              </button>
-              <button class="prompt-card" type="button" data-prompt="Could my symptoms or medicines interact with a Chinese herbal product?">
-                <span class="prompt-icon sage">叶</span><b>Herbs and medicines</b><small>Review evidence and interaction cautions</small>
-              </button>
-              <button class="prompt-card" type="button" data-prompt="Help me organize my symptoms for a medical appointment.">
-                <span class="prompt-icon blue">＋</span><b>Prepare for a visit</b><small>Turn observations into useful questions</small>
-              </button>
+              <button class="prompt-card" type="button" data-prompt="I found a lump. What details should I check before seeing a doctor?"><span class="prompt-icon coral">&#9675;</span><b>A lump or swelling</b><small>Know which details and red flags matter</small></button>
+              <button class="prompt-card" type="button" data-prompt="Could my symptoms or medicines interact with a Chinese herbal product?"><span class="prompt-icon sage">&#21494;</span><b>Herbs and medicines</b><small>Review evidence and interaction cautions</small></button>
+              <button class="prompt-card" type="button" data-prompt="Help me organize my symptoms for a medical appointment."><span class="prompt-icon blue">+</span><b>Prepare for a visit</b><small>Turn observations into useful questions</small></button>
             </div>
           </div>
-
           <div id="messages" class="messages" aria-live="polite"></div>
         </section>
-
         <section class="composer-area">
           <div id="urgent-note" class="urgent-note hidden" role="alert"></div>
           <form id="chat-form" class="composer">
             <label class="sr-only" for="message-input">Your health question</label>
-            <textarea
-              id="message-input"
-              maxlength="4000"
-              rows="1"
-              placeholder="Describe a symptom, concern, or medicine question…"
-              required
-            ></textarea>
-            <button id="send-button" type="submit" aria-label="Send message">↑</button>
+            <textarea id="message-input" maxlength="4000" rows="1" placeholder="Describe a symptom, concern, or medicine question..." required></textarea>
+            <button id="send-button" type="submit" aria-label="Send message">&uarr;</button>
           </form>
-          <p class="composer-note">
-            HealthBridge can make mistakes. For severe or rapidly worsening symptoms, call local emergency services.
-          </p>
+          <p class="composer-note">Anlu can make mistakes. For severe or rapidly worsening symptoms, call local emergency services.</p>
         </section>
       </main>
     </div>
 
     <dialog id="settings-dialog" class="settings-dialog">
-      <button id="close-settings" class="dialog-close" type="button" aria-label="Close">×</button>
-      <p class="eyebrow dark">PRIVACY & ACCOUNT</p>
+      <button id="close-settings" class="dialog-close" type="button" aria-label="Close">&times;</button>
+      <p class="eyebrow dark">PRIVACY &amp; ACCOUNT</p>
       <h2>Your data, your call.</h2>
-      <div class="setting-row">
-        <div><b>Conversation history</b><p id="history-status">Not stored by this deployment.</p></div>
-        <button id="delete-history" class="outline-button" type="button">Delete history</button>
-      </div>
-      <div class="setting-row danger-row">
-        <div><b>Delete account</b><p>Removes your account, sessions, and any saved conversations.</p></div>
-        <button id="delete-account" class="danger-button" type="button">Delete account</button>
-      </div>
+      <div class="setting-row"><div><b>Conversation history</b><p id="history-status">Not stored by this deployment.</p></div><button id="delete-history" class="outline-button" type="button">Delete history</button></div>
+      <div class="setting-row danger-row"><div><b>Delete account</b><p>Removes your account, sessions, and any saved conversations.</p></div><button id="delete-account" class="danger-button" type="button">Delete account</button></div>
       <p id="settings-message" class="form-error" role="status"></p>
     </dialog>
   </body>
 </html>
-

@@ -14,7 +14,7 @@ def test_register_me_logout(client: TestClient) -> None:
     )
     assert created.status_code == 201
     assert created.json()["email"] == "user@example.com"
-    assert client.cookies.get("hb_session")
+    assert client.cookies.get("anlu_session")
 
     me = client.get("/api/me")
     assert me.status_code == 200
@@ -48,3 +48,9 @@ def test_weak_password_is_rejected(client: TestClient) -> None:
         json={"email": "weak@example.com", "password": "aaaaaaaaaaaa", "terms_accepted": True},
     )
     assert response.status_code == 422
+
+
+def test_metrics_are_available_without_token_only_outside_production(client: TestClient) -> None:
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert "anlu_http_requests_total" in response.text

@@ -1,4 +1,4 @@
-# HealthBridge adapter model card
+# Anlu Health adapter model card
 
 - Base model/revision:
 - Adapter URI/SHA-256:
@@ -18,4 +18,3 @@
 - Approvers/date:
 
 The adapter must not be promoted while any field is blank.
-

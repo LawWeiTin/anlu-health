@@ -1,5 +1,10 @@
-status: not_promoted
-base_model:
+status: hosted_baseline
+runtime_model:
+  id: Qwen/Qwen3.5-9B:cheapest
+  provider: huggingface-inference-providers
+  revision: provider-managed
+  role: open-weight baseline behind RAG and deterministic safety gates
+candidate_base_model:
   id: google/medgemma-1.5-4b-it
   revision: pin-before-release
   license: HAI-DEF Terms of Use
@@ -8,13 +13,16 @@ adapter:
   sha256: set-after-reviewed-colab-run
 prompt_version: v1
 embedding_model:
-  id: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
-  revision: pin-before-release
+  id: intfloat/multilingual-e5-small
+  revision: provider-managed
+artifact_storage:
+  provider: google-drive
+  root_folder_id: 1QZkoMOmP50f7J4CoKsE0vQ70O7H4Zpkt
+  write_policy: timestamped-additive-only
 rag_manifest_sha256: set-after-ingestion
 evaluation_report: artifacts/eval.json
 approvals:
   physician: pending
   registered_tcm_practitioner: pending
   privacy_security: pending
-  product_owner: pending
-
+  product_owner: acknowledged

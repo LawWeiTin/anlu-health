@@ -14,9 +14,9 @@ class Settings(BaseSettings):
     )
 
     app_env: Literal["development", "test", "production"] = "development"
-    app_name: str = "HealthBridge"
+    app_name: str = "Anlu Health"
     app_base_url: str = "http://localhost:8000"
-    database_url: str = "sqlite:///./healthbridge.db"
+    database_url: str = "sqlite:///./anlu.db"
     cookie_secure: bool = False
     session_days: int = Field(default=7, ge=1, le=30)
     allow_registration: bool = True
@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     model_provider: Literal["mock", "openai_compatible"] = "mock"
     model_api_url: str | None = None
     model_api_token: str | None = None
+    hf_token: str | None = None
     model_name: str = "google/medgemma-1.5-4b-it"
     model_timeout_seconds: float = Field(default=45, ge=5, le=180)
 
@@ -39,6 +40,7 @@ class Settings(BaseSettings):
 
     redis_url: str | None = None
     sentry_dsn: str | None = None
+    metrics_token: str | None = None
     log_level: str = "INFO"
 
     @model_validator(mode="after")
@@ -52,8 +54,12 @@ class Settings(BaseSettings):
                 raise ValueError("Mock model/embeddings are not allowed in production")
             if not self.model_api_url or not self.embedding_api_url:
                 raise ValueError("Production model and embedding API URLs are required")
+            if not self.hf_token and not (self.model_api_token and self.embedding_api_token):
+                raise ValueError("HF_TOKEN or separate model and embedding tokens are required")
             if not self.cookie_secure:
                 raise ValueError("Secure cookies are required in production")
+            if not self.metrics_token:
+                raise ValueError("METRICS_TOKEN is required in production")
         return self
 
     @property

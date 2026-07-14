@@ -12,8 +12,8 @@ from app.database import get_db
 from app.models import AuthSession, User, utcnow
 from app.security import hash_password, hash_token, normalize_email, random_token, verify_password
 
-SESSION_COOKIE = "hb_session"
-CSRF_COOKIE = "hb_csrf"
+SESSION_COOKIE = "anlu_session"
+CSRF_COOKIE = "anlu_csrf"
 
 
 @dataclass(frozen=True)

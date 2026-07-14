@@ -1,9 +1,10 @@
 import json
 import logging
+import secrets
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -46,7 +47,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(
-    title="HealthBridge API",
+    title="Anlu Health API",
     version="0.1.0",
     docs_url=None if settings.app_env == "production" else "/docs",
     redoc_url=None,
@@ -91,5 +92,10 @@ def ready() -> dict[str, object]:
 
 
 @app.get("/metrics", include_in_schema=False)
-def metrics() -> Response:
+def metrics(request: Request) -> Response:
+    if settings.metrics_token:
+        provided = request.headers.get("Authorization", "")
+        expected = f"Bearer {settings.metrics_token}"
+        if not secrets.compare_digest(provided, expected):
+            raise HTTPException(status_code=404, detail="Not found")
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

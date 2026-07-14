@@ -20,7 +20,7 @@ function cookie(name) {
 
 async function api(path, options = {}) {
   const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
-  const csrf = cookie("hb_csrf");
+  const csrf = cookie("anlu_csrf");
   if (csrf && !["GET", "HEAD"].includes((options.method || "GET").toUpperCase())) {
     headers["X-CSRF-Token"] = decodeURIComponent(csrf);
   }
@@ -48,8 +48,22 @@ function setAuthMode(mode) {
   $("#auth-error").textContent = "";
 }
 
+function openAuthModal(mode = "login") {
+  setAuthMode(mode);
+  $("#auth-modal").classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  window.setTimeout(() => $("#email").focus(), 0);
+}
+
+function closeAuthModal() {
+  $("#auth-modal").classList.add("hidden");
+  document.body.classList.remove("modal-open");
+  $("#auth-error").textContent = "";
+}
+
 function showApp(user) {
   state.user = user;
+  closeAuthModal();
   $("#auth-shell").classList.add("hidden");
   $("#app-shell").classList.remove("hidden");
   $("#user-email").textContent = user.email;
@@ -64,6 +78,7 @@ function showApp(user) {
 
 function showAuth() {
   state.user = null;
+  closeAuthModal();
   $("#app-shell").classList.add("hidden");
   $("#auth-shell").classList.remove("hidden");
 }
@@ -156,7 +171,7 @@ function addAssistantMessage(payload) {
   const head = document.createElement("div");
   head.className = "answer-head";
   const name = document.createElement("b");
-  name.textContent = "HealthBridge";
+  name.textContent = "Anlu Health";
   const urgency = document.createElement("span");
   urgency.className = `urgency ${payload.urgency}`;
   urgency.textContent = payload.urgency;
@@ -255,6 +270,14 @@ function resizeComposer() {
 
 $("#login-tab").addEventListener("click", () => setAuthMode("login"));
 $("#register-tab").addEventListener("click", () => setAuthMode("register"));
+$$("[data-auth-mode]").forEach((button) => {
+  button.addEventListener("click", () => openAuthModal(button.dataset.authMode));
+});
+$("#close-auth").addEventListener("click", closeAuthModal);
+$("#auth-backdrop").addEventListener("click", closeAuthModal);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !$("#auth-modal").classList.contains("hidden")) closeAuthModal();
+});
 
 $("#auth-form").addEventListener("submit", async (event) => {
   event.preventDefault();

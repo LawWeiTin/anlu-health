@@ -14,7 +14,7 @@ from app.safety import SafetyAssessment, assess, emergency_response
 from app.schemas import ChatResponse, SourceOut
 from app.security import Cipher, short_fingerprint
 
-logger = logging.getLogger("healthbridge.audit")
+logger = logging.getLogger("anlu.audit")
 DISCLAIMER = (
     "Educational information only—not a diagnosis or treatment plan. For emergencies, contact local "
     "emergency services; for personal medical decisions, consult a qualified clinician."

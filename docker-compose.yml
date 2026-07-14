@@ -2,15 +2,15 @@ services:
   db:
     image: pgvector/pgvector:pg16
     environment:
-      POSTGRES_DB: healthbridge
-      POSTGRES_USER: healthbridge
+      POSTGRES_DB: anlu
+      POSTGRES_USER: anlu
       POSTGRES_PASSWORD: local-only-change-me
     ports:
       - "5432:5432"
     volumes:
-      - healthbridge_pg:/var/lib/postgresql/data
+      - anlu_pg:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U healthbridge"]
+      test: ["CMD-SHELL", "pg_isready -U anlu"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -21,7 +21,7 @@ services:
       - "8000:8000"
     environment:
       APP_ENV: development
-      DATABASE_URL: postgresql+psycopg://healthbridge:local-only-change-me@db:5432/healthbridge
+      DATABASE_URL: postgresql+psycopg://anlu:local-only-change-me@db:5432/anlu
       COOKIE_SECURE: "false"
       MODEL_PROVIDER: mock
       EMBEDDING_PROVIDER: mock
@@ -30,5 +30,4 @@ services:
         condition: service_healthy
 
 volumes:
-  healthbridge_pg:
-
+  anlu_pg:

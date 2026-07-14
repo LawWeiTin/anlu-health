@@ -41,7 +41,9 @@ Do not use real user conversations for training. A separate, explicit research c
 de-identification assessment, governance approval, deletion path, and data-use agreement would be
 required. Application logs must never contain prompt or answer text.
 
-Generated corpora, embeddings, checkpoints, and experiment logs are ignored by Git. Store them in
-encrypted, versioned object storage with lifecycle rules. DVC tracks hashes and lineage without
-placing large files on the laptop or in GitHub.
-
+Generated corpora, embeddings, checkpoints, and experiment logs are ignored by Git. The configured
+personal artifact store is the additive-only `Anlu Health` folder in Google Drive, with separate
+`Datasets`, `Model Adapters`, `Evaluation Reports`, and `Release Artifacts` subfolders. Training jobs
+must create timestamped run directories and must not delete or overwrite existing Drive content.
+DVC tracks hashes and lineage without placing large files on the laptop or in GitHub. Access to the
+Drive folder remains private to the account owner unless they explicitly change sharing settings.
