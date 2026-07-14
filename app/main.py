@@ -88,7 +88,17 @@ def ready() -> dict[str, object]:
         raise HTTPException(status_code=503, detail="Database is not ready") from exc
     if settings.app_env == "production" and not approved_sources:
         raise HTTPException(status_code=503, detail="No approved knowledge sources are indexed")
-    return {"status": "ready", "approved_sources": approved_sources or 0}
+    local_experimental = (
+        settings.app_env != "production"
+        and settings.model_provider == "mock"
+        and settings.embedding_provider == "mock"
+    )
+    return {
+        "status": "ready",
+        "approved_sources": approved_sources or 0,
+        "runtime_mode": "local_experimental" if local_experimental else "hosted",
+        "history_storage": "enabled" if settings.save_chat_history else "disabled",
+    }
 
 
 @app.get("/metrics", include_in_schema=False)

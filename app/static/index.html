@@ -28,6 +28,7 @@
           <a href="#privacy">Privacy</a>
         </nav>
         <div class="header-actions">
+          <span id="runtime-pill" class="runtime-pill hidden">Local &middot; offline</span>
           <button class="header-login" type="button" data-auth-mode="login">Sign in</button>
           <button class="header-cta" type="button" data-auth-mode="register">
             Start a private chat <span aria-hidden="true">&rarr;</span>
@@ -146,7 +147,7 @@
           <div class="privacy-copy">
             <p class="landing-eyebrow"><span></span> Designed around restraint</p>
             <h2>Your health question deserves deliberate handling.</h2>
-            <p>
+            <p id="processing-disclosure">
               Conversation history is off by default. Health text is excluded from application logs,
               sessions are revocable, and you can remove your account and stored history from the app.
               Questions are sent to the configured inference provider for processing.
@@ -204,7 +205,7 @@
             <p id="password-hint" class="field-hint hidden">12+ characters using at least two of uppercase, lowercase, and numbers.</p>
             <label id="terms-row" class="check-row hidden">
               <input id="terms" type="checkbox" />
-              <span>I understand this is educational information, not diagnosis or treatment, and that my question is processed by the configured inference provider.</span>
+              <span id="terms-disclosure">I understand this is educational information, not diagnosis or treatment, and that my question is processed by the configured inference provider.</span>
             </label>
             <p id="auth-error" class="form-error" role="alert"></p>
             <button id="auth-submit" class="primary-button" type="submit"><span>Continue securely</span><span aria-hidden="true">&rarr;</span></button>
@@ -236,7 +237,7 @@
       <main class="chat-main">
         <header class="topbar">
           <button id="menu-button" class="menu-button" type="button" aria-label="Open menu">&#9776;</button>
-          <div><span class="status-dot"></span><span>Evidence-grounded mode</span></div>
+          <div><span class="status-dot"></span><span id="runtime-status-label">Evidence-grounded mode</span></div>
           <label class="mode-select"><span>Perspective</span><select id="care-mode"><option value="integrative">Biomedical + TCM</option><option value="biomedical">Biomedical only</option></select></label>
         </header>
         <section id="chat-scroll" class="chat-scroll">

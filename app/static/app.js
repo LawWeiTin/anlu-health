@@ -91,6 +91,21 @@ async function loadSession() {
   }
 }
 
+async function loadRuntimeStatus() {
+  try {
+    const runtime = await api("/health/ready");
+    if (runtime.runtime_mode !== "local_experimental") return;
+    $("#runtime-pill").classList.remove("hidden");
+    $("#runtime-status-label").textContent = "Local experimental mode";
+    $("#processing-disclosure").textContent =
+      "This local build uses deterministic mock inference and embeddings. Questions stay on this laptop, conversation history is disabled, and health text is excluded from application logs. Hosted deployments use a separately configured inference provider.";
+    $("#terms-disclosure").textContent =
+      "I understand this is educational information, not diagnosis or treatment, and that this local experiment uses deterministic mock inference rather than a clinical model.";
+  } catch (_) {
+    // The main application will surface readiness failures when an action is attempted.
+  }
+}
+
 function resetConversation() {
   state.conversationId = null;
   $("#messages").replaceChildren();
@@ -356,4 +371,5 @@ $("#delete-account").addEventListener("click", async () => {
 });
 
 setAuthMode("login");
+loadRuntimeStatus();
 loadSession();
