@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+__pycache__
+.pytest_cache
+.ruff_cache
+artifacts
+data/generated
+mlruns
+checkpoints
+graphify-out
+*.sqlite3
+healthbridge.db
+

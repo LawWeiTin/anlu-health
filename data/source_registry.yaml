@@ -1,0 +1,78 @@
+version: 1
+last_reviewed: 2026-07-14
+policy: Only entries marked approved may enter the production RAG index.
+sources:
+  - source_key: medlineplus-skin-lumps
+    source_key_prefix: medlineplus-
+    title: MedlinePlus health topics and medical encyclopedia
+    publisher: U.S. National Library of Medicine
+    url: https://medlineplus.gov/xml.html
+    reuse_basis: MedlinePlus XML is offered for download/use with source attribution; encyclopedia pages are link/citation only unless their item terms allow more.
+    license_label: MedlinePlus XML use with attribution
+    evidence_tier: government_consumer
+    languages: [en, es]
+    approved: true
+    review_interval_days: 90
+    use: RAG
+    notes: Prefer daily XML topics. Seed entries are project-authored summaries, not copied encyclopedia prose.
+
+  - source_key: nccih-tcm-overview
+    title: Traditional Chinese Medicine — What You Need To Know
+    publisher: NIH National Center for Complementary and Integrative Health
+    url: https://www.nccih.nih.gov/health/traditional-chinese-medicine-what-you-need-to-know
+    reuse_basis: U.S. government public-domain text except material explicitly marked copyrighted; credit NCCIH.
+    license_label: U.S. government public domain unless marked
+    evidence_tier: government_consumer
+    languages: [en]
+    approved: true
+    review_interval_days: 180
+    use: RAG
+
+  - source_key: nccih-herb-drug-interactions
+    title: Herb-Drug Interactions
+    publisher: NIH National Center for Complementary and Integrative Health
+    url: https://www.nccih.nih.gov/health/providers/digest/herb-drug-interactions
+    reuse_basis: Page states content is public domain except material explicitly marked copyrighted; credit NCCIH.
+    license_label: U.S. government public domain unless marked
+    evidence_tier: clinical_review
+    languages: [en]
+    approved: true
+    review_interval_days: 90
+    use: RAG
+
+  - source_key: who-tcim-strategy
+    title: WHO Traditional Medicine Strategy 2025–2034
+    publisher: World Health Organization
+    url: https://www.who.int/health-topics/traditional-complementary-and-integrative-medicine
+    reuse_basis: Link and project-authored policy summary only; verify WHO item-specific licensing before full-text ingestion.
+    license_label: Link/citation only
+    evidence_tier: traditional_framework
+    languages: [en]
+    approved: true
+    review_interval_days: 180
+    use: RAG
+
+  - source_key: hsa-cpm-overview
+    title: Regulatory overview of Chinese Proprietary Medicines
+    publisher: Singapore Health Sciences Authority
+    url: https://www.hsa.gov.sg/chinese-proprietary-medicines/overview/
+    reuse_basis: Link and project-authored regulatory summary only; verify Singapore Government Terms of Use before full-text ingestion.
+    license_label: Link/citation only
+    evidence_tier: guideline
+    languages: [en, zh]
+    approved: true
+    review_interval_days: 90
+    use: RAG
+
+  - source_key: pubmedqa
+    title: PubMedQA
+    publisher: PubMedQA authors
+    url: https://github.com/pubmedqa/pubmedqa
+    reuse_basis: Repository is distributed under the MIT license; preserve attribution and benchmark separation.
+    license_label: MIT
+    evidence_tier: research_benchmark
+    languages: [en]
+    approved: true
+    review_interval_days: 365
+    use: evaluation_only
+

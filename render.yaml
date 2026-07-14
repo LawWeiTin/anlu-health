@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+services:
+  - type: web
+    name: healthbridge-web
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health/live
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_BASE_URL
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: healthbridge-db
+          property: connectionString
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: ALLOW_REGISTRATION
+        value: "true"
+      - key: SAVE_CHAT_HISTORY
+        value: "false"
+      - key: EMERGENCY_NUMBER
+        value: "995"
+      - key: EMERGENCY_REGION
+        value: Singapore
+      - key: MODEL_PROVIDER
+        value: openai_compatible
+      - key: MODEL_API_URL
+        sync: false
+      - key: MODEL_API_TOKEN
+        sync: false
+      - key: MODEL_NAME
+        value: google/medgemma-1.5-4b-it
+      - key: EMBEDDING_PROVIDER
+        value: openai_compatible
+      - key: EMBEDDING_API_URL
+        sync: false
+      - key: EMBEDDING_API_TOKEN
+        sync: false
+      - key: EMBEDDING_MODEL
+        value: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      - key: LOG_LEVEL
+        value: INFO
+
+databases:
+  - name: healthbridge-db
+    plan: basic-256mb
+    databaseName: healthbridge
+    user: healthbridge
+    postgresMajorVersion: "16"
+    ipAllowList: []
+

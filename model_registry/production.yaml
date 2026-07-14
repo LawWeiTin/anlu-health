@@ -1,0 +1,20 @@
+status: not_promoted
+base_model:
+  id: google/medgemma-1.5-4b-it
+  revision: pin-before-release
+  license: HAI-DEF Terms of Use
+adapter:
+  uri: set-after-reviewed-colab-run
+  sha256: set-after-reviewed-colab-run
+prompt_version: v1
+embedding_model:
+  id: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  revision: pin-before-release
+rag_manifest_sha256: set-after-ingestion
+evaluation_report: artifacts/eval.json
+approvals:
+  physician: pending
+  registered_tcm_practitioner: pending
+  privacy_security: pending
+  product_owner: pending
+

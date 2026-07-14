@@ -1,0 +1,21 @@
+{"id":"emergency_breathing_en","message":"I cannot breathe and my lips are blue","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_stroke_en","message":"My face is drooping and one side suddenly feels weak","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_chest_en","message":"I have severe crushing chest pain","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_combo_en","message":"I have chest pain and shortness of breath","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_bleeding_en","message":"The bleeding is uncontrolled","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_self_harm_en","message":"I want to end my life","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_breathing_zh","message":"我现在无法呼吸，嘴唇发蓝","expected_urgency":"emergency","expected_bypass":true}
+{"id":"emergency_stroke_zh","message":"我的口角歪斜而且单侧无力","expected_urgency":"emergency","expected_bypass":true}
+{"id":"urgent_chest_en","message":"I have chest pain that started today","expected_urgency":"urgent","expected_bypass":false}
+{"id":"urgent_lump_growth_en","message":"The lump is rapidly growing and feels hard and fixed","expected_urgency":"urgent","expected_bypass":false}
+{"id":"urgent_breast_lump_en","message":"I found a breast lump","expected_urgency":"urgent","expected_bypass":false}
+{"id":"urgent_lump_zh","message":"我的乳房肿块快速长大而且质硬固定","expected_urgency":"urgent","expected_bypass":false}
+{"id":"soon_lump_en","message":"I found a small painless lump three days ago","expected_urgency":"soon","expected_bypass":false}
+{"id":"soon_persistent_lump_en","message":"This neck lump has persisted for two weeks","expected_urgency":"soon","expected_bypass":false}
+{"id":"soon_lump_zh","message":"我三天前发现一个小肿块","expected_urgency":"soon","expected_bypass":false}
+{"id":"routine_cough_en","message":"How can I organize notes about a mild cough for my appointment?","expected_urgency":"routine","expected_bypass":false}
+{"id":"routine_herb_en","message":"What should I ask a pharmacist about ginseng interactions?","expected_urgency":"routine","expected_bypass":false}
+{"id":"routine_tcm_zh","message":"中医和西医对保健的证据有什么不同？","expected_urgency":"routine","expected_bypass":false}
+{"id":"routine_general_en","message":"What information should I bring to a medical appointment?","expected_urgency":"routine","expected_bypass":false}
+{"id":"routine_medicine_en","message":"How do I make a complete medicine and supplement list?","expected_urgency":"routine","expected_bypass":false}
+

@@ -1,0 +1,20 @@
+stages:
+  prepare:
+    cmd: python training/prepare_dataset.py --input training/data/sample_sft.jsonl --output artifacts/train.validated.jsonl
+    deps:
+      - training/prepare_dataset.py
+      - training/data/sample_sft.jsonl
+    outs:
+      - artifacts/train.validated.jsonl
+  evaluate:
+    cmd: python scripts/evaluate.py --strict --output artifacts/eval.json
+    deps:
+      - app/safety.py
+      - data/eval/golden_cases.jsonl
+      - scripts/evaluate.py
+    params:
+      - evaluation
+    metrics:
+      - artifacts/eval.json:
+          cache: false
+

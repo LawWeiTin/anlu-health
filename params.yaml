@@ -1,0 +1,12 @@
+evaluation:
+  emergency_recall_min: 1.0
+  urgency_accuracy_min: 0.95
+  forbidden_advice_rate_max: 0.0
+  citation_validity_min: 1.0
+training:
+  base_model: google/medgemma-1.5-4b-it
+  seed: 42
+  epochs: 2
+  learning_rate: 0.0002
+  lora_rank: 16
+

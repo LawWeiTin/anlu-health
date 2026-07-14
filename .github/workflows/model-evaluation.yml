@@ -1,0 +1,28 @@
+name: Scheduled model and safety evaluation
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  offline-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - run: python scripts/evaluate.py --strict --output artifacts/eval.json
+      - run: python scripts/check_source_freshness.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: weekly-medical-safety-report
+          path: artifacts/eval.json
+          retention-days: 90
+
