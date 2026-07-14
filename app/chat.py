@@ -19,6 +19,12 @@ DISCLAIMER = (
     "Educational information only—not a diagnosis or treatment plan. For emergencies, contact local "
     "emergency services; for personal medical decisions, consult a qualified clinician."
 )
+_SMALL_TALK = re.compile(
+    r"^\s*(?:hello|hi|hey|good (?:morning|afternoon|evening))"
+    r"(?:[!,. ]+(?:how are you|how is it going))?[!?. ]*$|"
+    r"^\s*(?:thanks|thank you|bye|goodbye)[!?. ]*$",
+    re.I,
+)
 
 
 @dataclass(frozen=True)
@@ -76,6 +82,14 @@ class ChatService:
             assessment.urgency.value,
             ",".join(assessment.flags) or "none",
         )
+
+        if _SMALL_TALK.fullmatch(message):
+            text = (
+                "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
+                "visit, or review medicine and herb safety. This local experimental mode uses "
+                "deterministic mock responses, so it is for testing the workflow—not medical advice."
+            )
+            return self._response(db, user, message, text, assessment, [], conversation_id)
 
         if assessment.bypass_model:
             text = emergency_response(

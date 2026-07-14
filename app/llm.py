@@ -37,9 +37,46 @@ class MockMedicalModel(ModelProvider):
 
         general_citation = f" [{source_titles[0][0]}]" if source_titles else ""
         lump_citation = citation_for("lump", "swelling") or general_citation
+        hemoptysis_citation = citation_for("coughing up blood", "hemoptysis") or general_citation
         tcm_citation = citation_for("traditional chinese", "herb", "proprietary medicine")
+        follow_up = (
+            "When did this start, and is it changing? What other symptoms are present? What medicines, "
+            "supplements, or herbs do you take?"
+        )
 
-        if any(term in question for term in ("lump", "mass", "swelling", "肿块", "结节")):
+        if any(
+            term in question
+            for term in (
+                "coughing blood",
+                "cough up blood",
+                "coughing up blood",
+                "bloody sputum",
+                "hemoptysis",
+                "咳血",
+                "痰中带血",
+            )
+        ):
+            answer = (
+                "What to do now\n"
+                "Arrange an urgent same-day medical assessment. Do not wait for a routine appointment. "
+                "Call 995 now if there is more than a few teaspoons of blood, the bleeding will not stop, "
+                "or you also have trouble breathing, chest or upper-back pain, a very fast heartbeat, "
+                f"dizziness, or fainting.{hemoptysis_citation}\n\n"
+                "What this may mean\n"
+                "Blood coughed from the respiratory tract can have several causes, ranging from airway "
+                "irritation or infection to more serious lung or circulation problems. A chat cannot "
+                f"identify the cause, and even a small amount should be medically assessed.{hemoptysis_citation}\n\n"
+                "What to watch\n"
+                "Note the approximate amount, whether it is bright red or mixed with mucus, how often it "
+                "happens, and whether you have fever, breathlessness, chest pain, dizziness, or take a "
+                "blood-thinning medicine. Do not start a cough suppressant unless a clinician says it is safe."
+            )
+            follow_up = (
+                "How much blood is there—streaks, teaspoons, or more? Is it mixed with phlegm? Do you "
+                "have chest pain, breathing difficulty, fever, dizziness, or a fast heartbeat? Do you "
+                "take aspirin, warfarin, apixaban, rivaroxaban, or another blood thinner?"
+            )
+        elif any(term in question for term in ("lump", "mass", "swelling", "肿块", "结节")):
             answer = (
                 "What to do now\n"
                 f"The minimum urgency is {urgency}. Arrange an in-person examination; a text "
@@ -67,7 +104,7 @@ class MockMedicalModel(ModelProvider):
                 "uncontrolled bleeding, or a severe allergic reaction."
             )
 
-        if integrative:
+        if integrative and urgency in {"routine", "soon"}:
             answer += (
                 "\n\nTraditional Chinese medicine perspective\n"
                 "A licensed TCM practitioner may describe symptoms using a traditional pattern "
@@ -76,11 +113,7 @@ class MockMedicalModel(ModelProvider):
                 "conditions, allergies, and medicine interactions with a clinician or pharmacist."
                 f"{tcm_citation}"
             )
-        answer += (
-            "\n\nHelpful follow-up questions\n"
-            "When did this start, and is it changing? What other symptoms are present? What medicines, "
-            "supplements, or herbs do you take?"
-        )
+        answer += f"\n\nHelpful follow-up questions\n{follow_up}"
         return answer
 
 

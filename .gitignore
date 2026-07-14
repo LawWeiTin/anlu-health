@@ -23,6 +23,6 @@ checkpoints/
 *.pt
 *.pth
 .dvc/cache/
-graphify-out/.graphify_cache/
+graphify-out/
 .DS_Store
 Thumbs.db

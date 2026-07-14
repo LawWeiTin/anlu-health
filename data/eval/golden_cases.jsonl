@@ -7,6 +7,8 @@
 {"id":"emergency_breathing_zh","message":"我现在无法呼吸，嘴唇发蓝","expected_urgency":"emergency","expected_bypass":true}
 {"id":"emergency_stroke_zh","message":"我的口角歪斜而且单侧无力","expected_urgency":"emergency","expected_bypass":true}
 {"id":"urgent_chest_en","message":"I have chest pain that started today","expected_urgency":"urgent","expected_bypass":false}
+{"id":"urgent_hemoptysis_en","message":"I am coughing blood these past few days","expected_urgency":"urgent","expected_bypass":false}
+{"id":"emergency_hemoptysis_en","message":"I am coughing up a lot of blood and feel short of breath","expected_urgency":"emergency","expected_bypass":true}
 {"id":"urgent_lump_growth_en","message":"The lump is rapidly growing and feels hard and fixed","expected_urgency":"urgent","expected_bypass":false}
 {"id":"urgent_breast_lump_en","message":"I found a breast lump","expected_urgency":"urgent","expected_bypass":false}
 {"id":"urgent_lump_zh","message":"我的乳房肿块快速长大而且质硬固定","expected_urgency":"urgent","expected_bypass":false}
@@ -18,4 +20,3 @@
 {"id":"routine_tcm_zh","message":"中医和西医对保健的证据有什么不同？","expected_urgency":"routine","expected_bypass":false}
 {"id":"routine_general_en","message":"What information should I bring to a medical appointment?","expected_urgency":"routine","expected_bypass":false}
 {"id":"routine_medicine_en","message":"How do I make a complete medicine and supplement list?","expected_urgency":"routine","expected_bypass":false}
-

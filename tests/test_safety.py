@@ -23,3 +23,16 @@ def test_emergency_bypasses_model() -> None:
     result = assess("I cannot breathe and I am turning blue")
     assert result.urgency == Urgency.EMERGENCY
     assert result.bypass_model
+
+
+def test_coughing_blood_is_never_routine() -> None:
+    result = assess("I am coughing blood these past few days")
+    assert result.urgency == Urgency.URGENT
+    assert result.flags == ("hemoptysis",)
+    assert not result.bypass_model
+
+
+def test_heavy_hemoptysis_with_breathlessness_bypasses_model() -> None:
+    result = assess("I am coughing up a lot of blood and feel short of breath")
+    assert result.urgency == Urgency.EMERGENCY
+    assert result.bypass_model

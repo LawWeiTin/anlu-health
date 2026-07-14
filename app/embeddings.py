@@ -13,6 +13,49 @@ class EmbeddingError(RuntimeError):
     pass
 
 
+_ENGLISH_STOPWORDS = {
+    "a",
+    "am",
+    "an",
+    "and",
+    "are",
+    "do",
+    "for",
+    "how",
+    "i",
+    "in",
+    "is",
+    "it",
+    "me",
+    "my",
+    "of",
+    "or",
+    "should",
+    "the",
+    "these",
+    "this",
+    "to",
+    "what",
+    "with",
+    "you",
+}
+_CJK_SEQUENCE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]+")
+
+
+def _feature_tokens(text: str) -> list[str]:
+    lowered = text.casefold()
+    words = [
+        token
+        for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", lowered)
+        if len(token) >= 2 and token not in _ENGLISH_STOPWORDS
+    ]
+    cjk: list[str] = []
+    for sequence in _CJK_SEQUENCE.findall(lowered):
+        cjk.append(sequence)
+        cjk.extend(sequence[index : index + 2] for index in range(max(0, len(sequence) - 1)))
+    return words + cjk
+
+
 class EmbeddingProvider(ABC):
     @abstractmethod
     def embed(self, texts: list[str]) -> list[list[float]]:
@@ -34,10 +77,7 @@ class MockMultilingualEmbeddings(EmbeddingProvider):
         results: list[list[float]] = []
         for text in texts:
             vector = [0.0] * self.dimensions
-            lowered = text.casefold()
-            words = re.findall(r"[\w-]+", lowered, flags=re.UNICODE)
-            chinese = [lowered[index : index + 2] for index in range(max(0, len(lowered) - 1))]
-            for token in words + chinese:
+            for token in _feature_tokens(text):
                 digest = hashlib.blake2b(token.encode("utf-8"), digest_size=8).digest()
                 slot = int.from_bytes(digest[:4], "little") % self.dimensions
                 sign = 1.0 if digest[4] % 2 else -1.0

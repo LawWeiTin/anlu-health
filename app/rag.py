@@ -6,7 +6,7 @@ from datetime import date
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.embeddings import EmbeddingProvider
+from app.embeddings import EmbeddingProvider, MockMultilingualEmbeddings
 from app.models import KnowledgeChunk, KnowledgeSource
 
 
@@ -24,12 +24,45 @@ _EVIDENCE_BOOST = {
     "clinical_review": 0.04,
     "traditional_framework": 0.0,
 }
+_ENGLISH_STOPWORDS = {
+    "a",
+    "am",
+    "an",
+    "and",
+    "are",
+    "do",
+    "for",
+    "how",
+    "i",
+    "in",
+    "is",
+    "it",
+    "me",
+    "my",
+    "of",
+    "or",
+    "should",
+    "the",
+    "these",
+    "this",
+    "to",
+    "what",
+    "with",
+    "you",
+}
+_CJK_SEQUENCE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]+")
 
 
 def _tokens(text: str) -> set[str]:
     lowered = text.casefold()
-    tokens = set(re.findall(r"[\w-]{2,}", lowered, re.UNICODE))
-    tokens.update(lowered[index : index + 2] for index in range(max(0, len(lowered) - 1)))
+    tokens = {
+        token
+        for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", lowered)
+        if len(token) >= 2 and token not in _ENGLISH_STOPWORDS
+    }
+    for sequence in _CJK_SEQUENCE.findall(lowered):
+        tokens.add(sequence)
+        tokens.update(sequence[index : index + 2] for index in range(max(0, len(sequence) - 1)))
     return tokens
 
 
@@ -41,8 +74,9 @@ def _cosine(left: list[float], right: list[float]) -> float:
 
 
 class Retriever:
-    def __init__(self, embedding_provider: EmbeddingProvider) -> None:
+    def __init__(self, embedding_provider: EmbeddingProvider, min_score: float = 0.18) -> None:
         self.embedding_provider = embedding_provider
+        self.min_score = min_score
 
     def search(self, db: Session, query: str, limit: int = 5) -> list[RetrievedChunk]:
         query_embedding = self.embedding_provider.embed([query])[0]
@@ -82,13 +116,17 @@ class Retriever:
         ranked: list[RetrievedChunk] = []
         for chunk, source, semantic in candidates:
             chunk_tokens = _tokens(chunk.content)
-            lexical = len(query_tokens & chunk_tokens) / max(1, len(query_tokens))
+            overlap = query_tokens & chunk_tokens
+            if isinstance(self.embedding_provider, MockMultilingualEmbeddings) and not overlap:
+                continue
+            lexical = len(overlap) / max(1, len(query_tokens))
             score = (
                 (0.78 * semantic)
                 + (0.22 * lexical)
                 + _EVIDENCE_BOOST.get(source.evidence_tier, 0.0)
             )
-            ranked.append(RetrievedChunk(chunk=chunk, source=source, score=score))
+            if score >= self.min_score:
+                ranked.append(RetrievedChunk(chunk=chunk, source=source, score=score))
 
         ranked.sort(key=lambda item: item.score, reverse=True)
         return ranked[:limit]

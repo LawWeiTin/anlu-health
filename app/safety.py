@@ -34,6 +34,19 @@ _CHEST = re.compile(r"\b(chest pain|chest pressure|crushing chest)\b|胸痛|胸�
 _BREATH = re.compile(
     r"\b(short(?:ness)? of breath|breathless|difficulty breathing)\b|呼吸困难", re.I
 )
+_HEMOPTYSIS = re.compile(
+    r"\b(cough(?:ing|ed|s)?(?: up)?(?: (?:a lot of|large amounts? of|some|"
+    r"more than (?:a )?few|a few|few teaspoons? of))? blood|blood(?:y|[- ]streaked)? "
+    r"(?:phlegm|sputum|mucus)|hemoptysis)\b|咳血|痰中带血",
+    re.I,
+)
+_HEMOPTYSIS_EMERGENCY = re.compile(
+    r"\b(more than (?:a )?few (?:spots|streaks)|large amount|a lot of blood|"
+    r"few teaspoons|bleeding (?:will not|won't|does not|doesn't) stop|"
+    r"very fast heartbeat|faint(?:ed|ing)?|dizz(?:y|iness)|lightheaded)\b|"
+    r"大量咳血|咳血不止|头晕|昏厥|心跳很快",
+    re.I,
+)
 _SEVERE_CHEST = re.compile(
     r"\b(sudden|severe|crushing|heavy)\b.{0,24}\b(chest pain|chest pressure)\b|"
     r"\b(chest pain|chest pressure)\b.{0,24}\b(sudden|severe|crushing|heavy)\b|"
@@ -71,6 +84,14 @@ def assess(message: str) -> SafetyAssessment:
         return SafetyAssessment(Urgency.EMERGENCY, ("emergency_red_flag",), True)
     if _CHEST.search(message) and _BREATH.search(message):
         return SafetyAssessment(Urgency.EMERGENCY, ("cardiorespiratory_red_flag",), True)
+    if _HEMOPTYSIS.search(message):
+        if (
+            _HEMOPTYSIS_EMERGENCY.search(message)
+            or _CHEST.search(message)
+            or _BREATH.search(message)
+        ):
+            return SafetyAssessment(Urgency.EMERGENCY, ("hemoptysis_emergency",), True)
+        return SafetyAssessment(Urgency.URGENT, ("hemoptysis",))
     if _CHEST.search(message):
         return SafetyAssessment(Urgency.URGENT, ("chest_symptom",))
 

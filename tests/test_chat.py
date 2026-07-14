@@ -12,7 +12,8 @@ from tests.conftest import csrf_headers
 
 
 def _seed_source() -> None:
-    vector = get_embedding_provider().embed(["lump swelling examination"])[0]
+    content = "An unexplained lump should be examined in person. Record growth and pain."
+    vector = get_embedding_provider().embed([content])[0]
     with session_factory()() as db:
         source = KnowledgeSource(
             source_key="test-lumps",
@@ -33,8 +34,43 @@ def _seed_source() -> None:
             KnowledgeChunk(
                 source_id=source.id,
                 ordinal=0,
-                content="Unexplained lumps should be examined in person. Record growth and pain.",
+                content=content,
                 token_count=18,
+                embedding=vector,
+            )
+        )
+        db.commit()
+
+
+def _seed_hemoptysis_source() -> None:
+    content = (
+        "Coughing up blood or bloody mucus should be medically assessed even without other symptoms. "
+        "Get medical help right away for more than a few teaspoons, bleeding that will not stop, "
+        "chest pain, dizziness, or severe shortness of breath."
+    )
+    vector = get_embedding_provider().embed([content])[0]
+    with session_factory()() as db:
+        source = KnowledgeSource(
+            source_key="test-hemoptysis",
+            title="Coughing up blood — urgent care navigation summary",
+            publisher="Test public health authority",
+            url="https://example.gov/coughing-up-blood",
+            license="Public domain",
+            evidence_tier="government_consumer",
+            language="en",
+            reviewed_on=date.today(),
+            expires_on=date.today() + timedelta(days=90),
+            checksum_sha256="1" * 64,
+            approved=True,
+        )
+        db.add(source)
+        db.flush()
+        db.add(
+            KnowledgeChunk(
+                source_id=source.id,
+                ordinal=0,
+                content=content,
+                token_count=42,
                 embedding=vector,
             )
         )
@@ -77,6 +113,44 @@ def test_lump_answer_has_source_and_escalation(registered_client: TestClient) ->
     assert body["sources"][0]["id"] == "S1"
     assert "cannot" in body["answer"].casefold()
     assert body["history_saved"] is False
+
+
+def test_coughing_blood_is_urgent_and_uses_only_relevant_source(
+    registered_client: TestClient,
+) -> None:
+    _seed_hemoptysis_source()
+    response = registered_client.post(
+        "/api/chat",
+        headers=csrf_headers(registered_client),
+        json={
+            "message": "I am coughing blood these past few days. What should I do?",
+            "care_mode": "integrative",
+        },
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["urgency"] == "urgent"
+    assert body["safety_flags"] == ["hemoptysis"]
+    assert len(body["sources"]) == 1
+    assert "coughing up blood" in body["sources"][0]["title"].casefold()
+    assert "lump" not in body["answer"].casefold()
+    assert "same-day" in body["answer"].casefold()
+    assert "traditional chinese medicine perspective" not in body["answer"].casefold()
+
+
+def test_small_talk_does_not_trigger_medical_boilerplate(registered_client: TestClient) -> None:
+    response = registered_client.post(
+        "/api/chat",
+        headers=csrf_headers(registered_client),
+        json={"message": "Hello how are you", "care_mode": "integrative"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["urgency"] == "routine"
+    assert body["sources"] == []
+    assert "hello" in body["answer"].casefold()
+    assert "local experimental mode" in body["answer"].casefold()
+    assert "what this may mean" not in body["answer"].casefold()
 
 
 def test_unknown_citation_is_removed() -> None:

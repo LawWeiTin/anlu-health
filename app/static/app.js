@@ -27,8 +27,36 @@ async function api(path, options = {}) {
   const response = await fetch(path, { credentials: "same-origin", ...options, headers });
   if (response.status === 204) return null;
   const body = await response.json().catch(() => ({ detail: "Unexpected server response" }));
-  if (!response.ok) throw new Error(body.detail || "Request failed");
+  if (!response.ok) throw new Error(errorMessage(body.detail));
   return body;
+}
+
+function errorMessage(detail) {
+  if (typeof detail === "string" && detail.trim()) return detail;
+  if (Array.isArray(detail)) {
+    const messages = detail
+      .map((item) => (typeof item === "string" ? item : item?.msg))
+      .filter((message) => typeof message === "string" && message.trim())
+      .map((message) => message.replace(/^Value error,\s*/i, ""));
+    if (messages.length) return [...new Set(messages)].join(" ");
+  }
+  if (detail && typeof detail === "object" && typeof detail.message === "string") {
+    return detail.message;
+  }
+  return "Request failed";
+}
+
+function validateCredentials(email, password, registering) {
+  const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!validEmail) return "Enter a valid email address.";
+  if (!password) return "Enter your password.";
+  if (!registering) return "";
+  if (password.length < 12) return "Use at least 12 characters for your password.";
+  const characterClasses = [/[a-z]/.test(password), /[A-Z]/.test(password), /\d/.test(password)];
+  if (characterClasses.filter(Boolean).length < 2) {
+    return "Use at least two of: uppercase letters, lowercase letters, and numbers.";
+  }
+  return "";
 }
 
 function setAuthMode(mode) {
@@ -300,6 +328,11 @@ $("#auth-form").addEventListener("submit", async (event) => {
   const password = $("#password").value;
   const submit = $("#auth-submit");
   $("#auth-error").textContent = "";
+  const validationError = validateCredentials(email, password, state.authMode === "register");
+  if (validationError) {
+    $("#auth-error").textContent = validationError;
+    return;
+  }
   if (state.authMode === "register" && !$("#terms").checked) {
     $("#auth-error").textContent = "Please accept the informational-use terms.";
     return;

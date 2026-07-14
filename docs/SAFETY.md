@@ -9,10 +9,13 @@ API, prompt, and evaluation gates all enforce that scope.
 ## Layered controls
 
 1. **Deterministic escalation:** high-recall English and Chinese patterns for breathing difficulty,
-   stroke signs, severe allergic reaction, uncontrolled bleeding, self-harm, and concerning lumps.
+   stroke signs, severe allergic reaction, uncontrolled bleeding, coughing up blood, self-harm, and
+   concerning lumps. Any coughing up blood is at least urgent; larger amounts or associated breathing,
+   chest, fainting, or fast-heartbeat symptoms bypass generation as an emergency.
    Emergency responses bypass retrieval and generation.
 2. **Approved-source RAG:** chunks carry publisher, URL, license, evidence tier, language, review date,
-   expiry date, checksum, and approval state. Retrieval filters stale/unapproved content.
+   expiry date, checksum, and approval state. Retrieval filters stale/unapproved content and abstains
+   when candidates lack topic overlap or fall below the relevance threshold.
 3. **Bounded generation:** the prompt forbids diagnosis, dosing, fabricated citations, urgency
    downgrades, and presentation of traditional concepts as established biomedical mechanisms.
 4. **Output validation:** only citations present in the retrieved set survive. Answers without usable

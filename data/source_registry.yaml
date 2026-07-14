@@ -2,6 +2,19 @@ version: 1
 last_reviewed: 2026-07-14
 policy: Only entries marked approved may enter the production RAG index.
 sources:
+  - source_key: medlineplus-hemoptysis
+    title: MedlinePlus Coughing up blood
+    publisher: U.S. National Library of Medicine
+    url: https://medlineplus.gov/ency/article/003073.htm
+    reuse_basis: Link and project-authored care-navigation summary only; do not copy encyclopedia prose.
+    license_label: MedlinePlus XML use with attribution
+    evidence_tier: government_consumer
+    languages: [en]
+    approved: true
+    review_interval_days: 90
+    use: RAG
+    notes: Reviewed summary for hemoptysis triage; keep emergency criteria aligned with source review.
+
   - source_key: medlineplus-skin-lumps
     source_key_prefix: medlineplus-
     title: MedlinePlus health topics and medical encyclopedia
@@ -75,4 +88,3 @@ sources:
     approved: true
     review_interval_days: 365
     use: evaluation_only
-
