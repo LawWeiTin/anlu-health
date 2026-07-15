@@ -20,6 +20,9 @@ flowchart LR
 - `dvc.yaml` records preparation and offline evaluation stages.
 - `params.yaml` defines release thresholds.
 - `training/medgemma_qlora_colab.ipynb` trains remotely; no weights are downloaded locally.
+- `training/open_datasets.yaml` pins every public dataset revision and license. The Colab preparation
+  step keeps PubMedQA's official test IDs out of training, filters MedQuAD to lower-risk educational
+  targets, records attribution, and prevents condition-level train/validation leakage.
 - Colab writes checkpoints to a new timestamped directory beneath
   `MyDrive/Anlu Health/Model Adapters`; evaluation outputs use the matching timestamp beneath
   `Evaluation Reports`. Existing Drive content is never deleted or replaced by the notebook.

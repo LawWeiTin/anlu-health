@@ -2,10 +2,10 @@
 
 ## Decision
 
-Do not fine-tune the current dataset yet. The local mock provider is deliberately deterministic and
-contains no general medical language intelligence, while the demonstration SFT set is far too small
-to produce a safe full-scale assistant. The immediate quality failures are safety-routing, retrieval,
-and validation defects; fine-tuning would not repair them reliably.
+Do not fine-tune only the original demonstration dataset. It is far too small to produce a safe
+full-scale assistant, and the initial quality failures were safety-routing, retrieval, and validation
+defects that fine-tuning could not repair. After those defects were corrected, a bounded open-data
+pilot was authorized to measure whether adaptation helps without weakening the external safeguards.
 
 ## Path to a capable conversational assistant
 
@@ -26,10 +26,10 @@ and validation defects; fine-tuning would not repair them reliably.
 
 ## Experiment order
 
-First benchmark remote base models without fine-tuning. Then compare RAG plus reranking. Only if the
-remaining measured errors are behavioral and repeatable should a Colab QLoRA run be authorized. The
-existing `training/medgemma_qlora_colab.ipynb` is therefore a gated later-stage experiment, not the
-next repair step.
+Keep the hosted base-model and RAG results as the unchanged comparison. The authorized QLoRA pilot
+uses the pinned, filtered mixture in `training/open_datasets.yaml` and runs for one epoch in Colab.
+Its adapter remains an unreviewed candidate until it beats the baseline without regressing emergency,
+harmful-advice, citation, multilingual, privacy, or human-review gates.
 
 MedGemma 1.5 4B remains a useful medical candidate, but its official model card says it has not been
 evaluated or optimized for multi-turn applications. Benchmark it against a capable general

@@ -23,8 +23,8 @@ clinical evidence.
   validation. The hosted baseline uses the open-weight `Qwen/Qwen3.5-9B` behind the same safety and
   retrieval layers until an approved Anlu adapter is promoted.
 - Render Blueprint and Docker deployment; no model weights or large datasets are stored locally.
-- Colab QLoRA notebook, DVC pipeline, dataset/model cards, golden safety cases, CI, and scheduled
-  evaluation workflows.
+- Colab QLoRA notebooks, a pinned open-dataset preparation pipeline, DVC stages, dataset/model cards,
+  golden safety cases, CI, and scheduled evaluation workflows.
 
 ## Run locally
 
@@ -84,6 +84,9 @@ The Colab notebook mounts Drive and writes large checkpoints only beneath
 `MyDrive/Anlu Health/Model Adapters`. Datasets, evaluation reports, and release artifacts have their
 own sibling folders. The workflow is additive: it creates timestamped run directories and does not
 delete, replace, or reorganize existing Drive content.
+The bounded open-data pilot is `training/medgemma_open_data_pilot_colab.ipynb`; it prepares MedQuAD
+and the non-test portion of PubMedQA remotely, records attribution and checksums, and never promotes
+its adapter automatically.
 
 Render PostgreSQL supports pgvector. Use paid plans with backups and high availability appropriate
 to your risk assessment; the sample plans are starter defaults, not a clinical availability claim.

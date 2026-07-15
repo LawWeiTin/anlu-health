@@ -16,12 +16,13 @@ obvious email addresses, phone numbers, and medical-record identifiers. Do not a
 
 A qualified clinician and registered TCM practitioner should author and independently review a
 larger multilingual set. Split by scenario template before generation to avoid near-duplicate leakage.
-Keep the held-out safety evaluation entirely separate. Use PubMedQA only as a research-reasoning
-benchmark, not as a substitute for consumer safety evaluation.
+Keep the held-out safety evaluation entirely separate. The open-data pilot may use the non-test
+portion of PubMedQA for evidence-conditioned research reasoning, but it is not a substitute for
+consumer safety evaluation. See `OPEN_DATA_CARD.md` and `open_datasets.yaml` for the pinned,
+license-audited pilot mixture and exclusions.
 
 ## Limitations
 
 Synthetic text cannot represent the full variety of symptom descriptions, literacy, language,
 culture, disability, or adversarial inputs. Fine-tuning can also weaken base-model safety behavior;
 the deterministic safety layer and post-training evaluation remain mandatory.
-

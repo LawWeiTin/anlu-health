@@ -1,0 +1,68 @@
+version: 1
+storage_policy: remote_colab_and_private_drive_only
+contains_user_conversations: false
+seed: 42
+validation_fraction: 0.10
+
+datasets:
+  - id: medquad
+    role: train
+    repository: https://github.com/abachaa/MedQuAD.git
+    revision: 577bd37b96c02d1833b2c9eed2de9f96964e96cb
+    homepage: https://github.com/abachaa/MedQuAD
+    license: CC-BY-4.0
+    citation: Ben Abacha A, Demner-Fushman D. BMC Bioinformatics. 2019;20:511.
+    max_examples: 1200
+    allowed_directories:
+      - 1_CancerGov_QA
+      - 2_GARD_QA
+      - 3_GHR_QA
+      - 4_MPlus_Health_Topics_QA
+      - 5_NIDDK_QA
+      - 6_NINDS_QA
+      - 7_SeniorHealth_QA
+      - 8_NHLBI_QA_XML
+      - 9_CDC_QA
+    allowed_question_types:
+      - information
+      - symptoms
+      - causes
+      - prevention
+      - frequency
+      - risk factors
+      - inheritance
+      - susceptibility
+    exclusions:
+      - The three MedlinePlus collections whose answers were removed for copyright are never used.
+      - Treatment, diagnosis, dosage, side-effect, prognosis, and procedure answers are excluded.
+      - Medication-like numeric dosing instructions are excluded.
+    freshness_note: Legacy educational corpus; it must not replace current RAG evidence.
+
+  - id: pubmedqa
+    role: train
+    repository: https://github.com/pubmedqa/pubmedqa.git
+    revision: 1cbae8e92f72f20c8d3747cbb3bf5bc53554d997
+    homepage: https://pubmedqa.github.io/
+    license: MIT
+    citation: Jin Q et al. EMNLP-IJCNLP 2019, pages 2567-2577.
+    max_examples: 500
+    subset: PQA-L
+    exclusions:
+      - Every PMID in data/test_ground_truth.json remains held out and is never written to training.
+      - PQA-A and PQA-U are excluded because the pilot uses only the expert-labeled subset.
+    intended_behavior: Evidence-conditioned biomedical research reasoning, not personal diagnosis.
+
+  - id: medmcqa
+    role: evaluation_only
+    repository: https://github.com/medmcqa/medmcqa.git
+    revision: c59ef14ca1990266c4107c7864b45a20fd93e5e0
+    homepage: https://medmcqa.github.io/
+    license: MIT
+    citation: Pal A, Umapathi LK, Sankarasubbu M. CHIL/PMLR 2022;174:248-260.
+    reason_not_trained: Entrance-exam multiple choice style is not a safe target format for consumer chat.
+
+excluded_dataset_classes:
+  - Scraped online patient consultations or support-forum conversations.
+  - Records governed by credentialed-access agreements such as MIMIC or MedNLI.
+  - Corpora without an explicit dataset license or with unclear answer provenance.
+  - Personalized treatment, drug dosing, or herbal prescription targets without clinical review.

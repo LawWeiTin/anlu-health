@@ -9,4 +9,9 @@ training:
   epochs: 2
   learning_rate: 0.0002
   lora_rank: 16
-
+  open_data_pilot:
+    epochs: 1
+    learning_rate: 0.0001
+    max_length: 1024
+    medquad_max_examples: 1200
+    pubmedqa_max_examples: 500
