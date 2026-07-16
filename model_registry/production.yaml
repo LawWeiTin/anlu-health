@@ -8,6 +8,18 @@ candidate_base_model:
   id: google/medgemma-1.5-4b-it
   revision: pin-before-release
   license: HAI-DEF Terms of Use
+latest_candidate_run:
+  status: rejected_automated_gate
+  run_id: 20260716T094417Z
+  platform: kaggle
+  script_version_id: "335685794"
+  repository_commit: e7193e8e2a3535b7ddba8d6610adaa43f47af260
+  report: model_registry/runs/medgemma_kaggle_v4.json
+  automated_gate_passed: false
+  baseline_pass_rate: 0.5
+  candidate_pass_rate: 0.5
+  promotion_allowed: false
+  disposition: keep private for audit; do not deploy
 adapter:
   uri: set-after-reviewed-colab-run
   sha256: set-after-reviewed-colab-run
@@ -23,6 +35,8 @@ rag_manifest_sha256: set-after-ingestion
 evaluation_report: artifacts/eval.json
 approvals:
   physician: pending
+  pharmacist: pending
   registered_tcm_practitioner: pending
   privacy_security: pending
+  retrieval_safety: pending
   product_owner: acknowledged
