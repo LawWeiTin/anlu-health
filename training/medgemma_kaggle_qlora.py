@@ -1,8 +1,9 @@
 """Private Kaggle QLoRA training and automated evaluation for the MedGemma candidate.
 
 Run only in a private Kaggle notebook with a T4 GPU and enabled encrypted secrets
-``HF_TOKEN`` (read-only gated-model access) and ``GH_TOKEN`` (read-only access to
-the private Anlu repository). Large base-model and source-dataset files remain in
+``HF_TOKEN`` (read-only gated-model access). The project snapshot may be supplied
+directly by a private notebook through ``ANLU_SNAPSHOT_DIR`` or fetched with an
+optional read-only ``GH_TOKEN``. Large base-model and source-dataset files remain in
 ``/kaggle/temp``. Only the LoRA adapter and audit reports enter private notebook output.
 """
 
@@ -81,9 +82,17 @@ random.seed(SEED)
 
 secrets = UserSecretsClient()
 hf_token = secrets.get_secret("HF_TOKEN")
-gh_token = secrets.get_secret("GH_TOKEN")
 assert hf_token, "Enable the encrypted Kaggle secret HF_TOKEN."
-assert gh_token, "Enable a read-only encrypted Kaggle secret GH_TOKEN."
+
+
+def optional_secret(name: str) -> str | None:
+    try:
+        return secrets.get_secret(name)
+    except Exception:  # Kaggle raises when an optional secret is absent.
+        return None
+
+
+gh_token = optional_secret("GH_TOKEN")
 
 # Check gated access without writing a reusable Hugging Face login file.
 hf_hub_download(repo_id=MODEL_ID, filename="config.json", token=hf_token)
@@ -105,30 +114,43 @@ def github_json(path: str) -> dict[str, Any]:
     return response.json()
 
 
-commit_sha = github_json(f"commits/{REPOSITORY_REF}")["sha"]
-print("Pinned private repository snapshot:", commit_sha)
 SNAPSHOT_FILES = (
     "training/open_datasets.yaml",
     "training/prepare_open_datasets.py",
     "training/data/sample_sft.jsonl",
     "training/data/model_release_cases.jsonl",
 )
-snapshot_root = TEMP_ROOT / "repository-snapshot"
-for relative in SNAPSHOT_FILES:
-    response = requests.get(
-        f"https://api.github.com/repos/{REPOSITORY}/contents/{relative}",
-        params={"ref": commit_sha},
-        headers={
-            "Authorization": f"Bearer {gh_token}",
-            "Accept": "application/vnd.github.raw+json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
-        timeout=60,
-    )
-    response.raise_for_status()
-    destination = snapshot_root / relative
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    destination.write_bytes(response.content)
+provided_snapshot = os.environ.get("ANLU_SNAPSHOT_DIR")
+if provided_snapshot:
+    snapshot_root = Path(provided_snapshot).resolve()
+    commit_sha = os.environ.get("ANLU_REPOSITORY_COMMIT", "")
+    assert len(commit_sha) == 40, "ANLU_REPOSITORY_COMMIT must be a full commit SHA."
+    missing = [relative for relative in SNAPSHOT_FILES if not (snapshot_root / relative).is_file()]
+    assert not missing, f"Private notebook snapshot is incomplete: {missing}"
+else:
+    assert gh_token, "Provide ANLU_SNAPSHOT_DIR or enable an encrypted read-only GH_TOKEN."
+    commit_sha = github_json(f"commits/{REPOSITORY_REF}")["sha"]
+    snapshot_root = TEMP_ROOT / "repository-snapshot"
+    for relative in SNAPSHOT_FILES:
+        response = requests.get(
+            f"https://api.github.com/repos/{REPOSITORY}/contents/{relative}",
+            params={"ref": commit_sha},
+            headers={
+                "Authorization": f"Bearer {gh_token}",
+                "Accept": "application/vnd.github.raw+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            },
+            timeout=60,
+        )
+        response.raise_for_status()
+        destination = snapshot_root / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(response.content)
+print("Pinned private repository snapshot:", commit_sha)
+snapshot_sha256 = {
+    relative: hashlib.sha256((snapshot_root / relative).read_bytes()).hexdigest()
+    for relative in SNAPSHOT_FILES
+}
 
 bundle_dir = TEMP_ROOT / "dataset-bundle"
 source_work = TEMP_ROOT / "open-source-repositories"
@@ -409,6 +431,7 @@ report = {
     "model_id": MODEL_ID,
     "repository": REPOSITORY,
     "repository_commit": commit_sha,
+    "repository_snapshot_sha256": snapshot_sha256,
     "gpu": torch.cuda.get_device_name(0),
     "quantization": "NF4 double-quantization; float32 compute",
     "numerical_probe_finite": finite_probe,

@@ -11,7 +11,8 @@ def test_kaggle_qlora_is_syntax_valid() -> None:
 def test_kaggle_qlora_keeps_secrets_and_heavy_artifacts_private() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     assert 'get_secret("HF_TOKEN")' in source
-    assert 'get_secret("GH_TOKEN")' in source
+    assert 'optional_secret("GH_TOKEN")' in source
+    assert 'os.environ.get("ANLU_SNAPSHOT_DIR")' in source
     assert 'Path("/kaggle/temp/anlu-health-qlora")' in source
     assert 'Path("/kaggle/working/anlu-health/medgemma-qlora")' in source
     assert "print(hf_token" not in source
