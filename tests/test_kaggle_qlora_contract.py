@@ -34,3 +34,12 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert 'candidate_evaluation["pass_rate"] == 1.0' in source
     assert '"human_review_required": True' in source
     assert '"promotion_allowed": False' in source
+
+
+def test_kaggle_qlora_reserves_supervised_completion_tokens() -> None:
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert "MIN_PROMPT_TOKENS = 128" in source
+    assert "completion_ids = full_ids[len(prompt_ids) :]" in source
+    assert "completion_ids[: MAX_LENGTH - MIN_PROMPT_TOKENS]" in source
+    assert "prompt_ids[:header_tokens] + prompt_ids[-tail_tokens:]" in source
+    assert "assert any(label != -100 for label in labels)" in source

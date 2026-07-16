@@ -26,6 +26,7 @@ REPOSITORY = "LawWeiTin/anlu-health"
 REPOSITORY_REF = "codex/medgemma-release-candidate"
 SEED = 42
 MAX_LENGTH = 512
+MIN_PROMPT_TOKENS = 128
 BEHAVIOR_WEIGHT = 4
 TEMP_ROOT = Path("/kaggle/temp/anlu-health-qlora")
 OUTPUT_ROOT = Path("/kaggle/working/anlu-health/medgemma-qlora")
@@ -239,15 +240,34 @@ def tokenize_record(record: dict[str, Any]) -> dict[str, list[int]]:
     full_text = processor.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=False
     )
-    encoded = tokenizer(full_text, truncation=True, max_length=MAX_LENGTH, add_special_tokens=False)
-    prompt = tokenizer(prompt_text, truncation=True, max_length=MAX_LENGTH, add_special_tokens=False)
-    prompt_length = min(len(prompt["input_ids"]), len(encoded["input_ids"]))
-    labels = [-100] * prompt_length + encoded["input_ids"][prompt_length:]
-    if not any(label != -100 for label in labels):
-        raise ValueError("assistant response was fully truncated")
+    full_ids = tokenizer(full_text, add_special_tokens=False)["input_ids"]
+    prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
+    assert full_ids[: len(prompt_ids)] == prompt_ids, (
+        "MedGemma chat template did not preserve the generation-prompt prefix."
+    )
+    completion_ids = full_ids[len(prompt_ids) :]
+    if not completion_ids:
+        raise ValueError("assistant response produced no completion tokens")
+
+    # Long PubMedQA contexts can exceed the full sequence budget before the
+    # assistant turn begins. Reserve at least MIN_PROMPT_TOKENS for the prompt
+    # and preserve supervised completion tokens instead of silently creating an
+    # all-masked training row. When prompt truncation is necessary, retain the
+    # chat-template header plus the tail, where the question normally appears.
+    completion_ids = completion_ids[: MAX_LENGTH - MIN_PROMPT_TOKENS]
+    prompt_budget = MAX_LENGTH - len(completion_ids)
+    if len(prompt_ids) > prompt_budget:
+        header_tokens = min(16, prompt_budget // 4)
+        tail_tokens = prompt_budget - header_tokens
+        prompt_ids = prompt_ids[:header_tokens] + prompt_ids[-tail_tokens:]
+
+    input_ids = prompt_ids + completion_ids
+    labels = [-100] * len(prompt_ids) + completion_ids
+    assert len(input_ids) <= MAX_LENGTH
+    assert any(label != -100 for label in labels)
     return {
-        "input_ids": encoded["input_ids"],
-        "attention_mask": encoded["attention_mask"],
+        "input_ids": input_ids,
+        "attention_mask": [1] * len(input_ids),
         "labels": labels,
     }
 
