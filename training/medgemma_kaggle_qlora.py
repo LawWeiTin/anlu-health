@@ -81,6 +81,17 @@ RUN_DIR.mkdir(parents=True, exist_ok=False)
 TEMP_ROOT.mkdir(parents=True, exist_ok=True)
 set_seed(SEED)
 random.seed(SEED)
+progress_path = RUN_DIR / "progress.log"
+
+
+def progress(message: str) -> None:
+    timestamp = datetime.now(UTC).isoformat()
+    with progress_path.open("a", encoding="utf-8") as handle:
+        handle.write(f"{timestamp} {message}\n")
+    print(message, flush=True)
+
+
+progress("runtime_initialized")
 
 secrets = UserSecretsClient()
 hf_token = secrets.get_secret("HF_TOKEN")
@@ -96,8 +107,21 @@ def optional_secret(name: str) -> str | None:
 
 gh_token = optional_secret("GH_TOKEN")
 
-# Check gated access without writing a reusable Hugging Face login file.
-hf_hub_download(repo_id=MODEL_ID, filename="config.json", token=hf_token)
+# Check gated access without writing a reusable Hugging Face login file. The Hub
+# occasionally returns transient 504s to Kaggle; wait in the background rather
+# than burning GPU on repeated notebook restarts.
+for access_attempt in range(1, 21):
+    try:
+        hf_hub_download(repo_id=MODEL_ID, filename="config.json", token=hf_token)
+        break
+    except Exception as exc:
+        if access_attempt == 20:
+            raise
+        progress(
+            f"hub_access_retry attempt={access_attempt} error={type(exc).__name__} wait_seconds=60"
+        )
+        time.sleep(60)
+progress("gated_model_access_granted")
 print("MedGemma gated access: GRANTED")
 print("GPU:", torch.cuda.get_device_name(0))
 
@@ -192,6 +216,7 @@ print(
     "Dataset rows:",
     {"train": len(train_records), "effective_train": len(effective_train), "validation": len(validation_records)},
 )
+progress("dataset_bundle_ready")
 
 processor = AutoProcessor.from_pretrained(MODEL_ID, token=hf_token)
 tokenizer = processor.tokenizer
@@ -272,6 +297,7 @@ finite_probe = bool(torch.isfinite(probe_logits).all().item())
 del probe_logits
 assert finite_probe, "4-bit float32-compute probe produced non-finite logits; refusing to train."
 print("Numerical precision gate: PASS")
+progress("numerical_precision_gate_passed")
 
 
 def clean_output(text: str) -> str:
@@ -331,6 +357,7 @@ def evaluate_model(label: str) -> dict[str, Any]:
 
 
 baseline_evaluation = evaluate_model("baseline")
+progress(f"baseline_evaluation_complete pass_rate={baseline_evaluation['pass_rate']:.4f}")
 
 model.config.use_cache = False
 model = prepare_model_for_kbit_training(
@@ -401,9 +428,11 @@ losses_finite = math.isfinite(float(train_result.metrics["train_loss"])) and mat
     float(eval_metrics["eval_loss"])
 )
 assert losses_finite, "Training or validation loss was non-finite."
+progress("training_and_validation_complete")
 
 model.config.use_cache = True
 candidate_evaluation = evaluate_model("candidate")
+progress(f"candidate_evaluation_complete pass_rate={candidate_evaluation['pass_rate']:.4f}")
 adapter_dir = RUN_DIR / "adapter"
 model.save_pretrained(adapter_dir, safe_serialization=True)
 processor.save_pretrained(adapter_dir)
@@ -457,5 +486,6 @@ report = {
     json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8"
 )
 print("Saved private adapter and report:", RUN_DIR)
+progress(f"run_complete automated_gate_passed={automated_gate_passed}")
 print("Automated release gate:", "PASS" if automated_gate_passed else "FAIL")
 print("Production promotion remains disabled pending every approval gate.")
