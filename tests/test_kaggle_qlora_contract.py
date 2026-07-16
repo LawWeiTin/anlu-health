@@ -17,6 +17,8 @@ def test_kaggle_qlora_keeps_secrets_and_heavy_artifacts_private() -> None:
     assert 'Path("/kaggle/working/anlu-health/medgemma-qlora")' in source
     assert 'os.environ["HF_HUB_ETAG_TIMEOUT"] = "120"' in source
     assert 'os.environ["HF_HUB_DOWNLOAD_TIMEOUT"] = "120"' in source
+    assert 'os.environ["CUDA_VISIBLE_DEVICES"] = "0"' in source
+    assert "torch.cuda.device_count() == 1" in source
     assert "for access_attempt in range(1, 21)" in source
     assert 'progress_path = RUN_DIR / "progress.log"' in source
     assert "print(hf_token" not in source

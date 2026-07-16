@@ -33,6 +33,12 @@ OUTPUT_ROOT = Path("/kaggle/working/anlu-health/medgemma-qlora")
 RUN_ID = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
 RUN_DIR = OUTPUT_ROOT / RUN_ID
 
+# Kaggle exposes two T4 devices for the selected accelerator. Transformers will
+# otherwise wrap this already device-mapped 4-bit model in DataParallel, which
+# is unsupported by the PEFT/bitsandbytes path and can cause an illegal CUDA
+# memory access on the first optimizer step. One T4 has ample room for this
+# 4-bit 4B-model adapter run, so make the process intentionally single-device.
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ["HF_HOME"] = str(TEMP_ROOT / "hf-cache")
 os.environ["HF_HUB_CACHE"] = str(TEMP_ROOT / "hf-cache" / "hub")
 os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
@@ -78,6 +84,7 @@ from transformers import (  # noqa: E402
 
 assert torch.cuda.is_available(), "Enable a Kaggle GPU before running."
 assert torch.cuda.get_device_capability(0)[0] >= 7, "A T4-or-newer GPU is required."
+assert torch.cuda.device_count() == 1, "Training must remain single-device for 4-bit QLoRA."
 RUN_DIR.mkdir(parents=True, exist_ok=False)
 TEMP_ROOT.mkdir(parents=True, exist_ok=True)
 set_seed(SEED)
