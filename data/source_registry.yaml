@@ -9,6 +9,7 @@ sources:
     reuse_basis: Link and project-authored care-navigation summary only; do not copy encyclopedia prose.
     license_label: MedlinePlus XML use with attribution
     evidence_tier: government_consumer
+    topics: [hemoptysis]
     languages: [en]
     approved: true
     review_interval_days: 90
@@ -23,6 +24,7 @@ sources:
     reuse_basis: MedlinePlus XML is offered for download/use with source attribution; encyclopedia pages are link/citation only unless their item terms allow more.
     license_label: MedlinePlus XML use with attribution
     evidence_tier: government_consumer
+    topics: [lumps_masses]
     languages: [en, es]
     approved: true
     review_interval_days: 90
@@ -36,6 +38,7 @@ sources:
     reuse_basis: U.S. government public-domain text except material explicitly marked copyrighted; credit NCCIH.
     license_label: U.S. government public domain unless marked
     evidence_tier: government_consumer
+    topics: [traditional_medicine]
     languages: [en]
     approved: true
     review_interval_days: 180
@@ -48,6 +51,7 @@ sources:
     reuse_basis: Page states content is public domain except material explicitly marked copyrighted; credit NCCIH.
     license_label: U.S. government public domain unless marked
     evidence_tier: clinical_review
+    topics: [medicine_interactions, traditional_medicine]
     languages: [en]
     approved: true
     review_interval_days: 90
@@ -60,6 +64,7 @@ sources:
     reuse_basis: Link and project-authored policy summary only; verify WHO item-specific licensing before full-text ingestion.
     license_label: Link/citation only
     evidence_tier: traditional_framework
+    topics: [traditional_medicine]
     languages: [en]
     approved: true
     review_interval_days: 180
@@ -72,6 +77,7 @@ sources:
     reuse_basis: Link and project-authored regulatory summary only; verify Singapore Government Terms of Use before full-text ingestion.
     license_label: Link/citation only
     evidence_tier: guideline
+    topics: [medicine_safety, traditional_medicine]
     languages: [en, zh]
     approved: true
     review_interval_days: 90
@@ -84,6 +90,7 @@ sources:
     reuse_basis: Repository is distributed under the MIT license; preserve attribution and benchmark separation.
     license_label: MIT
     evidence_tier: research_benchmark
+    topics: [biomedical_research]
     languages: [en]
     approved: true
     review_interval_days: 365

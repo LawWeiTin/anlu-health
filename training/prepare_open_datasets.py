@@ -209,6 +209,7 @@ def load_pubmedqa(repo: Path, spec: dict[str, Any]) -> tuple[list[dict[str, Any]
 
 def load_project_behavior(path: Path) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
+    source_revision = f"sha256:{_sha256(path)}"
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
@@ -217,14 +218,16 @@ def load_project_behavior(path: Path) -> list[dict[str, Any]]:
         record = {
             "messages": source["messages"],
             "metadata": {
-                "dataset_id": "anlu-reviewed-safety",
-                "source_record_id": f"project-{line_number:04d}",
-                "source_revision": "repository-commit",
+                "dataset_id": "anlu-authored-safety",
+                "source_record_id": source["scenario_id"],
+                "source_revision": source_revision,
                 "license": "project-authored",
                 "dataset_homepage": "private-repository",
                 "task": "safety_behavior",
                 "tags": tags,
-                "group_id": f"anlu:{':'.join(tags) or line_number}",
+                "evidence_source_keys": source.get("evidence_source_keys", []),
+                "authoring_status": "project-authored; clinical review pending",
+                "group_id": f"anlu:{source['scenario_id']}",
                 "force_split": "train",
             },
         }
@@ -333,7 +336,7 @@ def prepare_bundle(
 
     behavior = load_project_behavior(behavior_path)
     records.extend(behavior)
-    audit["anlu-reviewed-safety"] = {"selected_for_pilot": len(behavior)}
+    audit["anlu-authored-safety"] = {"selected_for_pilot": len(behavior)}
 
     unique: dict[str, dict[str, Any]] = {}
     for record in records:
@@ -369,6 +372,9 @@ def prepare_bundle(
         "privacy": {
             "contains_user_conversations": False,
             "obvious_identifier_filter_applied": True,
+        },
+        "training_sampling": {
+            "behavior_sampling_weight": int(manifest["behavior_sampling_weight"]),
         },
         "promotion_allowed": False,
     }

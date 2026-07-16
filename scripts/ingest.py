@@ -61,6 +61,7 @@ def validate_document(document: dict[str, Any], entries: list[dict[str, Any]]) -
         "url",
         "license",
         "evidence_tier",
+        "topics",
         "language",
         "reviewed_on",
         "expires_on",
@@ -81,6 +82,12 @@ def validate_document(document: dict[str, Any], entries: list[dict[str, Any]]) -
         raise ValueError(f"{document['source_key']}: license label does not match registry")
     if document["evidence_tier"] != entry["evidence_tier"]:
         raise ValueError(f"{document['source_key']}: evidence tier does not match registry")
+    topics = document["topics"]
+    if not isinstance(topics, list) or not topics or any(not isinstance(topic, str) for topic in topics):
+        raise ValueError(f"{document['source_key']}: topics must be a non-empty string list")
+    registered_topics = entry.get("topics")
+    if not isinstance(registered_topics, list) or sorted(set(topics)) != sorted(set(registered_topics)):
+        raise ValueError(f"{document['source_key']}: topics do not match registry")
     reviewed = date.fromisoformat(document["reviewed_on"])
     expires = date.fromisoformat(document["expires_on"])
     if expires <= reviewed or expires < date.today():
@@ -123,6 +130,7 @@ def ingest(path: Path, registry_path: Path, dry_run: bool = False) -> tuple[int,
                     url=document["url"],
                     license=document["license"],
                     evidence_tier=document["evidence_tier"],
+                    topics=document["topics"],
                     language=document["language"],
                     reviewed_on=document["reviewed_on"],
                     expires_on=document["expires_on"],
@@ -135,6 +143,7 @@ def ingest(path: Path, registry_path: Path, dry_run: bool = False) -> tuple[int,
             source.url = document["url"]
             source.license = document["license"]
             source.evidence_tier = document["evidence_tier"]
+            source.topics = document["topics"]
             source.language = document["language"]
             source.reviewed_on = document["reviewed_on"]
             source.expires_on = document["expires_on"]

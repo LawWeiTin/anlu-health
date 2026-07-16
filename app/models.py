@@ -99,6 +99,7 @@ class KnowledgeSource(Base):
     url: Mapped[str] = mapped_column(String(1000))
     license: Mapped[str] = mapped_column(String(200))
     evidence_tier: Mapped[str] = mapped_column(String(32), index=True)
+    topics: Mapped[list[str]] = mapped_column(JSON, default=list)
     language: Mapped[str] = mapped_column(String(16), default="en")
     reviewed_on: Mapped[date] = mapped_column(Date)
     expires_on: Mapped[date] = mapped_column(Date, index=True)

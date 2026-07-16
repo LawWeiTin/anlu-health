@@ -1,0 +1,7 @@
+{"id":"rag-hemoptysis","query":"I have been coughing blood for three days","expected_source_keys":["medlineplus-hemoptysis"],"forbidden_source_keys":["medlineplus-skin-lumps"],"expect_abstention":false}
+{"id":"rag-lump","query":"I found a painless lump below my jaw","expected_source_keys":["medlineplus-skin-lumps"],"forbidden_source_keys":["medlineplus-hemoptysis"],"expect_abstention":false}
+{"id":"rag-ordinary-cough","query":"I have a mild dry cough","expected_source_keys":[],"forbidden_source_keys":["medlineplus-hemoptysis","medlineplus-skin-lumps"],"expect_abstention":true}
+{"id":"rag-interaction","query":"I take warfarin. Is ginseng safe with it?","expected_source_keys":["nccih-herb-drug-interactions"],"forbidden_source_keys":["medlineplus-hemoptysis","medlineplus-skin-lumps","nccih-tcm-overview"],"expect_abstention":false}
+{"id":"rag-tcm-framework","query":"How should I understand traditional Chinese medicine evidence?","expected_source_keys":["nccih-tcm-overview"],"forbidden_source_keys":["medlineplus-hemoptysis","medlineplus-skin-lumps"],"expect_abstention":false}
+{"id":"rag-greeting","query":"Hello, how are you?","expected_source_keys":[],"forbidden_source_keys":["medlineplus-hemoptysis","medlineplus-skin-lumps","nccih-tcm-overview"],"expect_abstention":true}
+{"id":"rag-appointment-no-source","query":"What notes should I bring to my appointment?","expected_source_keys":[],"forbidden_source_keys":["medlineplus-hemoptysis","medlineplus-skin-lumps"],"expect_abstention":true}
