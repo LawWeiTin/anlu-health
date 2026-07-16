@@ -15,6 +15,8 @@ def test_kaggle_qlora_keeps_secrets_and_heavy_artifacts_private() -> None:
     assert 'os.environ.get("ANLU_SNAPSHOT_DIR")' in source
     assert 'Path("/kaggle/temp/anlu-health-qlora")' in source
     assert 'Path("/kaggle/working/anlu-health/medgemma-qlora")' in source
+    assert 'os.environ["HF_HUB_ETAG_TIMEOUT"] = "120"' in source
+    assert 'os.environ["HF_HUB_DOWNLOAD_TIMEOUT"] = "120"' in source
     assert "print(hf_token" not in source
     assert "print(gh_token" not in source
     assert "push_to_hub" not in source

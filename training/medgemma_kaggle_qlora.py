@@ -35,6 +35,8 @@ RUN_DIR = OUTPUT_ROOT / RUN_ID
 os.environ["HF_HOME"] = str(TEMP_ROOT / "hf-cache")
 os.environ["HF_HUB_CACHE"] = str(TEMP_ROOT / "hf-cache" / "hub")
 os.environ["HF_HUB_DISABLE_TELEMETRY"] = "1"
+os.environ["HF_HUB_ETAG_TIMEOUT"] = "120"
+os.environ["HF_HUB_DOWNLOAD_TIMEOUT"] = "120"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["WANDB_DISABLED"] = "true"
 
