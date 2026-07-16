@@ -412,7 +412,41 @@ model = get_peft_model(
         target_modules=target_modules,
     ),
 )
+model.enable_input_require_grads()
 model.print_trainable_parameters()
+
+data_collator = DataCollatorForSeq2Seq(
+    tokenizer=tokenizer,
+    padding=True,
+    pad_to_multiple_of=8,
+    label_pad_token_id=-100,
+)
+
+# Gradient checkpointing can silently detach the frozen embedding path on some
+# multimodal PEFT wrappers. Refuse the expensive epoch unless a real supervised
+# batch produces a finite loss and finite LoRA gradients.
+model.train()
+gradient_probe_batch = {
+    key: value.to("cuda:0") for key, value in data_collator([train_dataset[0]]).items()
+}
+gradient_probe_output = model(**gradient_probe_batch)
+gradient_probe_loss = gradient_probe_output.loss
+assert gradient_probe_loss.requires_grad, "QLoRA loss is detached from trainable adapters."
+assert torch.isfinite(gradient_probe_loss).item(), "QLoRA gradient-probe loss is non-finite."
+gradient_probe_loss.backward()
+trainable_gradients = [
+    parameter.grad
+    for parameter in model.parameters()
+    if parameter.requires_grad and parameter.grad is not None
+]
+assert trainable_gradients, "No trainable LoRA parameter received a gradient."
+assert all(torch.isfinite(gradient).all().item() for gradient in trainable_gradients), (
+    "A LoRA gradient was non-finite."
+)
+model.zero_grad(set_to_none=True)
+del gradient_probe_batch, gradient_probe_output, gradient_probe_loss, trainable_gradients
+torch.cuda.empty_cache()
+progress("gradient_flow_gate_passed")
 
 training_args = TrainingArguments(
     output_dir=str(TEMP_ROOT / "checkpoints"),
@@ -442,12 +476,7 @@ trainer = Trainer(
     args=training_args,
     train_dataset=train_dataset,
     eval_dataset=validation_dataset,
-    data_collator=DataCollatorForSeq2Seq(
-        tokenizer=tokenizer,
-        padding=True,
-        pad_to_multiple_of=8,
-        label_pad_token_id=-100,
-    ),
+    data_collator=data_collator,
 )
 train_result = trainer.train()
 eval_metrics = trainer.evaluate()

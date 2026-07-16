@@ -31,6 +31,9 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     assert "bnb_4bit_compute_dtype=torch.float32" in source
     assert "torch.isfinite(probe_logits).all()" in source
+    assert "model.enable_input_require_grads()" in source
+    assert "gradient_probe_loss.requires_grad" in source
+    assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
     assert "BEHAVIOR_WEIGHT = 4" in source
     assert 'candidate_evaluation["pass_rate"] == 1.0' in source
