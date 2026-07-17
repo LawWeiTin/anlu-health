@@ -17,6 +17,7 @@ data/generated/
 mlruns/
 wandb/
 checkpoints/
+.kaggle-release/
 *.safetensors
 *.bin
 *.gguf
