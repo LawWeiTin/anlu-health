@@ -51,6 +51,16 @@ _ENGLISH_STOPWORDS = {
     "you",
 }
 _CJK_SEQUENCE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]+")
+_SOURCE_REFERENCE = re.compile(
+    r"\b(?:article|card|document|evidence|retrieved|source|supplied)\b|资料|来源|检索|证据",
+    re.I,
+)
+_FOCUS_MARKERS = (
+    re.compile(r"\buser question\s*[:\-]\s*", re.I),
+    re.compile(r"\bmy (?:actual )?question (?:is|about)\s*[:\-]?\s*", re.I),
+    re.compile(r"\bbut\s+(?=(?:i|my)\b)", re.I),
+    re.compile(r"但(?:我的问题|我)(?:是|关于)?"),
+)
 
 _TOPIC_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
     (
@@ -68,7 +78,7 @@ _TOPIC_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
             r"\b(?:interact(?:ion|ions)?|warfarin|anticoagulant|blood thinner|"
             r"mix(?:ing)? .{0,20}(?:medicine|medication|drug|herb)|"
             r"(?:medicine|medication|drug|herb).{0,20}(?:together|safe))\b|"
-            r"药物相互作用|中西药同服|抗凝",
+            r"药物相互作用|中西药同服|华法林|抗凝|同服",
             re.I,
         ),
     ),
@@ -97,9 +107,7 @@ _TOPIC_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
 )
 
 
-def detect_topics(text: str) -> frozenset[str]:
-    """Return deterministic, auditable topic labels for a query or source."""
-
+def _detect_topics_in_text(text: str) -> frozenset[str]:
     matches = {topic for topic, pattern in _TOPIC_PATTERNS if pattern.search(text)}
     # Hemoptysis evidence is intentionally isolated from ordinary cough guidance.
     if "hemoptysis" in matches:
@@ -110,10 +118,39 @@ def detect_topics(text: str) -> frozenset[str]:
     return frozenset(matches)
 
 
+def _clinical_focus_text(text: str) -> str:
+    """Ignore a referenced source topic when the user clearly states a different question."""
+
+    if not _SOURCE_REFERENCE.search(text):
+        return text
+    focus_matches = [
+        match
+        for pattern in _FOCUS_MARKERS
+        for match in pattern.finditer(text)
+    ]
+    if focus_matches:
+        marker = max(focus_matches, key=lambda item: item.end())
+        focused = text[marker.end() :].strip()
+        if focused:
+            return focused
+    sentences = [
+        item.strip()
+        for item in re.split(r"(?<=[.!?。！？])\s*", text)
+        if item.strip()
+    ]
+    return sentences[-1] if len(sentences) > 1 else text
+
+
+def detect_topics(text: str) -> frozenset[str]:
+    """Return deterministic, auditable topic labels for a user's clinical focus."""
+
+    return _detect_topics_in_text(_clinical_focus_text(text))
+
+
 def _source_topics(source: KnowledgeSource, chunk: KnowledgeChunk) -> frozenset[str]:
     declared = frozenset(str(topic).strip() for topic in (source.topics or []) if str(topic).strip())
     # Derivation keeps pre-migration/test data safe, while ingestion requires explicit labels.
-    return declared or detect_topics(f"{source.title}\n{chunk.content}")
+    return declared or _detect_topics_in_text(f"{source.title}\n{chunk.content}")
 
 
 def _tokens(text: str) -> set[str]:

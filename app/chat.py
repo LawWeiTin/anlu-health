@@ -19,11 +19,40 @@ DISCLAIMER = (
     "Educational information only—not a diagnosis or treatment plan. For emergencies, contact local "
     "emergency services; for personal medical decisions, consult a qualified clinician."
 )
+UNVERIFIED_MODEL_RESPONSE = (
+    "The model response did not pass the evidence and safety checks, so I will not present it as "
+    "reliable. Please ask a qualified clinician or pharmacist. If symptoms are worsening or you "
+    "are worried, seek in-person care."
+)
 _SMALL_TALK = re.compile(
     r"^\s*(?:hello|hi|hey|good (?:morning|afternoon|evening))"
     r"(?:[!,. ]+(?:how are you|how is it going))?[!?. ]*$|"
     r"^\s*(?:thanks|thank you|bye|goodbye)[!?. ]*$",
     re.I,
+)
+_OFF_TOPIC_REQUEST = re.compile(
+    r"\b(?:write|compose|create)\b.{0,30}\b(?:poem|story|song|recipe)\b|"
+    r"\b(?:debug|repair|write)\b.{0,30}\b(?:code|javascript|python|program)\b|"
+    r"\b(?:stock|investment|weather|travel itinerary)\b|"
+    r"写.{0,12}(?:诗|故事)|菜谱|股票|天气",
+    re.I,
+)
+_HEALTH_CONTEXT = re.compile(
+    r"\b(?:allerg|blood|breath|clinician|cough|diagnos|diet|doctor|drug|fever|health|"
+    r"herb|lump|medical|medicine|nutrition|pain|pharmacist|pregnan|rash|symptom|tcm)\w*\b|"
+    r"健康|医疗|医生|药|中医|症状|疼痛|咳|肿块|皮疹|怀孕",
+    re.I,
+)
+_UNSAFE_MODEL_PATTERNS = (
+    re.compile(
+        r"\b(?:take|use|start)\s+\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|tablets?|capsules?)\b",
+        re.I,
+    ),
+    re.compile(r"\byou (?:definitely|certainly) have\b", re.I),
+    re.compile(r"\b(?:the|your) diagnosis is\b", re.I),
+    re.compile(r"\bchoose a non[- ]controversial\b", re.I),
+    re.compile(r"\bthe ai has been instructed\b", re.I),
+    re.compile(r"\bi should up[- ]rise\b", re.I),
 )
 
 
@@ -53,6 +82,21 @@ def validate_citations(answer: str, chunks: list[RetrievedChunk]) -> ValidatedAn
             "treat it as unverified and ask a qualified clinician."
         )
     return ValidatedAnswer(cleaned.strip(), cited)
+
+
+def guard_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> ValidatedAnswer:
+    """Fail closed when generation lacks approved evidence or contains unsafe artifacts."""
+
+    validated = validate_citations(answer, chunks)
+    if chunks and not validated.cited_chunks:
+        return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
+    if any(pattern.search(validated.text) for pattern in _UNSAFE_MODEL_PATTERNS):
+        return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
+    return validated
+
+
+def _is_obviously_off_topic(message: str) -> bool:
+    return bool(_OFF_TOPIC_REQUEST.search(message)) and not bool(_HEALTH_CONTEXT.search(message))
 
 
 class ChatService:
@@ -99,6 +143,14 @@ class ChatService:
             )
             return self._response(db, user, message, text, assessment, [], conversation_id)
 
+        if _is_obviously_off_topic(message):
+            text = (
+                "I am focused on health education, symptom navigation, and medicine or herb safety, "
+                "so I cannot complete that unrelated request here. If you have a health-related "
+                "question, I can help with that."
+            )
+            return self._response(db, user, message, text, assessment, [], conversation_id)
+
         chunks = self.retriever.search(db, message, limit=5)
         if not chunks:
             text = (
@@ -110,7 +162,7 @@ class ChatService:
 
         prompt = build_user_prompt(message, care_mode, assessment, chunks)
         draft = self.model.generate(SYSTEM_PROMPT, prompt)
-        validated = validate_citations(draft, chunks)
+        validated = guard_generated_answer(draft, chunks)
         return self._response(
             db,
             user,

@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from fastapi.testclient import TestClient
 
-from app.chat import validate_citations
+from app.chat import UNVERIFIED_MODEL_RESPONSE, guard_generated_answer, validate_citations
 from app.database import session_factory
 from app.embeddings import get_embedding_provider
 from app.llm import MockMedicalModel
@@ -153,6 +153,22 @@ def test_small_talk_does_not_trigger_medical_boilerplate(registered_client: Test
     assert "what this may mean" not in body["answer"].casefold()
 
 
+def test_off_topic_request_is_scoped_without_retrieval_or_model_boilerplate(
+    registered_client: TestClient,
+) -> None:
+    response = registered_client.post(
+        "/api/chat",
+        headers=csrf_headers(registered_client),
+        json={"message": "Write me a poem about the ocean.", "care_mode": "integrative"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["sources"] == []
+    assert "focused on health" in body["answer"].casefold()
+    assert "what this may mean" not in body["answer"].casefold()
+
+
 def test_unknown_citation_is_removed() -> None:
     source = KnowledgeSource(
         id="source-id",
@@ -178,6 +194,62 @@ def test_unknown_citation_is_removed() -> None:
     assert "[S99]" not in result.text
     assert len(result.cited_chunks) == 1
     assert result.cited_chunks[0][0] == "S1"
+
+
+def test_model_output_without_valid_citation_fails_closed() -> None:
+    source = KnowledgeSource(
+        id="source-id",
+        source_key="source-key",
+        title="Source",
+        publisher="Publisher",
+        url="https://example.gov",
+        license="Public domain",
+        evidence_tier="guideline",
+        language="en",
+        reviewed_on=date.today(),
+        expires_on=date.today() + timedelta(days=90),
+        checksum_sha256="0" * 64,
+        approved=True,
+    )
+    chunk = KnowledgeChunk(
+        id="chunk-id", source_id="source-id", ordinal=0, content="text", token_count=1, embedding=[]
+    )
+
+    result = guard_generated_answer(
+        "This is an unsupported medical answer.",
+        [RetrievedChunk(chunk, source, 1)],
+    )
+
+    assert result.text == UNVERIFIED_MODEL_RESPONSE
+    assert result.cited_chunks == []
+
+
+def test_numeric_personalized_dose_fails_closed_even_with_valid_citation() -> None:
+    source = KnowledgeSource(
+        id="source-id",
+        source_key="source-key",
+        title="Source",
+        publisher="Publisher",
+        url="https://example.gov",
+        license="Public domain",
+        evidence_tier="guideline",
+        language="en",
+        reviewed_on=date.today(),
+        expires_on=date.today() + timedelta(days=90),
+        checksum_sha256="0" * 64,
+        approved=True,
+    )
+    chunk = KnowledgeChunk(
+        id="chunk-id", source_id="source-id", ordinal=0, content="text", token_count=1, embedding=[]
+    )
+
+    result = guard_generated_answer(
+        "Take 10 mg each morning. [S1]",
+        [RetrievedChunk(chunk, source, 1)],
+    )
+
+    assert result.text == UNVERIFIED_MODEL_RESPONSE
+    assert result.cited_chunks == []
 
 
 def test_mock_model_uses_topic_relevant_tcm_citation() -> None:

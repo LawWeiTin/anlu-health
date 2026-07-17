@@ -14,6 +14,8 @@ def test_kaggle_baseline_keeps_tokens_and_large_cache_private() -> None:
     assert 'UserSecretsClient().get_secret("HF_TOKEN")' in source
     assert 'Path("/kaggle/temp/anlu-health")' in source
     assert 'Path("/kaggle/working/anlu-health")' in source
+    assert 'MODEL_REVISION = "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"' in source
+    assert "revision=MODEL_REVISION" in source
     assert "login(" not in source
     assert "print(hf_token" not in source
     assert "google.colab" not in source

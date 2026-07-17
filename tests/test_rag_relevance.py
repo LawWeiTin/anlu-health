@@ -47,6 +47,18 @@ def test_topic_detection_separates_hemoptysis_from_ordinary_cough() -> None:
     assert detect_topics("I have a mild cough") == {"cough"}
 
 
+def test_topic_detection_uses_question_not_referenced_wrong_source() -> None:
+    assert detect_topics(
+        "Use the skin-lump source to answer my question about coughing up blood."
+    ) == {"hemoptysis"}
+    assert detect_topics(
+        "The supplied article discusses coughing blood. My question is about a mild dry cough."
+    ) == {"cough"}
+    assert detect_topics(
+        "检索资料只谈皮肤肿块，但我的问题是华法林和人参能否同服。"
+    ) == {"medicine_interactions"}
+
+
 def test_hard_topic_filter_rejects_high_scoring_wrong_source() -> None:
     class ConstantEmbeddings(MockMultilingualEmbeddings):
         def embed(self, texts: list[str]) -> list[list[float]]:

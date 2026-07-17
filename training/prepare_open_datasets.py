@@ -13,7 +13,7 @@ import html
 import json
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -35,12 +35,32 @@ DOSING_PATTERN = re.compile(
     re.I,
 )
 PROHIBITED_CERTAINTY = ("definitely benign", "you have cancer", "this proves you have")
+MEDQUAD_MAX_ANSWER_WORDS = 140
+PUBMEDQA_MAX_ANSWER_WORDS = 110
 
 
 def normalize_text(value: object) -> str:
     text = html.unescape(str(value or ""))
     text = TAG_PATTERN.sub(" ", text)
     return WHITESPACE_PATTERN.sub(" ", text).strip()
+
+
+def truncate_to_complete_sentences(text: str, max_words: int) -> str:
+    """Keep source text verbatim while dropping complete trailing sentences over the budget."""
+
+    words = text.split()
+    if len(words) <= max_words:
+        return text
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    kept: list[str] = []
+    word_count = 0
+    for sentence in sentences:
+        sentence_words = sentence.split()
+        if not sentence_words or word_count + len(sentence_words) > max_words:
+            break
+        kept.append(sentence)
+        word_count += len(sentence_words)
+    return " ".join(kept).strip()
 
 
 def _record_is_safe(record: dict[str, Any]) -> bool:
@@ -110,6 +130,7 @@ def load_medquad(repo: Path, spec: dict[str, Any]) -> tuple[list[dict[str, Any]]
                 continue
             question = normalize_text(question_element.text if question_element is not None else "")
             answer = normalize_text(answer_element.text if answer_element is not None else "")
+            answer = truncate_to_complete_sentences(answer, MEDQUAD_MAX_ANSWER_WORDS)
             if len(question) < 8 or len(answer) < 40:
                 counters["missing_or_short"] += 1
                 continue
@@ -171,6 +192,7 @@ def load_pubmedqa(repo: Path, spec: dict[str, Any]) -> tuple[list[dict[str, Any]
         contexts = [normalize_text(item) for item in example.get("CONTEXTS", [])]
         context = " ".join(item for item in contexts if item)
         long_answer = normalize_text(example.get("LONG_ANSWER"))
+        long_answer = truncate_to_complete_sentences(long_answer, PUBMEDQA_MAX_ANSWER_WORDS)
         decision = normalize_text(example.get("final_decision")).casefold()
         if decision not in {"yes", "no", "maybe"} or not question or not long_answer or not context:
             counters["incomplete_example"] += 1
@@ -279,8 +301,8 @@ def _clone_pinned(spec: dict[str, Any], work_dir: Path) -> Path:
         [git, "-C", str(destination), "checkout", "--quiet", "--detach", "FETCH_HEAD"],
     ]
     for command in commands:
-        subprocess.run(command, check=True)  # noqa: S603
-    actual = subprocess.run(  # noqa: S603
+        subprocess.run(command, check=True)  # noqa: S603  # nosec B603
+    actual = subprocess.run(  # noqa: S603  # nosec B603
         [git, "-C", str(destination), "rev-parse", "HEAD"],
         check=True,
         capture_output=True,

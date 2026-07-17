@@ -19,6 +19,8 @@ def test_kaggle_qlora_keeps_secrets_and_heavy_artifacts_private() -> None:
     assert 'os.environ["HF_HUB_DOWNLOAD_TIMEOUT"] = "120"' in source
     assert 'os.environ["CUDA_VISIBLE_DEVICES"] = "0"' in source
     assert "torch.cuda.device_count() == 1" in source
+    assert 'MODEL_REVISION = "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"' in source
+    assert "revision=MODEL_REVISION" in source
     assert "for access_attempt in range(1, 21)" in source
     assert 'progress_path = RUN_DIR / "progress.log"' in source
     assert "print(hf_token" not in source
@@ -35,7 +37,11 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "gradient_probe_loss.requires_grad" in source
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
-    assert "BEHAVIOR_WEIGHT = 8" in source
+    assert "BEHAVIOR_WEIGHT = 12" in source
+    assert "RELEASE_CANDIDATE_VERSION = 9" in source
+    assert "INFERENCE_POLICY" in source
+    assert "framed_prompt" in source
+    assert '"inference_policy_sha256"' in source
     assert '"training/release_eval.py"' in source
     assert "repetition_penalty=1.08" in source
     assert "no_repeat_ngram_size=4" in source
@@ -52,4 +58,5 @@ def test_kaggle_qlora_reserves_supervised_completion_tokens() -> None:
     assert "completion_ids = full_ids[len(prompt_ids) :]" in source
     assert "completion_ids[: MAX_LENGTH - MIN_PROMPT_TOKENS]" in source
     assert "prompt_ids[:header_tokens] + prompt_ids[-tail_tokens:]" in source
-    assert "assert any(label != -100 for label in labels)" in source
+    assert "any(label != -100 for label in labels)" in source
+    assert "Tokenized training row has no supervised completion tokens." in source

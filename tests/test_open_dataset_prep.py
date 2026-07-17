@@ -1,7 +1,12 @@
 import json
 from pathlib import Path
 
-from training.prepare_open_datasets import load_medquad, load_pubmedqa, split_by_group
+from training.prepare_open_datasets import (
+    load_medquad,
+    load_pubmedqa,
+    split_by_group,
+    truncate_to_complete_sentences,
+)
 
 
 def _spec(dataset_id: str) -> dict:
@@ -89,3 +94,19 @@ def test_group_split_prevents_focus_leakage() -> None:
     validation_groups = {item["metadata"]["group_id"] for item in validation}
 
     assert not train_groups & validation_groups
+
+
+def test_long_training_targets_stop_at_a_complete_source_sentence() -> None:
+    text = (
+        "The first sentence provides concise evidence. "
+        "The second sentence remains within the limit. "
+        "The third sentence must be excluded because it exceeds the word budget."
+    )
+
+    truncated = truncate_to_complete_sentences(text, max_words=13)
+
+    assert truncated == (
+        "The first sentence provides concise evidence. "
+        "The second sentence remains within the limit."
+    )
+    assert truncated.endswith(".")

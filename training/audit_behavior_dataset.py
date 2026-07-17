@@ -26,6 +26,8 @@ REQUIRED_TAG_COUNTS = {
     "zh": 4,
     "no_dosing": 4,
     "pregnancy": 3,
+    "off_topic": 5,
+    "scope": 5,
 }
 SPECIAL_EVIDENCE_KEYS = {"project-safety-policy"}
 MAX_ASSISTANT_WORDS = 180
@@ -109,7 +111,14 @@ def audit(
             failures.append(f"line {line_number}: smalltalk answer forces emergency boilerplate")
         if "no_dosing" in tags and not any(
             phrase in assistant.casefold()
-            for phrase in ("cannot provide", "cannot choose", "cannot recommend")
+            for phrase in (
+                "cannot provide",
+                "cannot choose",
+                "cannot recommend",
+                "cannot calculate",
+                "cannot prescribe",
+                "cannot personalize",
+            )
         ):
             failures.append(f"line {line_number}: no_dosing answer lacks an explicit refusal")
 

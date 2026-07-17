@@ -9,13 +9,14 @@ from __future__ import annotations
 
 import json
 import os
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 from datetime import UTC, datetime
 from pathlib import Path
 
 MODEL_ID = "google/medgemma-1.5-4b-it"
+MODEL_REVISION = "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
 TEMP_ROOT = Path("/kaggle/temp/anlu-health")
 OUTPUT_ROOT = Path("/kaggle/working/anlu-health")
 RUN_ID = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -40,10 +41,15 @@ def install_runtime() -> None:
         "huggingface_hub>=0.33,<1",
         "sentencepiece>=0.2,<1",
     ]
-    subprocess.run(  # noqa: S603
+    subprocess.run(  # noqa: S603  # nosec B603
         [sys.executable, "-m", "pip", "install", "-q", *packages],
         check=True,
     )
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise RuntimeError(message)
 
 
 install_runtime()
@@ -53,26 +59,34 @@ from huggingface_hub import hf_hub_download  # noqa: E402
 from kaggle_secrets import UserSecretsClient  # noqa: E402
 from transformers import AutoModelForImageTextToText, AutoProcessor  # noqa: E402
 
-assert torch.cuda.is_available(), "Enable a Kaggle GPU accelerator before running."
-assert torch.cuda.device_count() >= 2, "Select Kaggle's GPU T4 x2 accelerator."
+require(torch.cuda.is_available(), "Enable a Kaggle GPU accelerator before running.")
+require(torch.cuda.device_count() >= 2, "Select Kaggle's GPU T4 x2 accelerator.")
 RUN_DIR.mkdir(parents=True, exist_ok=False)
 
 hf_token = UserSecretsClient().get_secret("HF_TOKEN")
-assert hf_token, "Add an enabled Kaggle secret named HF_TOKEN."
+require(bool(hf_token), "Add an enabled Kaggle secret named HF_TOKEN.")
 
 # Prove gated access before allocating the model. Passing the token explicitly
 # avoids writing it to a Hugging Face credential file.
-hf_hub_download(
+# MODEL_REVISION is an immutable SHA asserted by contract tests.
+hf_hub_download(  # nosec B615
     repo_id=MODEL_ID,
     filename="config.json",
+    revision=MODEL_REVISION,
     token=hf_token,
 )
 print("MedGemma gated access: GRANTED")
 print("GPUs:", [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())])
 
-processor = AutoProcessor.from_pretrained(MODEL_ID, token=hf_token)
-model = AutoModelForImageTextToText.from_pretrained(
+# Bandit cannot resolve the constant, but contract tests require the pinned SHA.
+processor = AutoProcessor.from_pretrained(  # nosec B615
     MODEL_ID,
+    revision=MODEL_REVISION,
+    token=hf_token,
+)
+model = AutoModelForImageTextToText.from_pretrained(  # nosec B615
+    MODEL_ID,
+    revision=MODEL_REVISION,
     token=hf_token,
     # MedGemma's bfloat16 weights overflow to NaN when forced to float16 on T4.
     # FP32 is numerically stable and is split across both 16 GiB T4 devices.
@@ -209,6 +223,7 @@ for case in CASES:
 report = {
     "run_id": RUN_ID,
     "model": MODEL_ID,
+    "model_revision": MODEL_REVISION,
     "gpus": [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())],
     "runtime_precision": "float32",
     "cases": results,

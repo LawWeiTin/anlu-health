@@ -18,12 +18,13 @@ API, prompt, and evaluation gates all enforce that scope.
    when candidates lack topic overlap or fall below the relevance threshold.
 3. **Bounded generation:** the prompt forbids diagnosis, dosing, fabricated citations, urgency
    downgrades, and presentation of traditional concepts as established biomedical mechanisms.
-4. **Output validation:** only citations present in the retrieved set survive. Answers without usable
-   evidence explicitly say that reliable support was not found.
+4. **Output validation:** only citations present in the retrieved set survive. Generated answers
+   without a valid approved citation, with personalized numeric dosing, diagnostic certainty, or
+   leaked prompt/meta instructions fail closed and are replaced by a deterministic abstention.
 5. **Privacy controls:** opaque revocable sessions; no raw health text in logs; history is off by
    default and app-level encrypted when explicitly enabled.
-6. **Release gates:** emergency recall, abstention, citation validity, traditional-medicine separation,
-   security tests, and clinician review.
+6. **Release gates:** emergency recall, abstention, citation validity, traditional-medicine
+   separation, response termination, scope adherence, security tests, and clinician review.
 
 ## Lump questions
 

@@ -1,9 +1,9 @@
-version: 3
+version: 4
 storage_policy: remote_colab_and_private_drive_only
 contains_user_conversations: false
 seed: 42
 validation_fraction: 0.10
-behavior_sampling_weight: 8
+behavior_sampling_weight: 12
 
 datasets:
   - id: medquad

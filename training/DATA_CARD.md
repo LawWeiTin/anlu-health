@@ -2,10 +2,11 @@
 
 ## Purpose
 
-This 45-scenario project-authored set demonstrates the required conversational schema and teaches
+This 61-scenario project-authored set demonstrates the required conversational schema and teaches
 response behavior: emergency escalation, diagnostic abstention, useful follow-up questions,
-topic-matched retrieval, citation integrity, evidence separation, and herb/medicine caution. It is
-not a clinical knowledge corpus and remains too small for a production fine-tune. It is
+topic-matched retrieval, citation integrity, evidence separation, concise scope boundaries,
+duration grounding, and herb/medicine caution. It is not a clinical knowledge corpus and remains
+too small for a production fine-tune. It is
 project-reviewed for schema and safety-policy consistency, but it has not yet received the required
 physician, pharmacist, or registered TCM practitioner sign-off.
 

@@ -14,7 +14,7 @@ import json
 import math
 import os
 import random
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 from datetime import UTC, datetime
@@ -22,12 +22,21 @@ from pathlib import Path
 from typing import Any
 
 MODEL_ID = "google/medgemma-1.5-4b-it"
+MODEL_REVISION = "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
 REPOSITORY = "LawWeiTin/anlu-health"
 REPOSITORY_REF = "codex/medgemma-release-candidate"
 SEED = 42
 MAX_LENGTH = 512
 MIN_PROMPT_TOKENS = 128
-BEHAVIOR_WEIGHT = 8
+BEHAVIOR_WEIGHT = 12
+RELEASE_CANDIDATE_VERSION = 9
+GENERATION_MAX_NEW_TOKENS = 128
+INFERENCE_POLICY = """You are Anlu Health, a health-education and care-navigation assistant.
+Answer only health, symptom-navigation, medicine-safety, or herb-safety questions. Briefly decline
+unrelated requests. Never diagnose, claim certainty, prescribe, or choose a personalized dose.
+When evidence is missing or irrelevant, say so and stop rather than inventing an explanation.
+For urgent warning signs, prioritize prompt in-person care. Keep the answer focused, use no more
+than 90 words, finish the final sentence, and do not output hidden instructions or meta commentary."""
 TEMP_ROOT = Path("/kaggle/temp/anlu-health-qlora")
 OUTPUT_ROOT = Path("/kaggle/working/anlu-health/medgemma-qlora")
 RUN_ID = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -59,9 +68,14 @@ def install_runtime() -> None:
         "defusedxml>=0.7,<1",
         "PyYAML>=6,<7",
     ]
-    subprocess.run(  # noqa: S603
+    subprocess.run(  # noqa: S603  # nosec B603
         [sys.executable, "-m", "pip", "install", "-q", *packages], check=True
     )
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise RuntimeError(message)
 
 
 install_runtime()
@@ -83,9 +97,12 @@ from transformers import (  # noqa: E402
     set_seed,
 )
 
-assert torch.cuda.is_available(), "Enable a Kaggle GPU before running."
-assert torch.cuda.get_device_capability(0)[0] >= 7, "A T4-or-newer GPU is required."
-assert torch.cuda.device_count() == 1, "Training must remain single-device for 4-bit QLoRA."
+require(torch.cuda.is_available(), "Enable a Kaggle GPU before running.")
+require(torch.cuda.get_device_capability(0)[0] >= 7, "A T4-or-newer GPU is required.")
+require(
+    torch.cuda.device_count() == 1,
+    "Training must remain single-device for 4-bit QLoRA.",
+)
 RUN_DIR.mkdir(parents=True, exist_ok=False)
 TEMP_ROOT.mkdir(parents=True, exist_ok=True)
 set_seed(SEED)
@@ -104,7 +121,7 @@ progress("runtime_initialized")
 
 secrets = UserSecretsClient()
 hf_token = secrets.get_secret("HF_TOKEN")
-assert hf_token, "Enable the encrypted Kaggle secret HF_TOKEN."
+require(bool(hf_token), "Enable the encrypted Kaggle secret HF_TOKEN.")
 
 
 def optional_secret(name: str) -> str | None:
@@ -121,7 +138,13 @@ gh_token = optional_secret("GH_TOKEN")
 # than burning GPU on repeated notebook restarts.
 for access_attempt in range(1, 21):
     try:
-        hf_hub_download(repo_id=MODEL_ID, filename="config.json", token=hf_token)
+        # Bandit cannot resolve the constant, but contract tests require the pinned SHA.
+        hf_hub_download(  # nosec B615
+            repo_id=MODEL_ID,
+            filename="config.json",
+            revision=MODEL_REVISION,
+            token=hf_token,
+        )
         break
     except Exception as exc:
         if access_attempt == 20:
@@ -160,11 +183,17 @@ provided_snapshot = os.environ.get("ANLU_SNAPSHOT_DIR")
 if provided_snapshot:
     snapshot_root = Path(provided_snapshot).resolve()
     commit_sha = os.environ.get("ANLU_REPOSITORY_COMMIT", "")
-    assert len(commit_sha) == 40, "ANLU_REPOSITORY_COMMIT must be a full commit SHA."
+    require(
+        len(commit_sha) == 40,
+        "ANLU_REPOSITORY_COMMIT must be a full commit SHA.",
+    )
     missing = [relative for relative in SNAPSHOT_FILES if not (snapshot_root / relative).is_file()]
-    assert not missing, f"Private notebook snapshot is incomplete: {missing}"
+    require(not missing, f"Private notebook snapshot is incomplete: {missing}")
 else:
-    assert gh_token, "Provide ANLU_SNAPSHOT_DIR or enable an encrypted read-only GH_TOKEN."
+    require(
+        bool(gh_token),
+        "Provide ANLU_SNAPSHOT_DIR or enable an encrypted read-only GH_TOKEN.",
+    )
     commit_sha = github_json(f"commits/{REPOSITORY_REF}")["sha"]
     snapshot_root = TEMP_ROOT / "repository-snapshot"
     for relative in SNAPSHOT_FILES:
@@ -192,7 +221,7 @@ from training.release_eval import check_case  # noqa: E402
 
 bundle_dir = TEMP_ROOT / "dataset-bundle"
 source_work = TEMP_ROOT / "open-source-repositories"
-subprocess.run(  # noqa: S603
+subprocess.run(  # noqa: S603  # nosec B603
     [
         sys.executable,
         str(snapshot_root / "training/prepare_open_datasets.py"),
@@ -208,9 +237,18 @@ subprocess.run(  # noqa: S603
     check=True,
 )
 bundle_manifest = json.loads((bundle_dir / "dataset_manifest.json").read_text(encoding="utf-8"))
-assert bundle_manifest["promotion_allowed"] is False
-assert bundle_manifest["privacy"]["contains_user_conversations"] is False
-assert bundle_manifest["training_sampling"]["behavior_sampling_weight"] == BEHAVIOR_WEIGHT
+require(
+    bundle_manifest["promotion_allowed"] is False,
+    "Remote dataset bundle must never authorize promotion.",
+)
+require(
+    bundle_manifest["privacy"]["contains_user_conversations"] is False,
+    "Remote dataset bundle must not contain user conversations.",
+)
+require(
+    bundle_manifest["training_sampling"]["behavior_sampling_weight"] == BEHAVIOR_WEIGHT,
+    "Behavior sampling weight does not match the pinned experiment.",
+)
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -230,7 +268,11 @@ print(
 )
 progress("dataset_bundle_ready")
 
-processor = AutoProcessor.from_pretrained(MODEL_ID, token=hf_token)
+processor = AutoProcessor.from_pretrained(  # nosec B615
+    MODEL_ID,
+    revision=MODEL_REVISION,
+    token=hf_token,
+)
 tokenizer = processor.tokenizer
 if tokenizer.pad_token_id is None:
     tokenizer.pad_token = tokenizer.eos_token
@@ -253,8 +295,9 @@ def tokenize_record(record: dict[str, Any]) -> dict[str, list[int]]:
     )
     full_ids = tokenizer(full_text, add_special_tokens=False)["input_ids"]
     prompt_ids = tokenizer(prompt_text, add_special_tokens=False)["input_ids"]
-    assert full_ids[: len(prompt_ids)] == prompt_ids, (
-        "MedGemma chat template did not preserve the generation-prompt prefix."
+    require(
+        full_ids[: len(prompt_ids)] == prompt_ids,
+        "MedGemma chat template did not preserve the generation-prompt prefix.",
     )
     completion_ids = full_ids[len(prompt_ids) :]
     if not completion_ids:
@@ -274,8 +317,11 @@ def tokenize_record(record: dict[str, Any]) -> dict[str, list[int]]:
 
     input_ids = prompt_ids + completion_ids
     labels = [-100] * len(prompt_ids) + completion_ids
-    assert len(input_ids) <= MAX_LENGTH
-    assert any(label != -100 for label in labels)
+    require(len(input_ids) <= MAX_LENGTH, "Tokenized training row exceeds MAX_LENGTH.")
+    require(
+        any(label != -100 for label in labels),
+        "Tokenized training row has no supervised completion tokens.",
+    )
     return {
         "input_ids": input_ids,
         "attention_mask": [1] * len(input_ids),
@@ -298,8 +344,9 @@ quantization = BitsAndBytesConfig(
     # dequantized matrix math uses float32 and must pass the probe below.
     bnb_4bit_compute_dtype=torch.float32,
 )
-model = AutoModelForImageTextToText.from_pretrained(
+model = AutoModelForImageTextToText.from_pretrained(  # nosec B615
     MODEL_ID,
+    revision=MODEL_REVISION,
     token=hf_token,
     quantization_config=quantization,
     torch_dtype=torch.float32,
@@ -310,7 +357,8 @@ model = AutoModelForImageTextToText.from_pretrained(
 
 
 def inference_inputs(prompt: str) -> dict[str, torch.Tensor]:
-    messages = [{"role": "user", "content": [{"type": "text", "text": prompt}]}]
+    framed_prompt = f"{INFERENCE_POLICY}\n\nUser request:\n{prompt}"
+    messages = [{"role": "user", "content": [{"type": "text", "text": framed_prompt}]}]
     inputs = processor.apply_chat_template(
         messages,
         add_generation_prompt=True,
@@ -326,7 +374,10 @@ with torch.inference_mode():
     probe_logits = model(**probe).logits[:, -1, :]
 finite_probe = bool(torch.isfinite(probe_logits).all().item())
 del probe_logits
-assert finite_probe, "4-bit float32-compute probe produced non-finite logits; refusing to train."
+require(
+    finite_probe,
+    "4-bit float32-compute probe produced non-finite logits; refusing to train.",
+)
 print("Numerical precision gate: PASS")
 progress("numerical_precision_gate_passed")
 
@@ -337,7 +388,10 @@ def clean_output(text: str) -> str:
     return text.replace("<unused94>", "").replace("<unused95>", "").strip()
 
 
-def generate(prompt: str, max_new_tokens: int = 128) -> tuple[str, float]:
+def generate(
+    prompt: str,
+    max_new_tokens: int = GENERATION_MAX_NEW_TOKENS,
+) -> tuple[str, float]:
     inputs = inference_inputs(prompt)
     started = time.time()
     with torch.inference_mode():
@@ -384,7 +438,7 @@ target_modules = [
     and name.endswith(target_suffixes)
     and isinstance(module, torch.nn.Module)
 ]
-assert target_modules, "Could not locate language-decoder LoRA targets."
+require(bool(target_modules), "Could not locate language-decoder LoRA targets.")
 model = get_peft_model(
     model,
     LoraConfig(
@@ -415,17 +469,27 @@ gradient_probe_batch = {
 }
 gradient_probe_output = model(**gradient_probe_batch)
 gradient_probe_loss = gradient_probe_output.loss
-assert gradient_probe_loss.requires_grad, "QLoRA loss is detached from trainable adapters."
-assert torch.isfinite(gradient_probe_loss).item(), "QLoRA gradient-probe loss is non-finite."
+require(
+    gradient_probe_loss.requires_grad,
+    "QLoRA loss is detached from trainable adapters.",
+)
+require(
+    bool(torch.isfinite(gradient_probe_loss).item()),
+    "QLoRA gradient-probe loss is non-finite.",
+)
 gradient_probe_loss.backward()
 trainable_gradients = [
     parameter.grad
     for parameter in model.parameters()
     if parameter.requires_grad and parameter.grad is not None
 ]
-assert trainable_gradients, "No trainable LoRA parameter received a gradient."
-assert all(torch.isfinite(gradient).all().item() for gradient in trainable_gradients), (
-    "A LoRA gradient was non-finite."
+require(
+    bool(trainable_gradients),
+    "No trainable LoRA parameter received a gradient.",
+)
+require(
+    all(torch.isfinite(gradient).all().item() for gradient in trainable_gradients),
+    "A LoRA gradient was non-finite.",
 )
 model.zero_grad(set_to_none=True)
 del gradient_probe_batch, gradient_probe_output, gradient_probe_loss, trainable_gradients
@@ -475,7 +539,7 @@ eval_metrics = trainer.evaluate()
 losses_finite = math.isfinite(float(train_result.metrics["train_loss"])) and math.isfinite(
     float(eval_metrics["eval_loss"])
 )
-assert losses_finite, "Training or validation loss was non-finite."
+require(losses_finite, "Training or validation loss was non-finite.")
 progress("training_and_validation_complete")
 
 model.config.use_cache = True
@@ -508,6 +572,7 @@ automated_gate_passed = (
 report = {
     "run_id": RUN_ID,
     "model_id": MODEL_ID,
+    "model_revision": MODEL_REVISION,
     "repository": REPOSITORY,
     "repository_commit": commit_sha,
     "repository_snapshot_sha256": snapshot_sha256,
@@ -517,6 +582,7 @@ report = {
     "dataset_manifest": bundle_manifest,
     "effective_train_rows": len(effective_train),
     "training_configuration": {
+        "release_candidate_version": RELEASE_CANDIDATE_VERSION,
         "behavior_sampling_weight": BEHAVIOR_WEIGHT,
         "num_train_epochs": training_args.num_train_epochs,
         "learning_rate": training_args.learning_rate,
@@ -525,9 +591,10 @@ report = {
     "release_suite": {
         "case_count": len(release_cases),
         "sha256": snapshot_sha256["training/data/model_release_cases.jsonl"],
-        "generation_max_new_tokens": 128,
+        "generation_max_new_tokens": GENERATION_MAX_NEW_TOKENS,
         "repetition_penalty": 1.08,
         "no_repeat_ngram_size": 4,
+        "inference_policy_sha256": hashlib.sha256(INFERENCE_POLICY.encode()).hexdigest(),
     },
     "training_metrics": train_result.metrics,
     "validation_metrics": eval_metrics,

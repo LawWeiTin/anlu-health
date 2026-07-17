@@ -18,7 +18,7 @@ clinical model and is not intended to learn diagnosis or personalized treatment.
   topic mismatch, citation integrity, red-flag navigation, lump assessment, medicine-herb safety,
   TCM evidence separation, and English/Chinese prompts. No real user messages. Clinical review is
   still pending, so these examples cannot independently authorize production use. During training,
-  this behavior subset receives a sampling weight of eight to keep generic biomedical QA from
+  this behavior subset receives a sampling weight of twelve to keep generic biomedical QA from
   overwhelming the intended conversational behavior.
 
 MedMCQA is recorded but evaluation-only because entrance-exam multiple-choice responses are not the
@@ -29,7 +29,8 @@ datasets without explicit licensing are excluded.
 
 The source repositories are cloned at exact commit hashes into ephemeral Kaggle storage. The pipeline
 normalizes text, rejects obvious identifiers and medication-like dosing targets, deduplicates by
-question, and splits by source group so one source group does not occur in both train and validation.
+question, caps open-data targets at complete source-sentence boundaries, and splits by source group
+so one source group does not occur in both train and validation.
 The private Kaggle run writes only the adapter, progress log, attribution, source revisions, filter
 counts, release evaluation, and SHA-256 checksums to a new UTC-timestamped output directory. It
 never writes base-model weights or source-corpus clones to the laptop.

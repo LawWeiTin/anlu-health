@@ -16,7 +16,7 @@ training:
   open_data_pilot:
     epochs: 1
     learning_rate: 0.0001
-    max_length: 1024
+    max_length: 512
     medquad_max_examples: 800
     pubmedqa_max_examples: 200
-    behavior_sampling_weight: 8
+    behavior_sampling_weight: 12
