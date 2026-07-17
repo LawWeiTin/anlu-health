@@ -10,14 +10,15 @@ candidate_base_model:
   license: HAI-DEF Terms of Use
 latest_candidate_run:
   status: rejected_automated_gate
-  run_id: 20260716T094417Z
+  run_id: 20260717T113245Z
   platform: kaggle
-  script_version_id: "335685794"
-  repository_commit: e7193e8e2a3535b7ddba8d6610adaa43f47af260
-  report: model_registry/runs/medgemma_kaggle_v4.json
+  version_number: 8
+  script_version_id: "335931420"
+  repository_commit: 1d678efc96956fe470b8ebad95427d5faf5e4d07
+  report: model_registry/runs/medgemma_kaggle_v8.json
   automated_gate_passed: false
-  baseline_pass_rate: 0.5
-  candidate_pass_rate: 0.5
+  baseline_pass_rate: 0.16666666666666666
+  candidate_pass_rate: 0.6666666666666666
   promotion_allowed: false
   disposition: keep private for audit; do not deploy
 adapter:
