@@ -15,18 +15,20 @@ import yaml
 from training.prepare_open_datasets import IDENTIFIER_PATTERNS, PROHIBITED_CERTAINTY
 
 REQUIRED_TAG_COUNTS = {
-    "smalltalk": 3,
-    "hemoptysis": 4,
-    "lump": 5,
-    "tcm": 10,
-    "interaction": 4,
-    "topic_relevance": 3,
-    "citation_integrity": 2,
+    "smalltalk": 4,
+    "hemoptysis": 5,
+    "lump": 9,
+    "tcm": 14,
+    "interaction": 7,
+    "topic_relevance": 7,
+    "citation_integrity": 5,
     "emergency": 4,
-    "zh": 3,
-    "no_dosing": 2,
+    "zh": 4,
+    "no_dosing": 4,
+    "pregnancy": 3,
 }
 SPECIAL_EVIDENCE_KEYS = {"project-safety-policy"}
+MAX_ASSISTANT_WORDS = 180
 
 
 def _normalize(text: str) -> str:
@@ -73,6 +75,10 @@ def audit(
         normalized = _normalize(prompt)
         if not normalized or not assistant:
             failures.append(f"line {line_number}: empty prompt or answer")
+        if len(assistant.split()) > MAX_ASSISTANT_WORDS:
+            failures.append(
+                f"line {line_number}: assistant response exceeds {MAX_ASSISTANT_WORDS} words"
+            )
         if normalized in prompts:
             failures.append(
                 f"line {line_number}: duplicate normalized prompt shared with {prompts[normalized]}"

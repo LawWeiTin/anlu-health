@@ -15,5 +15,5 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     )
 
     assert report["status"] == "pass", json.dumps(report["failures"], indent=2)
-    assert report["records"] >= 30
+    assert report["records"] >= 45
     assert report["leakage"] == []

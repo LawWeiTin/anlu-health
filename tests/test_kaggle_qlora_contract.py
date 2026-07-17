@@ -35,7 +35,12 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "gradient_probe_loss.requires_grad" in source
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
-    assert "BEHAVIOR_WEIGHT = 4" in source
+    assert "BEHAVIOR_WEIGHT = 8" in source
+    assert '"training/release_eval.py"' in source
+    assert "repetition_penalty=1.08" in source
+    assert "no_repeat_ngram_size=4" in source
+    assert "callbacks=[ProgressCallback()]" in source
+    assert '"release_suite"' in source
     assert 'candidate_evaluation["pass_rate"] == 1.0' in source
     assert '"human_review_required": True' in source
     assert '"promotion_allowed": False' in source

@@ -8,7 +8,7 @@ def test_open_dataset_manifest_is_pinned_and_excludes_patient_chats() -> None:
     manifest = yaml.safe_load(Path("training/open_datasets.yaml").read_text(encoding="utf-8"))
     assert manifest["storage_policy"] == "remote_colab_and_private_drive_only"
     assert manifest["contains_user_conversations"] is False
-    assert manifest["behavior_sampling_weight"] == 4
+    assert manifest["behavior_sampling_weight"] == 8
     datasets = {item["id"]: item for item in manifest["datasets"]}
     assert datasets["medquad"]["role"] == "train"
     assert datasets["pubmedqa"]["role"] == "train"

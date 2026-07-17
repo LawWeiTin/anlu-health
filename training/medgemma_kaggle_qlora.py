@@ -27,7 +27,7 @@ REPOSITORY_REF = "codex/medgemma-release-candidate"
 SEED = 42
 MAX_LENGTH = 512
 MIN_PROMPT_TOKENS = 128
-BEHAVIOR_WEIGHT = 4
+BEHAVIOR_WEIGHT = 8
 TEMP_ROOT = Path("/kaggle/temp/anlu-health-qlora")
 OUTPUT_ROOT = Path("/kaggle/working/anlu-health/medgemma-qlora")
 RUN_ID = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -78,6 +78,7 @@ from transformers import (  # noqa: E402
     BitsAndBytesConfig,
     DataCollatorForSeq2Seq,
     Trainer,
+    TrainerCallback,
     TrainingArguments,
     set_seed,
 )
@@ -151,6 +152,7 @@ def github_json(path: str) -> dict[str, Any]:
 SNAPSHOT_FILES = (
     "training/open_datasets.yaml",
     "training/prepare_open_datasets.py",
+    "training/release_eval.py",
     "training/data/sample_sft.jsonl",
     "training/data/model_release_cases.jsonl",
 )
@@ -185,6 +187,8 @@ snapshot_sha256 = {
     relative: hashlib.sha256((snapshot_root / relative).read_bytes()).hexdigest()
     for relative in SNAPSHOT_FILES
 }
+sys.path.insert(0, str(snapshot_root))
+from training.release_eval import check_case  # noqa: E402
 
 bundle_dir = TEMP_ROOT / "dataset-bundle"
 source_work = TEMP_ROOT / "open-source-repositories"
@@ -333,7 +337,7 @@ def clean_output(text: str) -> str:
     return text.replace("<unused94>", "").replace("<unused95>", "").strip()
 
 
-def generate(prompt: str, max_new_tokens: int = 192) -> tuple[str, float]:
+def generate(prompt: str, max_new_tokens: int = 128) -> tuple[str, float]:
     inputs = inference_inputs(prompt)
     started = time.time()
     with torch.inference_mode():
@@ -341,6 +345,8 @@ def generate(prompt: str, max_new_tokens: int = 192) -> tuple[str, float]:
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=False,
+            repetition_penalty=1.08,
+            no_repeat_ngram_size=4,
             pad_token_id=tokenizer.eos_token_id,
             eos_token_id=tokenizer.eos_token_id,
         )
@@ -349,28 +355,6 @@ def generate(prompt: str, max_new_tokens: int = 192) -> tuple[str, float]:
 
 
 release_cases = read_jsonl(snapshot_root / "training/data/model_release_cases.jsonl")
-
-
-def check_case(case: dict[str, Any], answer: str) -> dict[str, Any]:
-    normalized = answer.casefold()
-    required_all = {
-        term: term.casefold() in normalized for term in case.get("required_all", [])
-    }
-    required_any = {
-        " | ".join(group): any(term.casefold() in normalized for term in group)
-        for group in case.get("required_any", [])
-    }
-    forbidden = {
-        term: term.casefold() not in normalized for term in case.get("forbidden", [])
-    }
-    passed = all(required_all.values()) and all(required_any.values()) and all(forbidden.values())
-    return {
-        "passed": passed,
-        "required_all": required_all,
-        "required_any": required_any,
-        "forbidden_absent": forbidden,
-    }
-
 
 def evaluate_model(label: str) -> dict[str, Any]:
     results = []
@@ -448,6 +432,13 @@ del gradient_probe_batch, gradient_probe_output, gradient_probe_loss, trainable_
 torch.cuda.empty_cache()
 progress("gradient_flow_gate_passed")
 
+
+class ProgressCallback(TrainerCallback):
+    def on_log(self, args, state, control, logs=None, **kwargs):  # noqa: ANN001, ANN201, ARG002
+        if logs:
+            progress(f"trainer_log step={state.global_step} metrics={json.dumps(logs, sort_keys=True)}")
+
+
 training_args = TrainingArguments(
     output_dir=str(TEMP_ROOT / "checkpoints"),
     num_train_epochs=1,
@@ -477,6 +468,7 @@ trainer = Trainer(
     train_dataset=train_dataset,
     eval_dataset=validation_dataset,
     data_collator=data_collator,
+    callbacks=[ProgressCallback()],
 )
 train_result = trainer.train()
 eval_metrics = trainer.evaluate()
@@ -524,6 +516,19 @@ report = {
     "numerical_probe_finite": finite_probe,
     "dataset_manifest": bundle_manifest,
     "effective_train_rows": len(effective_train),
+    "training_configuration": {
+        "behavior_sampling_weight": BEHAVIOR_WEIGHT,
+        "num_train_epochs": training_args.num_train_epochs,
+        "learning_rate": training_args.learning_rate,
+        "max_length": MAX_LENGTH,
+    },
+    "release_suite": {
+        "case_count": len(release_cases),
+        "sha256": snapshot_sha256["training/data/model_release_cases.jsonl"],
+        "generation_max_new_tokens": 128,
+        "repetition_penalty": 1.08,
+        "no_repeat_ngram_size": 4,
+    },
     "training_metrics": train_result.metrics,
     "validation_metrics": eval_metrics,
     "losses_finite": losses_finite,

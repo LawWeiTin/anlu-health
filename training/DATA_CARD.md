@@ -2,19 +2,21 @@
 
 ## Purpose
 
-This project-authored set demonstrates the required conversational schema and teaches response
-behavior: emergency escalation, diagnostic abstention, useful follow-up questions, evidence
-separation, and herb/medicine caution. It is not a clinical knowledge corpus and is far too small for
-a production fine-tune. It is project-reviewed for schema and safety-policy consistency, but it has
-not yet received the required physician, pharmacist, or registered TCM practitioner sign-off.
+This 45-scenario project-authored set demonstrates the required conversational schema and teaches
+response behavior: emergency escalation, diagnostic abstention, useful follow-up questions,
+topic-matched retrieval, citation integrity, evidence separation, and herb/medicine caution. It is
+not a clinical knowledge corpus and remains too small for a production fine-tune. It is
+project-reviewed for schema and safety-policy consistency, but it has not yet received the required
+physician, pharmacist, or registered TCM practitioner sign-off.
 
 ## Provenance and privacy
 
 Examples are synthetic and contain no real patient conversations. Each record has a stable scenario
 ID, behavior tags, and evidence-source keys. `audit_behavior_dataset.py` checks topic coverage,
 source-key provenance, exact/near-duplicate held-out leakage, role/schema validity, and obvious
-identifiers. `prepare_dataset.py` rejects
-obvious email addresses, phone numbers, and medical-record identifiers. Do not add real user chat.
+identifiers. It also rejects overlong authored answers so the target style remains concise.
+`prepare_dataset.py` rejects obvious email addresses, phone numbers, and medical-record identifiers.
+Do not add real user chat.
 
 ## Production extension
 

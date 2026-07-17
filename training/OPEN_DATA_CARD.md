@@ -18,7 +18,7 @@ clinical model and is not intended to learn diagnosis or personalized treatment.
   topic mismatch, citation integrity, red-flag navigation, lump assessment, medicine-herb safety,
   TCM evidence separation, and English/Chinese prompts. No real user messages. Clinical review is
   still pending, so these examples cannot independently authorize production use. During training,
-  this behavior subset receives a sampling weight of four to keep generic biomedical QA from
+  this behavior subset receives a sampling weight of eight to keep generic biomedical QA from
   overwhelming the intended conversational behavior.
 
 MedMCQA is recorded but evaluation-only because entrance-exam multiple-choice responses are not the
@@ -27,11 +27,12 @@ datasets without explicit licensing are excluded.
 
 ## Processing and storage
 
-The source repositories are cloned at exact commit hashes into ephemeral Colab storage. The pipeline
+The source repositories are cloned at exact commit hashes into ephemeral Kaggle storage. The pipeline
 normalizes text, rejects obvious identifiers and medication-like dosing targets, deduplicates by
-question, and splits MedQuAD by focus so one condition does not occur in both train and validation.
-It writes a new UTC-timestamped directory under private Google Drive with JSONL splits, attribution,
-source revisions, filter counts, and SHA-256 checksums. It never overwrites or deletes Drive content.
+question, and splits by source group so one source group does not occur in both train and validation.
+The private Kaggle run writes only the adapter, progress log, attribution, source revisions, filter
+counts, release evaluation, and SHA-256 checksums to a new UTC-timestamped output directory. It
+never writes base-model weights or source-corpus clones to the laptop.
 
 ## Known limitations
 

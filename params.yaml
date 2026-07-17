@@ -19,4 +19,4 @@ training:
     max_length: 1024
     medquad_max_examples: 800
     pubmedqa_max_examples: 200
-    behavior_sampling_weight: 4
+    behavior_sampling_weight: 8
