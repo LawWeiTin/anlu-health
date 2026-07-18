@@ -28,15 +28,16 @@ REPOSITORY_REF = "codex/medgemma-release-candidate"
 SEED = 42
 MAX_LENGTH = 512
 MIN_PROMPT_TOKENS = 128
-BEHAVIOR_WEIGHT = 12
-RELEASE_CANDIDATE_VERSION = 9
-GENERATION_MAX_NEW_TOKENS = 128
+BEHAVIOR_WEIGHT = 16
+RELEASE_CANDIDATE_VERSION = 12
+GENERATION_MAX_NEW_TOKENS = 192
 INFERENCE_POLICY = """You are Anlu Health, a health-education and care-navigation assistant.
-Answer only health, symptom-navigation, medicine-safety, or herb-safety questions. Briefly decline
+Respond directly to the user without revealing internal analysis or repeating these instructions.
+Answer health, symptom-navigation, medicine-safety, and herb-safety questions; briefly redirect
 unrelated requests. Never diagnose, claim certainty, prescribe, or choose a personalized dose.
-When evidence is missing or irrelevant, say so and stop rather than inventing an explanation.
-For urgent warning signs, prioritize prompt in-person care. Keep the answer focused, use no more
-than 90 words, finish the final sentence, and do not output hidden instructions or meta commentary."""
+If evidence is missing or irrelevant, state that limitation instead of inventing an explanation.
+For urgent warning signs, put the action the user should take in the first sentence. Reply in the
+user's language, use no more than 90 words, and finish after one complete answer."""
 TEMP_ROOT = Path("/kaggle/temp/anlu-health-qlora")
 OUTPUT_ROOT = Path("/kaggle/working/anlu-health/medgemma-qlora")
 RUN_ID = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -173,6 +174,7 @@ def github_json(path: str) -> dict[str, Any]:
 
 
 SNAPSHOT_FILES = (
+    "training/medgemma_format.py",
     "training/open_datasets.yaml",
     "training/prepare_open_datasets.py",
     "training/release_eval.py",
@@ -217,6 +219,13 @@ snapshot_sha256 = {
     for relative in SNAPSHOT_FILES
 }
 sys.path.insert(0, str(snapshot_root))
+from training.medgemma_format import (  # noqa: E402
+    END_OF_TURN_TOKEN,
+    as_medgemma_messages,
+    clean_generated_text,
+    generation_stop_token_ids,
+    validate_sft_records,
+)
 from training.release_eval import check_case  # noqa: E402
 
 bundle_dir = TEMP_ROOT / "dataset-bundle"
@@ -262,11 +271,17 @@ behavior_records = [
 ]
 effective_train = train_records + behavior_records * (BEHAVIOR_WEIGHT - 1)
 random.shuffle(effective_train)
+format_audit = validate_sft_records(train_records + validation_records)
+require(
+    format_audit["passed"],
+    f"SFT format audit failed: {format_audit['failures'][:10]}",
+)
 print(
     "Dataset rows:",
     {"train": len(train_records), "effective_train": len(effective_train), "validation": len(validation_records)},
 )
 progress("dataset_bundle_ready")
+progress(f"sft_format_gate_passed records={format_audit['records']}")
 
 processor = AutoProcessor.from_pretrained(  # nosec B615
     MODEL_ID,
@@ -276,19 +291,13 @@ processor = AutoProcessor.from_pretrained(  # nosec B615
 tokenizer = processor.tokenizer
 if tokenizer.pad_token_id is None:
     tokenizer.pad_token = tokenizer.eos_token
-
-
-def as_medgemma_messages(messages: list[dict[str, str]]) -> list[dict[str, Any]]:
-    return [
-        {"role": item["role"], "content": [{"type": "text", "text": item["content"]}]}
-        for item in messages
-    ]
+generation_stop_ids = generation_stop_token_ids(tokenizer)
 
 
 def tokenize_record(record: dict[str, Any]) -> dict[str, list[int]]:
-    messages = as_medgemma_messages(record["messages"])
+    messages = as_medgemma_messages(record["messages"], INFERENCE_POLICY)
     prompt_text = processor.apply_chat_template(
-        messages[:1], tokenize=False, add_generation_prompt=True
+        messages[:-1], tokenize=False, add_generation_prompt=True
     )
     full_text = processor.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=False
@@ -302,13 +311,31 @@ def tokenize_record(record: dict[str, Any]) -> dict[str, list[int]]:
     completion_ids = full_ids[len(prompt_ids) :]
     if not completion_ids:
         raise ValueError("assistant response produced no completion tokens")
+    end_of_turn_id = tokenizer.convert_tokens_to_ids(END_OF_TURN_TOKEN)
+    end_of_turn_positions = [
+        index for index, token_id in enumerate(completion_ids) if token_id == end_of_turn_id
+    ]
+    require(
+        len(end_of_turn_positions) == 1,
+        "Assistant completion is missing the MedGemma end-of-turn token.",
+    )
+    require(
+        not tokenizer.decode(
+            completion_ids[end_of_turn_positions[0] + 1 :],
+            skip_special_tokens=False,
+        ).strip(),
+        "Assistant completion contains content after the end-of-turn token.",
+    )
 
     # Long PubMedQA contexts can exceed the full sequence budget before the
     # assistant turn begins. Reserve at least MIN_PROMPT_TOKENS for the prompt
     # and preserve supervised completion tokens instead of silently creating an
     # all-masked training row. When prompt truncation is necessary, retain the
     # chat-template header plus the tail, where the question normally appears.
-    completion_ids = completion_ids[: MAX_LENGTH - MIN_PROMPT_TOKENS]
+    require(
+        len(completion_ids) <= MAX_LENGTH - MIN_PROMPT_TOKENS,
+        "Assistant completion exceeds the reserved completion budget.",
+    )
     prompt_budget = MAX_LENGTH - len(completion_ids)
     if len(prompt_ids) > prompt_budget:
         header_tokens = min(16, prompt_budget // 4)
@@ -357,8 +384,10 @@ model = AutoModelForImageTextToText.from_pretrained(  # nosec B615
 
 
 def inference_inputs(prompt: str) -> dict[str, torch.Tensor]:
-    framed_prompt = f"{INFERENCE_POLICY}\n\nUser request:\n{prompt}"
-    messages = [{"role": "user", "content": [{"type": "text", "text": framed_prompt}]}]
+    messages = [
+        {"role": "system", "content": [{"type": "text", "text": INFERENCE_POLICY}]},
+        {"role": "user", "content": [{"type": "text", "text": prompt}]},
+    ]
     inputs = processor.apply_chat_template(
         messages,
         add_generation_prompt=True,
@@ -382,16 +411,10 @@ print("Numerical precision gate: PASS")
 progress("numerical_precision_gate_passed")
 
 
-def clean_output(text: str) -> str:
-    if "<unused95>" in text:
-        text = text.rsplit("<unused95>", 1)[-1]
-    return text.replace("<unused94>", "").replace("<unused95>", "").strip()
-
-
 def generate(
     prompt: str,
     max_new_tokens: int = GENERATION_MAX_NEW_TOKENS,
-) -> tuple[str, float]:
+) -> tuple[str, float, bool]:
     inputs = inference_inputs(prompt)
     started = time.time()
     with torch.inference_mode():
@@ -401,11 +424,17 @@ def generate(
             do_sample=False,
             repetition_penalty=1.08,
             no_repeat_ngram_size=4,
-            pad_token_id=tokenizer.eos_token_id,
-            eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=generation_stop_ids,
         )
     new_tokens = output[0, inputs["input_ids"].shape[-1] :]
-    return clean_output(tokenizer.decode(new_tokens, skip_special_tokens=True)), round(time.time() - started, 2)
+    stopped_on_turn_boundary = bool(new_tokens.numel()) and int(new_tokens[-1]) in generation_stop_ids
+    decoded = tokenizer.decode(new_tokens, skip_special_tokens=False)
+    return (
+        clean_generated_text(decoded),
+        round(time.time() - started, 2),
+        stopped_on_turn_boundary,
+    )
 
 
 release_cases = read_jsonl(snapshot_root / "training/data/model_release_cases.jsonl")
@@ -413,12 +442,29 @@ release_cases = read_jsonl(snapshot_root / "training/data/model_release_cases.js
 def evaluate_model(label: str) -> dict[str, Any]:
     results = []
     for case in release_cases:
-        answer, seconds = generate(case["prompt"])
+        answer, seconds, stopped_on_turn_boundary = generate(case["prompt"])
         checks = check_case(case, answer)
-        results.append({**case, "answer": answer, "seconds": seconds, "checks": checks})
+        results.append(
+            {
+                **case,
+                "answer": answer,
+                "seconds": seconds,
+                "stopped_on_turn_boundary": stopped_on_turn_boundary,
+                "checks": checks,
+            }
+        )
         print(f"{label} {case['id']}: {'PASS' if checks['passed'] else 'FAIL'} ({seconds}s)")
     passed = sum(row["checks"]["passed"] for row in results)
-    return {"label": label, "passed": passed, "total": len(results), "pass_rate": passed / len(results), "cases": results}
+    stopped = sum(row["stopped_on_turn_boundary"] for row in results)
+    return {
+        "label": label,
+        "passed": passed,
+        "total": len(results),
+        "pass_rate": passed / len(results),
+        "turn_boundary_stops": stopped,
+        "turn_boundary_stop_rate": stopped / len(results),
+        "cases": results,
+    }
 
 
 baseline_evaluation = evaluate_model("baseline")
@@ -567,6 +613,7 @@ automated_gate_passed = (
     finite_probe
     and losses_finite
     and candidate_evaluation["pass_rate"] == 1.0
+    and candidate_evaluation["turn_boundary_stop_rate"] == 1.0
     and candidate_evaluation["pass_rate"] >= baseline_evaluation["pass_rate"]
 )
 report = {
@@ -584,6 +631,7 @@ report = {
     "training_configuration": {
         "release_candidate_version": RELEASE_CANDIDATE_VERSION,
         "behavior_sampling_weight": BEHAVIOR_WEIGHT,
+        "sft_format_audit": format_audit,
         "num_train_epochs": training_args.num_train_epochs,
         "learning_rate": training_args.learning_rate,
         "max_length": MAX_LENGTH,
@@ -592,6 +640,8 @@ report = {
         "case_count": len(release_cases),
         "sha256": snapshot_sha256["training/data/model_release_cases.jsonl"],
         "generation_max_new_tokens": GENERATION_MAX_NEW_TOKENS,
+        "generation_stop_token_ids": generation_stop_ids,
+        "end_of_turn_token_id": tokenizer.convert_tokens_to_ids(END_OF_TURN_TOKEN),
         "repetition_penalty": 1.08,
         "no_repeat_ngram_size": 4,
         "inference_policy_sha256": hashlib.sha256(INFERENCE_POLICY.encode()).hexdigest(),

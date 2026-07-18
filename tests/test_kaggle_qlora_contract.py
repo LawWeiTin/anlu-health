@@ -37,10 +37,15 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "gradient_probe_loss.requires_grad" in source
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
-    assert "BEHAVIOR_WEIGHT = 12" in source
-    assert "RELEASE_CANDIDATE_VERSION = 9" in source
+    assert "BEHAVIOR_WEIGHT = 16" in source
+    assert "RELEASE_CANDIDATE_VERSION = 12" in source
     assert "INFERENCE_POLICY" in source
-    assert "framed_prompt" in source
+    assert '"role": "system"' in source
+    assert "generation_stop_ids = generation_stop_token_ids(tokenizer)" in source
+    assert "eos_token_id=generation_stop_ids" in source
+    assert "skip_special_tokens=False" in source
+    assert '"turn_boundary_stop_rate"' in source
+    assert "validate_sft_records" in source
     assert '"inference_policy_sha256"' in source
     assert '"training/release_eval.py"' in source
     assert "repetition_penalty=1.08" in source
@@ -56,7 +61,9 @@ def test_kaggle_qlora_reserves_supervised_completion_tokens() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     assert "MIN_PROMPT_TOKENS = 128" in source
     assert "completion_ids = full_ids[len(prompt_ids) :]" in source
-    assert "completion_ids[: MAX_LENGTH - MIN_PROMPT_TOKENS]" in source
+    assert "len(end_of_turn_positions) == 1" in source
+    assert "completion_ids[end_of_turn_positions[0] + 1 :]" in source
+    assert "len(completion_ids) <= MAX_LENGTH - MIN_PROMPT_TOKENS" in source
     assert "prompt_ids[:header_tokens] + prompt_ids[-tail_tokens:]" in source
     assert "any(label != -100 for label in labels)" in source
     assert "Tokenized training row has no supervised completion tokens." in source

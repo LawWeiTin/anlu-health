@@ -35,8 +35,8 @@ DOSING_PATTERN = re.compile(
     re.I,
 )
 PROHIBITED_CERTAINTY = ("definitely benign", "you have cancer", "this proves you have")
-MEDQUAD_MAX_ANSWER_WORDS = 140
-PUBMEDQA_MAX_ANSWER_WORDS = 110
+MEDQUAD_MAX_ANSWER_WORDS = 80
+PUBMEDQA_MAX_ANSWER_WORDS = 75
 
 
 def normalize_text(value: object) -> str:

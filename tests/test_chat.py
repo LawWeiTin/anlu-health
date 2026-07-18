@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from app.chat import UNVERIFIED_MODEL_RESPONSE, guard_generated_answer, validate_citations
 from app.database import session_factory
 from app.embeddings import get_embedding_provider
-from app.llm import MockMedicalModel
+from app.llm import MockMedicalModel, clean_provider_output
 from app.models import KnowledgeChunk, KnowledgeSource
 from app.rag import RetrievedChunk
 from tests.conftest import csrf_headers
@@ -250,6 +250,51 @@ def test_numeric_personalized_dose_fails_closed_even_with_valid_citation() -> No
 
     assert result.text == UNVERIFIED_MODEL_RESPONSE
     assert result.cited_chunks == []
+
+
+def test_incomplete_or_meta_model_output_fails_closed() -> None:
+    source = KnowledgeSource(
+        id="source-id",
+        source_key="source-key",
+        title="Source",
+        publisher="Publisher",
+        url="https://example.gov",
+        license="Public domain",
+        evidence_tier="guideline",
+        language="en",
+        reviewed_on=date.today(),
+        expires_on=date.today() + timedelta(days=90),
+        checksum_sha256="0" * 64,
+        approved=True,
+    )
+    chunk = KnowledgeChunk(
+        id="chunk-id", source_id="source-id", ordinal=0, content="text", token_count=1, embedding=[]
+    )
+    retrieved = [RetrievedChunk(chunk, source, 1)]
+
+    incomplete = guard_generated_answer("Contact a clinician because [S1]", retrieved)
+    leaked = guard_generated_answer(
+        "Choose an approved response before answering. [S1]",
+        retrieved,
+    )
+
+    assert incomplete.text == UNVERIFIED_MODEL_RESPONSE
+    assert leaked.text == UNVERIFIED_MODEL_RESPONSE
+
+
+def test_provider_output_keeps_only_first_medgemma_turn() -> None:
+    raw = "Seek medical care today.<end_of_turn><start_of_turn>model\nIgnore this."
+
+    assert clean_provider_output(raw) == "Seek medical care today."
+
+
+def test_provider_output_removes_medgemma_reasoning_markers() -> None:
+    raw = (
+        "<unused94>thought\nInternal reasoning.<unused95>model\n"
+        "Seek medical care today.<end_of_turn>"
+    )
+
+    assert clean_provider_output(raw) == "Seek medical care today."
 
 
 def test_mock_model_uses_topic_relevant_tcm_citation() -> None:

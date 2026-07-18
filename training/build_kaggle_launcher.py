@@ -10,6 +10,7 @@ from pathlib import Path
 
 SNAPSHOT_FILES = (
     "training/medgemma_kaggle_qlora.py",
+    "training/medgemma_format.py",
     "training/open_datasets.yaml",
     "training/prepare_open_datasets.py",
     "training/release_eval.py",

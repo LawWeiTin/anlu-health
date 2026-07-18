@@ -1,9 +1,9 @@
-version: 4
+version: 5
 storage_policy: remote_colab_and_private_drive_only
 contains_user_conversations: false
 seed: 42
 validation_fraction: 0.10
-behavior_sampling_weight: 12
+behavior_sampling_weight: 16
 
 datasets:
   - id: medquad
@@ -13,7 +13,7 @@ datasets:
     homepage: https://github.com/abachaa/MedQuAD
     license: CC-BY-4.0
     citation: Ben Abacha A, Demner-Fushman D. BMC Bioinformatics. 2019;20:511.
-    max_examples: 800
+    max_examples: 600
     allowed_directories:
       - 1_CancerGov_QA
       - 2_GARD_QA
@@ -46,7 +46,7 @@ datasets:
     homepage: https://pubmedqa.github.io/
     license: MIT
     citation: Jin Q et al. EMNLP-IJCNLP 2019, pages 2567-2577.
-    max_examples: 200
+    max_examples: 150
     subset: PQA-L
     exclusions:
       - Every PMID in data/test_ground_truth.json remains held out and is never written to training.

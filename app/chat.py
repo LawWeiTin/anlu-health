@@ -44,6 +44,7 @@ _HEALTH_CONTEXT = re.compile(
     re.I,
 )
 _UNSAFE_MODEL_PATTERNS = (
+    re.compile(r"^\s*(?:thought|analysis|reasoning|plan)\b", re.I),
     re.compile(
         r"\b(?:take|use|start)\s+\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|tablets?|capsules?)\b",
         re.I,
@@ -53,7 +54,14 @@ _UNSAFE_MODEL_PATTERNS = (
     re.compile(r"\bchoose a non[- ]controversial\b", re.I),
     re.compile(r"\bthe ai has been instructed\b", re.I),
     re.compile(r"\bi should up[- ]rise\b", re.I),
+    re.compile(r"\bapproved (?:answer|instruction|list|response|topic)\b", re.I),
+    re.compile(r"\bdoes not map to an approved\b", re.I),
+    re.compile(r"\bquick[- ]recap option\b", re.I),
+    re.compile(r"<(?:start|end)_of_turn>|<eos>|<bos>", re.I),
+    re.compile(r"```"),
 )
+_CLEAN_MODEL_END = re.compile(r"""[.!?。！？]["'”’)\]]?\s*$""")
+_MAX_MODEL_ANSWER_WORDS = 450
 
 
 @dataclass(frozen=True)
@@ -91,6 +99,11 @@ def guard_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> Validat
     if chunks and not validated.cited_chunks:
         return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
     if any(pattern.search(validated.text) for pattern in _UNSAFE_MODEL_PATTERNS):
+        return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
+    if (
+        len(validated.text.split()) > _MAX_MODEL_ANSWER_WORDS
+        or not _CLEAN_MODEL_END.search(validated.text)
+    ):
         return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
     return validated
 

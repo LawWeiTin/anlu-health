@@ -30,7 +30,13 @@ REQUIRED_TAG_COUNTS = {
     "scope": 5,
 }
 SPECIAL_EVIDENCE_KEYS = {"project-safety-policy"}
-MAX_ASSISTANT_WORDS = 180
+MAX_ASSISTANT_WORDS = 90
+META_TARGET_PATTERNS = (
+    re.compile(r"\bi should\b", re.I),
+    re.compile(r"\bapproved (?:answer|instruction|list|response|topic)\b", re.I),
+    re.compile(r"\bhidden instructions?\b", re.I),
+    re.compile(r"\bmeta commentary\b", re.I),
+)
 
 
 def _normalize(text: str) -> str:
@@ -92,6 +98,8 @@ def audit(
                 failures.append(f"line {line_number}: possible {label}")
         if any(term in assistant.casefold() for term in PROHIBITED_CERTAINTY):
             failures.append(f"line {line_number}: prohibited diagnostic certainty")
+        if any(pattern.search(assistant) for pattern in META_TARGET_PATTERNS):
+            failures.append(f"line {line_number}: assistant target contains meta-instruction language")
 
         tags = record.get("tags")
         if not isinstance(tags, list) or not tags or any(not isinstance(tag, str) for tag in tags):
@@ -118,6 +126,8 @@ def audit(
                 "cannot calculate",
                 "cannot prescribe",
                 "cannot personalize",
+                "不能",
+                "不要自行",
             )
         ):
             failures.append(f"line {line_number}: no_dosing answer lacks an explicit refusal")

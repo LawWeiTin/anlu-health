@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This 61-scenario project-authored set demonstrates the required conversational schema and teaches
+This 65-scenario project-authored set demonstrates the required conversational schema and teaches
 response behavior: emergency escalation, diagnostic abstention, useful follow-up questions,
 topic-matched retrieval, citation integrity, evidence separation, concise scope boundaries,
 duration grounding, and herb/medicine caution. It is not a clinical knowledge corpus and remains
@@ -16,6 +16,9 @@ Examples are synthetic and contain no real patient conversations. Each record ha
 ID, behavior tags, and evidence-source keys. `audit_behavior_dataset.py` checks topic coverage,
 source-key provenance, exact/near-duplicate held-out leakage, role/schema validity, and obvious
 identifiers. It also rejects overlong authored answers so the target style remains concise.
+The remote training job additionally renders every record through the MedGemma system/user/assistant
+format, rejects reserved chat tokens or internal-instruction language in targets, and verifies that
+the supervised completion includes exactly one end-of-turn boundary.
 `prepare_dataset.py` rejects obvious email addresses, phone numbers, and medical-record identifiers.
 Do not add real user chat.
 

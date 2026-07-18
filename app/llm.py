@@ -11,6 +11,30 @@ class ModelError(RuntimeError):
     pass
 
 
+def clean_provider_output(content: str) -> str:
+    """Remove model chat-control markers and keep only the first assistant turn."""
+
+    earliest = len(content)
+    for marker in ("<end_of_turn>", "<eos>", "<start_of_turn>"):
+        index = content.find(marker)
+        if index >= 0:
+            earliest = min(earliest, index)
+    cleaned = content[:earliest]
+    if "<unused95>" in cleaned:
+        cleaned = cleaned.rsplit("<unused95>", 1)[-1]
+    for marker in (
+        "<bos>",
+        "<eos>",
+        "<pad>",
+        "<end_of_turn>",
+        "<start_of_turn>",
+        "<unused94>",
+        "<unused95>",
+    ):
+        cleaned = cleaned.replace(marker, "")
+    return re.sub(r"^\s*model\s*\n", "", cleaned, flags=re.I).strip()
+
+
 class ModelProvider(ABC):
     @abstractmethod
     def generate(self, system_prompt: str, user_prompt: str) -> str:
@@ -151,7 +175,10 @@ class OpenAICompatibleModel(ModelProvider):
             raise ModelError("The medical information model is temporarily unavailable") from exc
         if not isinstance(content, str) or not content.strip():
             raise ModelError("The medical information model returned an empty response")
-        return content.strip()
+        cleaned = clean_provider_output(content)
+        if not cleaned:
+            raise ModelError("The medical information model returned an empty first response")
+        return cleaned
 
 
 @lru_cache
