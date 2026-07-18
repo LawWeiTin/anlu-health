@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "launch_run_id": "20260718T103812Z",
-  "status": "training",
+  "status": "failed_infrastructure",
   "platform": "kaggle",
   "kaggle_version_number": 12,
   "source_release_candidate_version": 12,
@@ -20,6 +20,9 @@
     "launcher_sha256": "045dbadb15396699fb46e0f9d77ee4486c5d4f61256e5e698a37f28e30d69980",
     "verified_before_launch": true
   },
+  "runtime_seconds": 211.857,
+  "failure_stage": "dependency_installation",
+  "failure_analysis": "model_registry/runs/medgemma_kaggle_v12_failure_analysis.json",
   "runtime_security": {
     "internet_enabled": true,
     "hugging_face_secret_label": "HF_TOKEN",
@@ -55,11 +58,11 @@
     "tracked_secret_scan": "passed",
     "git_diff_check": "passed"
   },
-  "evaluation_status": "pending",
+  "evaluation_status": "not_started",
   "automated_gate_passed": false,
   "human_review_required": true,
   "promotion_allowed": false,
-  "local_experimental_activation_allowed_after_gate": true,
+  "local_experimental_activation_allowed_after_gate": false,
   "required_approvals_for_production": [
     "physician",
     "pharmacist",
@@ -67,6 +70,6 @@
     "privacy_security",
     "retrieval_safety"
   ],
-  "disposition": "Private release candidate in training. Do not deploy publicly or promote to production. If every automated gate passes, it may be connected to the localhost-only experimental web application.",
-  "notes": "Version 12 aligns training and inference framing, stops generation on MedGemma's end-of-turn token, rejects incomplete or meta output, expands bilingual behavior coverage, and hardens RAG/topic and response validation."
+  "disposition": "Private infrastructure-failed candidate retained for audit. Do not activate, deploy, or promote.",
+  "notes": "Version 12 stopped before training because Kaggle temporarily could not resolve the Python package index. No model-quality conclusion is possible. The follow-up keeps the Version 12 behavioral changes and adds only bounded dependency-install retries."
 }

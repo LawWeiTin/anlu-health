@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "script_version_id": "336222481",
+  "status": "failed_infrastructure",
+  "runtime_seconds": 211.857,
+  "failure_stage": "dependency_installation",
+  "exact_cause": "Kaggle temporarily failed DNS resolution for the Python package index. Pip exhausted its retries and could not resolve transformers>=4.53,<5, so the notebook stopped before model access, data preparation, training, or evaluation.",
+  "evidence": [
+    "Temporary failure in name resolution while requesting /simple/transformers/.",
+    "No matching distribution found because the package index returned no versions.",
+    "CalledProcessError from the runtime dependency installation command."
+  ],
+  "security_findings": {
+    "hugging_face_secret_exposed": false,
+    "secret_related_failure": false,
+    "private_notebook": true,
+    "heavy_artifacts_downloaded_to_laptop": false
+  },
+  "candidate_findings": {
+    "training_started": false,
+    "adapter_created": false,
+    "evaluation_started": false,
+    "model_quality_conclusion_possible": false
+  },
+  "smallest_safe_fix": "Retry the pinned dependency installation at the notebook level with bounded exponential backoff in addition to pip's network retries, while keeping the same model, data, safety gates, and encrypted-secret design.",
+  "disposition": "Infrastructure failure only. Do not activate the candidate. Relaunch privately after the bounded network-retry fix."
+}

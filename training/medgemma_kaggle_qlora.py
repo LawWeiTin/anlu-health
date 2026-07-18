@@ -29,8 +29,9 @@ SEED = 42
 MAX_LENGTH = 512
 MIN_PROMPT_TOKENS = 128
 BEHAVIOR_WEIGHT = 16
-RELEASE_CANDIDATE_VERSION = 12
+RELEASE_CANDIDATE_VERSION = 13
 GENERATION_MAX_NEW_TOKENS = 192
+RUNTIME_INSTALL_ATTEMPTS = 3
 INFERENCE_POLICY = """You are Anlu Health, a health-education and care-navigation assistant.
 Respond directly to the user without revealing internal analysis or repeating these instructions.
 Answer health, symptom-navigation, medicine-safety, and herb-safety questions; briefly redirect
@@ -69,9 +70,35 @@ def install_runtime() -> None:
         "defusedxml>=0.7,<1",
         "PyYAML>=6,<7",
     ]
-    subprocess.run(  # noqa: S603  # nosec B603
-        [sys.executable, "-m", "pip", "install", "-q", *packages], check=True
-    )
+    for attempt in range(1, RUNTIME_INSTALL_ATTEMPTS + 1):
+        try:
+            subprocess.run(  # noqa: S603  # nosec B603
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "-q",
+                    "--retries",
+                    "8",
+                    "--timeout",
+                    "30",
+                    *packages,
+                ],
+                check=True,
+            )
+            return
+        except subprocess.CalledProcessError:
+            if attempt == RUNTIME_INSTALL_ATTEMPTS:
+                raise
+            delay_seconds = 30 * attempt
+            print(
+                "Dependency installation was interrupted by the package index; "
+                f"retrying in {delay_seconds} seconds "
+                f"({attempt}/{RUNTIME_INSTALL_ATTEMPTS}).",
+                flush=True,
+            )
+            time.sleep(delay_seconds)
 
 
 def require(condition: bool, message: str) -> None:
