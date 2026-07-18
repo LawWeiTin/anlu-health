@@ -9,8 +9,8 @@ candidate_base_model:
   revision: 91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b
   license: HAI-DEF Terms of Use
 latest_candidate_run:
-  status: training
-  run_id: pending
+  status: failed_data_gate
+  run_id: 20260718T110857Z
   platform: kaggle
   version_number: 13
   source_release_candidate_version: 13
@@ -25,10 +25,10 @@ latest_candidate_run:
   turn_boundary_stop_rate: pending
   required_turn_boundary_stop_rate: 1.0
   automated_gate_passed: false
-  evaluation_status: pending
+  evaluation_status: not_started
   promotion_allowed: false
-  local_experimental_activation_allowed_after_gate: true
-  disposition: private candidate training; connect to localhost only after every automated gate passes
+  local_experimental_activation_allowed_after_gate: false
+  disposition: private candidate stopped by the pre-training data-integrity gate; localhost remains unchanged
 adapter:
   uri: set-after-reviewed-colab-run
   sha256: set-after-reviewed-colab-run

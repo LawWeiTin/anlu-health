@@ -37,6 +37,7 @@ DOSING_PATTERN = re.compile(
 PROHIBITED_CERTAINTY = ("definitely benign", "you have cancer", "this proves you have")
 MEDQUAD_MAX_ANSWER_WORDS = 80
 PUBMEDQA_MAX_ANSWER_WORDS = 75
+SENTENCE_TERMINAL_PATTERN = re.compile(r"""[.!?。！？]["')\]]?$""")
 
 
 def normalize_text(value: object) -> str:
@@ -46,21 +47,26 @@ def normalize_text(value: object) -> str:
 
 
 def truncate_to_complete_sentences(text: str, max_words: int) -> str:
-    """Keep source text verbatim while dropping complete trailing sentences over the budget."""
+    """Keep source text within budget and normalize a missing terminal punctuation mark."""
 
     words = text.split()
     if len(words) <= max_words:
-        return text
-    sentences = re.split(r"(?<=[.!?])\s+", text)
-    kept: list[str] = []
-    word_count = 0
-    for sentence in sentences:
-        sentence_words = sentence.split()
-        if not sentence_words or word_count + len(sentence_words) > max_words:
-            break
-        kept.append(sentence)
-        word_count += len(sentence_words)
-    return " ".join(kept).strip()
+        result = text.strip()
+    else:
+        sentences = re.split(r"(?<=[.!?。！？])\s+", text)
+        kept: list[str] = []
+        word_count = 0
+        for sentence in sentences:
+            sentence_words = sentence.split()
+            if not sentence_words or word_count + len(sentence_words) > max_words:
+                break
+            kept.append(sentence)
+            word_count += len(sentence_words)
+        result = " ".join(kept).strip()
+
+    if result and not SENTENCE_TERMINAL_PATTERN.search(result):
+        result += "."
+    return result
 
 
 def _record_is_safe(record: dict[str, Any]) -> bool:

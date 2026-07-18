@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "script_version_id": "336227798",
+  "status": "failed_data_gate",
+  "runtime_seconds": 80.91,
+  "failure_stage": "sft_format_audit",
+  "exact_cause": "The strict pre-training SFT format audit rejected generated PubMedQA record 12607120 because the assistant target did not end with sentence punctuation. The source LONG_ANSWER was below the word budget, so the existing truncation helper returned it unchanged without normalizing the missing terminal mark.",
+  "evidence": [
+    "runtime_initialized completed.",
+    "gated_model_access_granted completed.",
+    "SFT format audit failed at generated record index 577.",
+    "The only reported issue was: assistant target does not end with sentence punctuation."
+  ],
+  "security_findings": {
+    "hugging_face_secret_exposed": false,
+    "secret_related_failure": false,
+    "gated_model_access_granted": true,
+    "private_notebook": true,
+    "heavy_artifacts_downloaded_to_laptop": false
+  },
+  "candidate_findings": {
+    "training_started": false,
+    "adapter_created": false,
+    "evaluation_started": false,
+    "model_quality_conclusion_possible": false,
+    "strict_data_gate_worked_as_designed": true
+  },
+  "smallest_safe_fix": "Normalize only a missing terminal punctuation mark after source-preserving sentence truncation, accepting existing English or CJK sentence terminators unchanged. Add regression coverage for short unpunctuated answers and existing punctuation, without inventing or altering biomedical claims.",
+  "disposition": "Data-integrity failure only. Do not activate the candidate. Relaunch privately after the targeted normalization fix passes the complete local gate suite."
+}

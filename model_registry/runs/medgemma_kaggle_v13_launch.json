@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "launch_run_id": "20260718T110900Z",
-  "status": "training",
+  "status": "failed_data_gate",
   "platform": "kaggle",
   "kaggle_version_number": 13,
   "source_release_candidate_version": 13,
@@ -20,6 +20,9 @@
     "launcher_sha256": "524cc58ab00bfe7f58f23ebc5e502cb11f0b07e7f49dd8c846029ca1bdd2d975",
     "verified_before_launch": true
   },
+  "runtime_seconds": 80.91,
+  "failure_stage": "sft_format_audit",
+  "failure_analysis": "model_registry/runs/medgemma_kaggle_v13_failure_analysis.json",
   "runtime_security": {
     "internet_enabled": true,
     "hugging_face_secret_label": "HF_TOKEN",
@@ -56,11 +59,11 @@
     "tracked_secret_scan": "passed",
     "launcher_fingerprint_and_secret_check": "passed"
   },
-  "evaluation_status": "pending",
+  "evaluation_status": "not_started",
   "automated_gate_passed": false,
   "human_review_required": true,
   "promotion_allowed": false,
-  "local_experimental_activation_allowed_after_gate": true,
+  "local_experimental_activation_allowed_after_gate": false,
   "required_approvals_for_production": [
     "physician",
     "pharmacist",
@@ -68,6 +71,6 @@
     "privacy_security",
     "retrieval_safety"
   ],
-  "disposition": "Private release candidate in training. Do not change the localhost app until every automated release requirement passes.",
-  "notes": "Version 13 preserves the Version 12 response-template, turn-boundary, bilingual behavior, RAG, and fail-closed output changes. Its only follow-up change is bounded retry handling for transient package-index failures."
+  "disposition": "Private data-gate-failed candidate retained for audit. Do not activate, deploy, or promote.",
+  "notes": "Version 13 reached the gated model and completed data preparation, then the strict SFT format audit rejected PubMedQA record 12607120 because its source-provided answer lacked terminal punctuation. Training and evaluation did not start."
 }

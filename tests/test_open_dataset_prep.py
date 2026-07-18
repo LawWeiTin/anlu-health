@@ -59,7 +59,7 @@ def test_pubmedqa_reserves_official_test_ids(tmp_path: Path) -> None:
         "train-pmid": {
             "QUESTION": "Does the intervention improve the measured outcome?",
             "CONTEXTS": ["A controlled study reported an improvement in the measured outcome."],
-            "LONG_ANSWER": "The abstract supports an improvement, with study limitations.",
+            "LONG_ANSWER": "The abstract supports an improvement, with study limitations",
             "final_decision": "yes",
         },
         "heldout-pmid": {
@@ -77,6 +77,7 @@ def test_pubmedqa_reserves_official_test_ids(tmp_path: Path) -> None:
     records, counters = load_pubmedqa(tmp_path, _spec("pubmedqa"))
 
     assert [item["metadata"]["pmid"] for item in records] == ["train-pmid"]
+    assert records[0]["messages"][-1]["content"].endswith(".")
     assert counters["official_test_examples_excluded"] == 1
 
 
@@ -110,3 +111,19 @@ def test_long_training_targets_stop_at_a_complete_source_sentence() -> None:
         "The second sentence remains within the limit."
     )
     assert truncated.endswith(".")
+
+
+def test_short_training_target_gets_missing_terminal_punctuation() -> None:
+    text = "The abstract supports an association while important limitations remain"
+
+    normalized = truncate_to_complete_sentences(text, max_words=75)
+
+    assert normalized == f"{text}."
+
+
+def test_existing_terminal_punctuation_is_preserved() -> None:
+    text = "The evidence remains uncertain!"
+
+    normalized = truncate_to_complete_sentences(text, max_words=75)
+
+    assert normalized == text
