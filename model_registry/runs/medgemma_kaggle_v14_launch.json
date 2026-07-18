@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "launch_run_id": "20260718T120859Z",
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 14,
+  "source_release_candidate_version": 14,
+  "script_version_id": null,
+  "script_version_id_status": "pending_kaggle_version_api_resolution",
+  "version_name": "V14 terminal-punctuation data fix",
+  "private": true,
+  "accelerator": "GPU T4 x2",
+  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "repository_commit": "fd1120c21e464d39a47bded58f3ef6bb34359a5a",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "2f923e59bf4b692490dbe074f1fff2673c25fd012ee877bb25feeee491618495",
+    "launcher_sha256": "bacc1ca927f8f4178a3d8a77643d663564e7324811ae096ba056c14977a19643",
+    "notebook_sha256": "c916a2c2a3d2ac44740b5a180920bb38c6881088aa98f9f6efcdfddb5f18b472",
+    "verified_before_launch": true
+  },
+  "runtime_security": {
+    "internet_enabled": true,
+    "hugging_face_secret_label": "HF_TOKEN",
+    "hugging_face_secret_label_count": 1,
+    "hugging_face_token_scope": "fine-grained read-only",
+    "hugging_face_secret_attachment_verified": true,
+    "secret_storage": "Kaggle encrypted secret",
+    "secret_embedded_in_notebook": false,
+    "private_notebook": true,
+    "credential_rotation": "completed; superseded credentials revoked without recording their values"
+  },
+  "training_configuration": {
+    "quantization": "NF4 double-quantization; float32 compute",
+    "behavior_sampling_weight": 16,
+    "num_train_epochs": 1,
+    "learning_rate": 0.0001,
+    "max_length": 512,
+    "generation_max_new_tokens": 192,
+    "runtime_install_attempts": 3,
+    "required_turn_boundary_stop_rate": 1.0
+  },
+  "release_requirements": {
+    "losses_finite": true,
+    "candidate_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0
+  },
+  "local_gates": {
+    "verified_at": "2026-07-18T11:23:15Z",
+    "pytest": "68 passed with 84.32% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "rag": "10/10 passed",
+    "behavior_dataset_audit": "65/65 records passed; 52 held-out prompts had no leakage",
+    "tracked_secret_scan": "passed",
+    "launcher_fingerprint_and_secret_check": "passed"
+  },
+  "evaluation_status": "not_started",
+  "automated_gate_passed": false,
+  "human_review_required": true,
+  "promotion_allowed": false,
+  "local_experimental_activation_allowed_after_gate": false,
+  "required_approvals_for_production": [
+    "physician",
+    "pharmacist",
+    "registered_tcm_practitioner",
+    "privacy_security",
+    "retrieval_safety"
+  ],
+  "disposition": "Private release-candidate training is running. Do not activate, deploy, or promote.",
+  "notes": "Version 14 launched privately with Save & Run All. Kaggle reported Version 14 running on GPU T4 x2 and the notebook verified the pinned private source snapshot before continuing. The localhost application remains unchanged. Kaggle's current public CLI exposes the version number and running status but not the private script version ID while the run is active; the ID will be recorded once the version API exposes it."
+}

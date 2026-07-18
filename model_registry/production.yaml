@@ -9,14 +9,15 @@ candidate_base_model:
   revision: 91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b
   license: HAI-DEF Terms of Use
 latest_candidate_run:
-  status: failed_data_gate
-  run_id: 20260718T110857Z
+  status: running
+  run_id: 20260718T120859Z
   platform: kaggle
-  version_number: 13
-  source_release_candidate_version: 13
-  script_version_id: "336227798"
-  repository_commit: be3dac8c3e94fc42031889007631ab0d7060192e
-  report: model_registry/runs/medgemma_kaggle_v13_launch.json
+  kernel_id: 127448562
+  version_number: 14
+  source_release_candidate_version: 14
+  script_version_id: pending
+  repository_commit: fd1120c21e464d39a47bded58f3ef6bb34359a5a
+  report: model_registry/runs/medgemma_kaggle_v14_launch.json
   losses_finite: pending
   baseline_pass_rate: pending
   candidate_pass_rate: pending
@@ -28,7 +29,7 @@ latest_candidate_run:
   evaluation_status: not_started
   promotion_allowed: false
   local_experimental_activation_allowed_after_gate: false
-  disposition: private candidate stopped by the pre-training data-integrity gate; localhost remains unchanged
+  disposition: private candidate training is running; localhost remains unchanged
 adapter:
   uri: set-after-reviewed-colab-run
   sha256: set-after-reviewed-colab-run
