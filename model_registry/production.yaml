@@ -9,27 +9,26 @@ candidate_base_model:
   revision: 91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b
   license: HAI-DEF Terms of Use
 latest_candidate_run:
-  status: failed_infrastructure
+  status: training
   run_id: pending
   platform: kaggle
-  version_number: 12
-  source_release_candidate_version: 12
-  script_version_id: "336222481"
-  repository_commit: 65a4e9b3d6f5e039a3c8d2aac28a20a365e43ae0
-  report: model_registry/runs/medgemma_kaggle_v12_launch.json
-  failure_analysis: model_registry/runs/medgemma_kaggle_v12_failure_analysis.json
-  losses_finite: not_started
-  baseline_pass_rate: not_started
-  candidate_pass_rate: not_started
+  version_number: 13
+  source_release_candidate_version: 13
+  script_version_id: "336227798"
+  repository_commit: be3dac8c3e94fc42031889007631ab0d7060192e
+  report: model_registry/runs/medgemma_kaggle_v13_launch.json
+  losses_finite: pending
+  baseline_pass_rate: pending
+  candidate_pass_rate: pending
   required_candidate_pass_rate: 1.0
-  candidate_at_least_baseline: not_started
-  turn_boundary_stop_rate: not_started
+  candidate_at_least_baseline: pending
+  turn_boundary_stop_rate: pending
   required_turn_boundary_stop_rate: 1.0
   automated_gate_passed: false
-  evaluation_status: not_started
+  evaluation_status: pending
   promotion_allowed: false
-  local_experimental_activation_allowed_after_gate: false
-  disposition: private infrastructure-failed candidate retained for audit; do not activate
+  local_experimental_activation_allowed_after_gate: true
+  disposition: private candidate training; connect to localhost only after every automated gate passes
 adapter:
   uri: set-after-reviewed-colab-run
   sha256: set-after-reviewed-colab-run
