@@ -1,17 +1,20 @@
 {
   "schema_version": 1,
+  "run_id": "20260718T120911Z",
   "launch_run_id": "20260718T120859Z",
-  "status": "running",
+  "status": "rejected_automated_gate",
   "platform": "kaggle",
   "kaggle_kernel_id": 127448562,
   "kaggle_version_number": 14,
   "source_release_candidate_version": 14,
-  "script_version_id": null,
-  "script_version_id_status": "pending_kaggle_version_api_resolution",
+  "script_version_id": "336238082",
+  "script_version_id_status": "resolved_from_authenticated_private_version_page",
   "version_name": "V14 terminal-punctuation data fix",
   "private": true,
   "accelerator": "GPU T4 x2",
-  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "observed_gpu": "Tesla T4",
+  "runtime_seconds": 5012.3,
+  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=336238082",
   "repository_commit": "fd1120c21e464d39a47bded58f3ef6bb34359a5a",
   "base_model": {
     "id": "google/medgemma-1.5-4b-it",
@@ -21,7 +24,9 @@
     "manifest_sha256": "2f923e59bf4b692490dbe074f1fff2673c25fd012ee877bb25feeee491618495",
     "launcher_sha256": "bacc1ca927f8f4178a3d8a77643d663564e7324811ae096ba056c14977a19643",
     "notebook_sha256": "c916a2c2a3d2ac44740b5a180920bb38c6881088aa98f9f6efcdfddb5f18b472",
-    "verified_before_launch": true
+    "training_report_sha256": "0e803d8b9a8194b0f2801d0391ce3288b7a788375b45fd17bee50ca732d6b176",
+    "verified_before_launch": true,
+    "verified_at_startup": true
   },
   "runtime_security": {
     "internet_enabled": true,
@@ -34,6 +39,18 @@
     "private_notebook": true,
     "credential_rotation": "completed; superseded credentials revoked without recording their values"
   },
+  "startup_checks": {
+    "runtime_initialized": true,
+    "gated_model_access_granted": true,
+    "pinned_repository_commit_verified": true,
+    "dataset_bundle_ready": true,
+    "sft_format_audit_passed": true,
+    "dataset_rows": 805,
+    "train_rows": 728,
+    "effective_train_rows": 1703,
+    "validation_rows": 77,
+    "numerical_probe_finite": true
+  },
   "training_configuration": {
     "quantization": "NF4 double-quantization; float32 compute",
     "behavior_sampling_weight": 16,
@@ -44,24 +61,57 @@
     "runtime_install_attempts": 3,
     "required_turn_boundary_stop_rate": 1.0
   },
-  "release_requirements": {
+  "training_metrics": {
+    "train_loss": 0.8028660078003933,
+    "eval_loss": 1.1536552906036377,
     "losses_finite": true,
-    "candidate_pass_rate": 1.0,
+    "train_runtime_seconds": 4097.0698,
+    "validation_runtime_seconds": 80.7073
+  },
+  "evaluation": {
+    "suite_cases": 30,
+    "suite_sha256": "7ac5ad83b09f75467a5e027401b0fb7f08eb88f0179738d5fa57f966ccbede32",
+    "baseline_passed": 8,
+    "baseline_total": 30,
+    "baseline_pass_rate": 0.26666666666666666,
+    "baseline_turn_boundary_stop_rate": 0.8,
+    "candidate_passed": 20,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.6666666666666666,
     "candidate_at_least_baseline": true,
-    "turn_boundary_stop_rate": 1.0
+    "required_candidate_pass_rate": 1.0,
+    "candidate_turn_boundary_stop_rate": 1.0,
+    "required_turn_boundary_stop_rate": 1.0,
+    "failure_analysis": "model_registry/runs/medgemma_kaggle_v14_failure_analysis.json"
+  },
+  "adapter_artifact": {
+    "remote_path": "anlu-health/medgemma-qlora/20260718T120911Z/adapter",
+    "storage_policy": "Private Kaggle output; heavy files were not downloaded to the laptop.",
+    "sha256": {
+      "README.md": "42c4bbc819284bf9c530a356018b9393f86bba34348039913597db5e2c4653d3",
+      "adapter_config.json": "fbe357c67a8c1b999429f9fe2da3e02285d5fe00b946342f9d58b8f45778b196",
+      "adapter_model.safetensors": "d89429f2565f3ab8dab6ea94f7c329e31b0aa97d79484f5005bd36c8f89fd2b6",
+      "added_tokens.json": "50b2f405ba56a26d4913fd772089992252d7f942123cc0a034d96424221ba946",
+      "chat_template.jinja": "7de1c58e208eda46e9c7f86397df37ec49883aeece39fb961e0a6b24088dd3c4",
+      "preprocessor_config.json": "5b2f684b616a25f3cd4a700e5e471a07fcaabc5ec07871d2231b7e376e8648ce",
+      "processor_config.json": "3ffd5f11778dc73e2b69b3c00535e4121e1badf7018136263cd17b5b34fbaa53",
+      "special_tokens_map.json": "2f7b0adf4fb469770bb1490e3e35df87b1dc578246c5e7e6fc76ecf33213a397",
+      "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+      "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+      "tokenizer_config.json": "120c4a25aed6436edaac2e3966c9aa026bc13b5f7d3d9a81fc7afe2569b9e28b"
+    }
   },
   "local_gates": {
-    "verified_at": "2026-07-18T11:23:15Z",
+    "verified_at": "2026-07-18T13:47:04Z",
     "pytest": "68 passed with 84.32% coverage",
     "ruff": "passed",
     "bandit": "passed",
     "deterministic_safety": "22/22 passed",
     "rag": "10/10 passed",
     "behavior_dataset_audit": "65/65 records passed; 52 held-out prompts had no leakage",
-    "tracked_secret_scan": "passed",
-    "launcher_fingerprint_and_secret_check": "passed"
+    "tracked_secret_scan": "passed"
   },
-  "evaluation_status": "not_started",
+  "evaluation_status": "failed",
   "automated_gate_passed": false,
   "human_review_required": true,
   "promotion_allowed": false,
@@ -73,6 +123,6 @@
     "privacy_security",
     "retrieval_safety"
   ],
-  "disposition": "Private release-candidate training is running. Do not activate, deploy, or promote.",
-  "notes": "Version 14 launched privately with Save & Run All. Kaggle reported Version 14 running on GPU T4 x2 and the notebook verified the pinned private source snapshot before continuing. The localhost application remains unchanged. Kaggle's current public CLI exposes the version number and running status but not the private script version ID while the run is active; the ID will be recorded once the version API exposes it."
+  "disposition": "Retain privately for audit only. Do not activate, deploy, publish, or promote.",
+  "notes": "Version 14 completed successfully at the infrastructure and numerical levels and improved the held-out pass rate from 26.7% to 66.7%, with a 100% turn-boundary stop rate. It still failed 10 of 30 held-out behavior cases, so the automated release gate remains closed and the localhost application remains unchanged."
 }

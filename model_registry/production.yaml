@@ -9,27 +9,27 @@ candidate_base_model:
   revision: 91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b
   license: HAI-DEF Terms of Use
 latest_candidate_run:
-  status: running
-  run_id: 20260718T120859Z
+  status: rejected_automated_gate
+  run_id: 20260718T120911Z
   platform: kaggle
   kernel_id: 127448562
   version_number: 14
   source_release_candidate_version: 14
-  script_version_id: pending
+  script_version_id: "336238082"
   repository_commit: fd1120c21e464d39a47bded58f3ef6bb34359a5a
   report: model_registry/runs/medgemma_kaggle_v14_launch.json
-  losses_finite: pending
-  baseline_pass_rate: pending
-  candidate_pass_rate: pending
+  losses_finite: true
+  baseline_pass_rate: 0.26666666666666666
+  candidate_pass_rate: 0.6666666666666666
   required_candidate_pass_rate: 1.0
-  candidate_at_least_baseline: pending
-  turn_boundary_stop_rate: pending
+  candidate_at_least_baseline: true
+  turn_boundary_stop_rate: 1.0
   required_turn_boundary_stop_rate: 1.0
   automated_gate_passed: false
-  evaluation_status: not_started
+  evaluation_status: failed
   promotion_allowed: false
   local_experimental_activation_allowed_after_gate: false
-  disposition: private candidate training is running; localhost remains unchanged
+  disposition: private candidate retained for audit only; localhost remains unchanged
 adapter:
   uri: set-after-reviewed-colab-run
   sha256: set-after-reviewed-colab-run
