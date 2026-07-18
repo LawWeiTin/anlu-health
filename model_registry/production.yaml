@@ -9,26 +9,26 @@ candidate_base_model:
   revision: 91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b
   license: HAI-DEF Terms of Use
 latest_candidate_run:
-  status: rejected_automated_gate
-  run_id: 20260717T145818Z
+  status: training
+  run_id: pending
   platform: kaggle
-  version_number: 11
-  source_release_candidate_version: 9
-  script_version_id: "335974108"
-  repository_commit: ae581f6d44dd56ab47db64e03a9b0ea83eca7ad1
-  report: model_registry/runs/medgemma_kaggle_v11_launch.json
-  failure_analysis: model_registry/runs/medgemma_kaggle_v11_failure_analysis.json
-  losses_finite: true
-  train_loss: 1.0366391085162021
-  eval_loss: 1.201258659362793
-  baseline_pass_rate: 0.0
-  candidate_pass_rate: 0.13333333333333333
+  version_number: 12
+  source_release_candidate_version: 12
+  script_version_id: "336222481"
+  repository_commit: 65a4e9b3d6f5e039a3c8d2aac28a20a365e43ae0
+  report: model_registry/runs/medgemma_kaggle_v12_launch.json
+  losses_finite: pending
+  baseline_pass_rate: pending
+  candidate_pass_rate: pending
   required_candidate_pass_rate: 1.0
-  candidate_at_least_baseline: true
+  candidate_at_least_baseline: pending
+  turn_boundary_stop_rate: pending
+  required_turn_boundary_stop_rate: 1.0
   automated_gate_passed: false
-  evaluation_status: failed
+  evaluation_status: pending
   promotion_allowed: false
-  disposition: private rejected candidate retained for audit; do not deploy
+  local_experimental_activation_allowed_after_gate: true
+  disposition: private candidate training; activate only in localhost experiment after all automated gates pass
 adapter:
   uri: set-after-reviewed-colab-run
   sha256: set-after-reviewed-colab-run

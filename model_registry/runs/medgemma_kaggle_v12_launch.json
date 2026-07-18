@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "launch_run_id": "20260718T103812Z",
+  "status": "training",
+  "platform": "kaggle",
+  "kaggle_version_number": 12,
+  "source_release_candidate_version": 12,
+  "script_version_id": "336222481",
+  "version_name": "V12 turn-boundary and template alignment",
+  "private": true,
+  "accelerator": "GPU T4 x2",
+  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=336222481",
+  "repository_commit": "65a4e9b3d6f5e039a3c8d2aac28a20a365e43ae0",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "1e0a14c7fbe79d1a44e41f69aa82e1d201e259b52dd5f2c830261eec3a89c48b",
+    "launcher_sha256": "045dbadb15396699fb46e0f9d77ee4486c5d4f61256e5e698a37f28e30d69980",
+    "verified_before_launch": true
+  },
+  "runtime_security": {
+    "internet_enabled": true,
+    "hugging_face_secret_label": "HF_TOKEN",
+    "hugging_face_token_scope": "fine-grained read-only",
+    "secret_storage": "Kaggle encrypted secret",
+    "secret_embedded_in_notebook": false,
+    "private_notebook": true
+  },
+  "training_configuration": {
+    "quantization": "NF4 double-quantization; float32 compute",
+    "behavior_sampling_weight": 16,
+    "num_train_epochs": 1,
+    "learning_rate": 0.0001,
+    "max_length": 512,
+    "generation_max_new_tokens": 192,
+    "required_turn_boundary_stop_rate": 1.0
+  },
+  "release_requirements": {
+    "losses_finite": true,
+    "candidate_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0
+  },
+  "local_gates": {
+    "verified_at": "2026-07-18T10:40:12Z",
+    "pytest": "66 passed",
+    "targeted_regression_tests": "31 passed",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "rag": "10/10 passed",
+    "behavior_dataset_audit": "65/65 records passed; 52 held-out prompts had no leakage",
+    "tracked_secret_scan": "passed",
+    "git_diff_check": "passed"
+  },
+  "evaluation_status": "pending",
+  "automated_gate_passed": false,
+  "human_review_required": true,
+  "promotion_allowed": false,
+  "local_experimental_activation_allowed_after_gate": true,
+  "required_approvals_for_production": [
+    "physician",
+    "pharmacist",
+    "registered_tcm_practitioner",
+    "privacy_security",
+    "retrieval_safety"
+  ],
+  "disposition": "Private release candidate in training. Do not deploy publicly or promote to production. If every automated gate passes, it may be connected to the localhost-only experimental web application.",
+  "notes": "Version 12 aligns training and inference framing, stops generation on MedGemma's end-of-turn token, rejects incomplete or meta output, expands bilingual behavior coverage, and hardens RAG/topic and response validation."
+}
