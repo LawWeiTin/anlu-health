@@ -204,6 +204,8 @@ function renderAnswerText(container, text) {
 
 function addAssistantMessage(payload) {
   $("#typing-message")?.remove();
+  $("#urgent-note").textContent = "";
+  $("#urgent-note").classList.add("hidden");
   const wrapper = document.createElement("div");
   wrapper.className = "message assistant-message";
   const mark = document.createElement("div");
