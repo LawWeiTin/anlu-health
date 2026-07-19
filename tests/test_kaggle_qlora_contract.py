@@ -38,12 +38,13 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
     assert "BEHAVIOR_WEIGHT = 24" in source
-    assert "RELEASE_CANDIDATE_VERSION = 15" in source
+    assert "RELEASE_CANDIDATE_VERSION = 16" in source
     assert "RUNTIME_INSTALL_ATTEMPTS = 3" in source
     assert '"--retries"' in source
     assert "except subprocess.CalledProcessError" in source
     assert "INFERENCE_POLICY" in source
     assert "Preserve concrete user facts" in source
+    assert "explicitly acknowledge that duration" in source
     assert "Traditional pattern labels do not confirm a biomedical diagnosis." in source
     assert '"role": "system"' in source
     assert "generation_stop_ids = generation_stop_token_ids(tokenizer)" in source
@@ -56,6 +57,9 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "repetition_penalty=1.08" in source
     assert "no_repeat_ngram_size=4" in source
     assert "callbacks=[ProgressCallback()]" in source
+    assert "candidate_failure_detail" not in source
+    assert 'f"{label}_failure_detail="' in source
+    assert "save_embedding_layers=False" in source
     assert '"release_suite"' in source
     assert 'candidate_evaluation["pass_rate"] == 1.0' in source
     assert '"human_review_required": True' in source

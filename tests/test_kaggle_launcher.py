@@ -15,6 +15,8 @@ def test_release_bundle_is_private_and_self_contained(tmp_path: Path) -> None:
 
     metadata = json.loads((tmp_path / "kernel-metadata.json").read_text(encoding="utf-8"))
     notebook = json.loads((tmp_path / CODE_FILE).read_text(encoding="utf-8"))
+    assert len(notebook["cells"]) == 1
+    assert notebook["cells"][0]["cell_type"] == "code"
     launcher = "".join(notebook["cells"][0]["source"])
     assert metadata["is_private"] is True
     assert metadata["enable_gpu"] is True

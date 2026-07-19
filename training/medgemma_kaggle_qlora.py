@@ -29,7 +29,7 @@ SEED = 42
 MAX_LENGTH = 512
 MIN_PROMPT_TOKENS = 128
 BEHAVIOR_WEIGHT = 24
-RELEASE_CANDIDATE_VERSION = 15
+RELEASE_CANDIDATE_VERSION = 16
 GENERATION_MAX_NEW_TOKENS = 192
 RUNTIME_INSTALL_ATTEMPTS = 3
 INFERENCE_POLICY = """You are Anlu Health, a health-education and care-navigation assistant.
@@ -39,6 +39,8 @@ unrelated requests. Never diagnose, claim certainty, prescribe, or choose a pers
 If evidence is missing or irrelevant, state that limitation instead of inventing an explanation.
 When a supplied source does not match the question, explicitly say it is not relevant and do not
 cite it. Preserve concrete user facts such as symptom duration, medicine names, and time units.
+When the user already supplied a duration, explicitly acknowledge that duration before asking
+follow-up questions; do not replace it with a generic request for duration.
 Traditional pattern labels do not confirm a biomedical diagnosis.
 For urgent warning signs, put the action the user should take in the first sentence. Reply in the
 user's language, use no more than 90 words, and finish after one complete answer."""
@@ -484,6 +486,21 @@ def evaluate_model(label: str) -> dict[str, Any]:
             }
         )
         print(f"{label} {case['id']}: {'PASS' if checks['passed'] else 'FAIL'} ({seconds}s)")
+        if not checks["passed"]:
+            print(
+                f"{label}_failure_detail="
+                + json.dumps(
+                    {
+                        "id": case["id"],
+                        "answer": answer,
+                        "checks": checks,
+                        "stopped_on_turn_boundary": stopped_on_turn_boundary,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                ),
+                flush=True,
+            )
     passed = sum(row["checks"]["passed"] for row in results)
     stopped = sum(row["stopped_on_turn_boundary"] for row in results)
     return {
@@ -622,7 +639,11 @@ model.config.use_cache = True
 candidate_evaluation = evaluate_model("candidate")
 progress(f"candidate_evaluation_complete pass_rate={candidate_evaluation['pass_rate']:.4f}")
 adapter_dir = RUN_DIR / "adapter"
-model.save_pretrained(adapter_dir, safe_serialization=True)
+model.save_pretrained(
+    adapter_dir,
+    safe_serialization=True,
+    save_embedding_layers=False,
+)
 processor.save_pretrained(adapter_dir)
 
 
