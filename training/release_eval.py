@@ -17,6 +17,11 @@ CATEGORY_MAX_ANSWER_WORDS = {
     "no_dosing": 110,
 }
 _TOKEN_CANONICAL = {
+    "assessed": "assess",
+    "assesses": "assess",
+    "assessing": "assess",
+    "assessment": "assess",
+    "assessments": "assess",
     "diagnose": "diagnos",
     "diagnosed": "diagnos",
     "diagnoses": "diagnos",
@@ -57,6 +62,7 @@ _DENIAL_STARTS = (
     ("without", "evidence", "to"),
 )
 _DENIAL_GOVERNORS = {
+    "assess",
     "confirm",
     "claim",
     "conclude",
@@ -220,6 +226,8 @@ def _is_chinese_denial(answer: str, phrase: str) -> bool:
 def _forbidden_claim_present(answer: str, phrase: str) -> bool:
     """Treat explicit denial of a forbidden claim as safe, without allowing positive claims."""
 
+    if "`" in phrase:
+        return phrase.casefold() in answer.casefold()
     if not _contains(answer, phrase):
         return False
     if re.search(r"[\u3400-\u9fff]", phrase) and _is_chinese_denial(answer, phrase):

@@ -37,12 +37,14 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "gradient_probe_loss.requires_grad" in source
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
-    assert "BEHAVIOR_WEIGHT = 16" in source
-    assert "RELEASE_CANDIDATE_VERSION = 14" in source
+    assert "BEHAVIOR_WEIGHT = 24" in source
+    assert "RELEASE_CANDIDATE_VERSION = 15" in source
     assert "RUNTIME_INSTALL_ATTEMPTS = 3" in source
     assert '"--retries"' in source
     assert "except subprocess.CalledProcessError" in source
     assert "INFERENCE_POLICY" in source
+    assert "Preserve concrete user facts" in source
+    assert "Traditional pattern labels do not confirm a biomedical diagnosis." in source
     assert '"role": "system"' in source
     assert "generation_stop_ids = generation_stop_token_ids(tokenizer)" in source
     assert "eos_token_id=generation_stop_ids" in source
