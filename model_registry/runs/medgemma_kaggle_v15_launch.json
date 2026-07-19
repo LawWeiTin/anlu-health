@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": "20260719T132022Z",
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 15,
+  "source_release_candidate_version": 15,
+  "script_version_id": null,
+  "script_version_id_status": "not_exposed_by_authenticated_private_run_while_active",
+  "version_name": "V15 behavior fidelity and evaluator fixes",
+  "private": true,
+  "accelerator": "GPU T4 x2",
+  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "launch_observed_at": "2026-07-19T13:20:22Z",
+  "training_source_commit": "8d5f23a1ecb872410e5710367e2a89e5e2d51955",
+  "current_integration_commit": "f557ec73f0a9c1c3a3e05fcad9839d2ffda40259",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "19b9e095ab4a5b23bb3208cdb41c03f0bc41ddc07054b29ad8f8885567cdb622",
+    "launcher_sha256": "ea3aa3f45a74eb1a2850dde8c823ad6931492ab9142af1ee59711c20a7fde15c",
+    "notebook_sha256": "5e537e76326303afb642559653205f5ee512003f0dac0d4a2d8fe1cb543b2984",
+    "verified_before_launch": true
+  },
+  "runtime_security": {
+    "internet_enabled": true,
+    "hugging_face_secret_label": "HF_TOKEN",
+    "hugging_face_secret_label_count": 1,
+    "hugging_face_token_scope": "fine-grained read-only",
+    "hugging_face_secret_attachment_verified": true,
+    "secret_storage": "Kaggle encrypted secret",
+    "secret_embedded_in_notebook": false,
+    "private_notebook": true
+  },
+  "observed_health": {
+    "kaggle_status": "KernelWorkerStatus.RUNNING",
+    "version_visible_in_authenticated_active_events": 15,
+    "accelerator_visible_in_authenticated_active_events": "GPU T4 x2",
+    "latest_bounded_signal": "gradient_flow_gate_passed"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "human_review_required": true,
+  "promotion_allowed": false,
+  "local_experimental_activation_allowed_after_gate": false,
+  "required_approvals_for_production": [
+    "physician",
+    "pharmacist",
+    "registered_tcm_practitioner",
+    "privacy_security",
+    "retrieval_safety"
+  ],
+  "disposition": "Monitor privately. Do not activate the adapter locally until every automated release gate passes; do not publish or production-promote while required human approvals are pending.",
+  "notes": "Version 15 launched successfully and is actively training. Kaggle has exposed the private version number and GPU configuration but not the exact private scriptVersionId while the run is active; resolve and record it when Kaggle exposes it, without guessing."
+}
