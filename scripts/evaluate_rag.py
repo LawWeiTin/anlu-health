@@ -1,4 +1,4 @@
-"""Offline topic-isolation and abstention release gate for the approved RAG seed."""
+"""Offline hybrid-retrieval relevance and abstention gate for the approved RAG seed."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ from app.database import Base  # noqa: E402
 from app.embeddings import MockMultilingualEmbeddings  # noqa: E402
 from app.models import KnowledgeChunk, KnowledgeSource  # noqa: E402
 from app.rag import Retriever  # noqa: E402
+from app.search_text import knowledge_search_text, semantic_document_text  # noqa: E402
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -42,6 +43,7 @@ def evaluate(seed_path: Path, cases_path: Path) -> dict[str, Any]:
                 license=document["license"],
                 evidence_tier=document["evidence_tier"],
                 topics=document["topics"],
+                keywords=document.get("keywords", []),
                 language=document["language"],
                 reviewed_on=date.fromisoformat(document["reviewed_on"]),
                 expires_on=date.fromisoformat(document["expires_on"]),
@@ -55,8 +57,25 @@ def evaluate(seed_path: Path, cases_path: Path) -> dict[str, Any]:
                     source_id=source.id,
                     ordinal=0,
                     content=content,
+                    search_text=knowledge_search_text(
+                        title=document["title"],
+                        publisher=document["publisher"],
+                        topics=document["topics"],
+                        keywords=document.get("keywords", []),
+                        content=content,
+                    ),
                     token_count=max(1, len(content) // 4),
-                    embedding=embeddings.embed([content])[0],
+                    embedding=embeddings.embed(
+                        [
+                            semantic_document_text(
+                                title=document["title"],
+                                publisher=document["publisher"],
+                                topics=document["topics"],
+                                keywords=document.get("keywords", []),
+                                content=content,
+                            )
+                        ]
+                    )[0],
                 )
             )
         db.commit()

@@ -33,6 +33,9 @@ stages:
     deps:
       - app/rag.py
       - app/models.py
+      - app/search_text.py
+      - app/embeddings.py
+      - data/source_registry.yaml
       - data/seed_knowledge.jsonl
       - data/eval/rag_cases.jsonl
       - scripts/evaluate_rag.py

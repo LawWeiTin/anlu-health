@@ -3,7 +3,7 @@ from pathlib import Path
 from scripts.evaluate_rag import evaluate
 
 
-def test_rag_release_cases_have_perfect_topic_isolation_and_abstention() -> None:
+def test_rag_release_cases_have_perfect_relevance_isolation_and_abstention() -> None:
     metrics = evaluate(
         Path("data/seed_knowledge.jsonl"),
         Path("data/eval/rag_cases.jsonl"),

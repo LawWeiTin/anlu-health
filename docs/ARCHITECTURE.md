@@ -35,7 +35,10 @@ flowchart LR
 1. Opaque session and CSRF tokens are validated; rate limits are applied.
 2. The message is safety-classified without sending it to an external service.
 3. Emergency messages receive a fixed, localized escalation response and bypass the model.
-4. Other messages are embedded and searched against approved, current source chunks.
+4. Other messages enter two independent retrieval branches: pgvector cosine search over
+   multilingual passage embeddings and PostgreSQL full-text search over titles, curated index terms,
+   declared topics, and chunk text. The candidate union is fused using semantic score, keyword
+   score, and reciprocal ranks. No symptom-topic regular expression selects RAG evidence.
 5. The prompt includes retrieved text, source IDs, evidence tiers, and the non-downgradable urgency.
 6. The remote model drafts a cautious educational response.
 7. Unknown citations are removed, evidence limitations are surfaced, and the answer plus source cards
@@ -45,6 +48,8 @@ flowchart LR
 
 - Add Render Key Value and set `REDIS_URL` for distributed rate limiting across multiple web replicas.
 - Use a pgvector HNSW index and connection pooling for larger corpora.
+- Keep the PostgreSQL GIN full-text index alongside HNSW; do not replace either branch with an
+  application-side scan in hosted environments. SQLite uses bounded BM25 only for local evaluation.
 - Scale the GPU endpoint independently from the web tier.
 - Run ingestion as a controlled job, never inside web requests.
 - Put source documents and evaluation artifacts in versioned object storage; keep only manifests and

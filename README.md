@@ -16,8 +16,8 @@ clinical evidence.
   security headers, rate limiting, account deletion, and health/metrics endpoints.
 - Medical safety layer that bypasses the model for emergencies and escalates concerning lump
   descriptions before retrieval or generation.
-- PostgreSQL + pgvector knowledge store with source approval, evidence tiers, expiry dates,
-  multilingual embeddings, hybrid reranking, and citation validation.
+- PostgreSQL knowledge store with pgvector HNSW semantic search, indexed full-text keyword search,
+  hybrid rank fusion, source approval, evidence tiers, expiry dates, and citation validation.
 - A model-provider interface for a separately hosted open-weight model. The recommended starting
   fine-tuning point is `google/medgemma-1.5-4b-it`, subject to its terms and only after use-case
   validation. The hosted baseline uses the open-weight `Qwen/Qwen3.5-9B` behind the same safety and
@@ -65,7 +65,8 @@ Before enabling real users:
 
 1. Review [docs/SAFETY.md](docs/SAFETY.md) and complete its clinical release checklist.
 2. Populate the RAG index only from the approved [data/source_registry.yaml](data/source_registry.yaml).
-3. Run `python scripts/evaluate.py --strict` and require all release gates to pass.
+3. Run `python scripts/evaluate.py --strict` and `python scripts/evaluate_rag.py --strict`, and
+   require all release gates to pass.
 4. Have qualified Western and Chinese medicine clinicians review a representative, multilingual
    evaluation set. Benchmark scores are not a substitute for this review.
 5. Complete the privacy, regulatory, threat-model, and incident-response work for your jurisdiction.

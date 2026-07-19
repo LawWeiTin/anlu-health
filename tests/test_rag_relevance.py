@@ -1,9 +1,11 @@
+import inspect
 from datetime import date, timedelta
 
 from app.database import session_factory
 from app.embeddings import MockMultilingualEmbeddings
 from app.models import KnowledgeChunk, KnowledgeSource
-from app.rag import Retriever, detect_topics
+from app.rag import Retriever, _postgres_candidates
+from app.search_text import knowledge_search_text, semantic_document_text
 
 
 def test_mock_retrieval_abstains_when_topic_has_no_lexical_overlap() -> None:
@@ -42,21 +44,13 @@ def test_mock_retrieval_abstains_when_topic_has_no_lexical_overlap() -> None:
     assert results == []
 
 
-def test_topic_detection_separates_hemoptysis_from_ordinary_cough() -> None:
-    assert detect_topics("I am coughing blood") == {"hemoptysis"}
-    assert detect_topics("I have a mild cough") == {"cough"}
+def test_postgresql_path_combines_pgvector_and_full_text_search() -> None:
+    source = inspect.getsource(_postgres_candidates)
 
-
-def test_topic_detection_uses_question_not_referenced_wrong_source() -> None:
-    assert detect_topics(
-        "Use the skin-lump source to answer my question about coughing up blood."
-    ) == {"hemoptysis"}
-    assert detect_topics(
-        "The supplied article discusses coughing blood. My question is about a mild dry cough."
-    ) == {"cough"}
-    assert detect_topics(
-        "检索资料只谈皮肤肿块，但我的问题是华法林和人参能否同服。"
-    ) == {"medicine_interactions"}
+    assert "cosine_distance" in source
+    assert "to_tsvector" in source
+    assert "to_tsquery" in source
+    assert 'vector.op("@@")' in source
 
 
 def test_hard_topic_filter_rejects_high_scoring_wrong_source() -> None:
@@ -113,3 +107,63 @@ def test_hard_topic_filter_rejects_high_scoring_wrong_source() -> None:
         results = Retriever(embeddings).search(db, "I am coughing blood", limit=5)
 
     assert [result.source.source_key for result in results] == ["lower-score-hemoptysis"]
+
+
+def test_strong_semantic_match_can_retrieve_a_paraphrase_without_exact_keywords() -> None:
+    class SemanticEmbeddings(MockMultilingualEmbeddings):
+        def embed(self, texts: list[str]) -> list[list[float]]:
+            return [[1.0] + [0.0] * 383 for _ in texts]
+
+    embeddings = SemanticEmbeddings()
+    content = "Seek prompt assessment when respiratory bleeding is reported."
+    with session_factory()() as db:
+        source = KnowledgeSource(
+            source_key="semantic-hemoptysis",
+            title="Respiratory bleeding",
+            publisher="Test authority",
+            url="https://example.gov/respiratory-bleeding",
+            license="Public domain",
+            evidence_tier="government_consumer",
+            topics=["hemoptysis"],
+            keywords=["hemoptysis"],
+            language="en",
+            reviewed_on=date.today(),
+            expires_on=date.today() + timedelta(days=90),
+            checksum_sha256="5" * 64,
+            approved=True,
+        )
+        db.add(source)
+        db.flush()
+        db.add(
+            KnowledgeChunk(
+                source_id=source.id,
+                ordinal=0,
+                content=content,
+                search_text=knowledge_search_text(
+                    title=source.title,
+                    publisher=source.publisher,
+                    topics=source.topics,
+                    keywords=source.keywords,
+                    content=content,
+                ),
+                token_count=10,
+                embedding=embeddings.embed(
+                    [
+                        semantic_document_text(
+                            title=source.title,
+                            publisher=source.publisher,
+                            topics=source.topics,
+                            keywords=source.keywords,
+                            content=content,
+                        )
+                    ]
+                )[0],
+            )
+        )
+        db.commit()
+        results = Retriever(embeddings).search(
+            db,
+            "There are red streaks in material from my lungs",
+        )
+
+    assert [result.source.source_key for result in results] == ["semantic-hemoptysis"]

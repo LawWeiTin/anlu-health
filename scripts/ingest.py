@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 from app.database import Base, get_engine, session_factory  # noqa: E402
 from app.embeddings import get_embedding_provider  # noqa: E402
 from app.models import KnowledgeChunk, KnowledgeSource, utcnow  # noqa: E402
+from app.search_text import knowledge_search_text, semantic_document_text  # noqa: E402
 
 
 def load_registry(path: Path) -> list[dict[str, Any]]:
@@ -88,6 +89,15 @@ def validate_document(document: dict[str, Any], entries: list[dict[str, Any]]) -
     registered_topics = entry.get("topics")
     if not isinstance(registered_topics, list) or sorted(set(topics)) != sorted(set(registered_topics)):
         raise ValueError(f"{document['source_key']}: topics do not match registry")
+    keywords = document.get("keywords", [])
+    registered_keywords = entry.get("keywords", [])
+    if (
+        not isinstance(keywords, list)
+        or any(not isinstance(keyword, str) or not keyword.strip() for keyword in keywords)
+        or sorted(set(keywords)) != sorted(set(registered_keywords))
+    ):
+        raise ValueError(f"{document['source_key']}: keywords do not match registry")
+    document["keywords"] = keywords
     reviewed = date.fromisoformat(document["reviewed_on"])
     expires = date.fromisoformat(document["expires_on"])
     if expires <= reviewed or expires < date.today():
@@ -131,6 +141,7 @@ def ingest(path: Path, registry_path: Path, dry_run: bool = False) -> tuple[int,
                     license=document["license"],
                     evidence_tier=document["evidence_tier"],
                     topics=document["topics"],
+                    keywords=document["keywords"],
                     language=document["language"],
                     reviewed_on=document["reviewed_on"],
                     expires_on=document["expires_on"],
@@ -144,6 +155,7 @@ def ingest(path: Path, registry_path: Path, dry_run: bool = False) -> tuple[int,
             source.license = document["license"]
             source.evidence_tier = document["evidence_tier"]
             source.topics = document["topics"]
+            source.keywords = document["keywords"]
             source.language = document["language"]
             source.reviewed_on = document["reviewed_on"]
             source.expires_on = document["expires_on"]
@@ -154,13 +166,36 @@ def ingest(path: Path, registry_path: Path, dry_run: bool = False) -> tuple[int,
             db.execute(delete(KnowledgeChunk).where(KnowledgeChunk.source_id == source.id))
 
             chunks = chunk_text(document["content"])
-            vectors = embeddings.embed(chunks)
-            for ordinal, (content, vector) in enumerate(zip(chunks, vectors, strict=True)):
+            search_documents = [
+                knowledge_search_text(
+                    title=document["title"],
+                    publisher=document["publisher"],
+                    topics=document["topics"],
+                    keywords=document["keywords"],
+                    content=content,
+                )
+                for content in chunks
+            ]
+            semantic_documents = [
+                semantic_document_text(
+                    title=document["title"],
+                    publisher=document["publisher"],
+                    topics=document["topics"],
+                    keywords=document["keywords"],
+                    content=content,
+                )
+                for content in chunks
+            ]
+            vectors = embeddings.embed(semantic_documents)
+            for ordinal, (content, search_text, vector) in enumerate(
+                zip(chunks, search_documents, vectors, strict=True)
+            ):
                 db.add(
                     KnowledgeChunk(
                         source_id=source.id,
                         ordinal=ordinal,
                         content=content,
+                        search_text=search_text,
                         token_count=max(1, len(content) // 4),
                         embedding=vector,
                     )

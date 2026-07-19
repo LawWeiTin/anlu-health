@@ -6,6 +6,10 @@ Only sources registered in `data/source_registry.yaml` may be ingested. Each sou
 publisher, URL, reuse basis, evidence tier, language, review owner, and expiry window. A checksum
 makes each indexed version auditable.
 
+The searchable representation combines each approved source's title, declared topics, reviewed
+index terms, and content. Index terms are source metadata, not diagnosis rules. They are checked
+against the registry during ingestion and cannot bypass approval or freshness gates.
+
 Preferred knowledge sources are public-health agencies, government health libraries, systematic
 reviews, and professional guidelines. Individual blogs, forums, testimonials, retailer pages,
 unlicensed scraped conversations, and model-generated medical text are prohibited.

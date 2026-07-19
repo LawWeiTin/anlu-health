@@ -31,10 +31,14 @@ jobs:
         run: pytest --cov=app --cov-report=term-missing --cov-fail-under=75
       - name: Medical safety release gate
         run: python scripts/evaluate.py --strict --output artifacts/eval.json
+      - name: Hybrid RAG release gate
+        run: python scripts/evaluate_rag.py --strict --output artifacts/rag_eval.json
       - uses: actions/upload-artifact@v4
         with:
-          name: safety-evaluation
-          path: artifacts/eval.json
+          name: safety-and-rag-evaluation
+          path: |
+            artifacts/eval.json
+            artifacts/rag_eval.json
 
   container:
     runs-on: ubuntu-latest
