@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "running",
+  "status": "rejected_automated_gate",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
   "kaggle_kernel_id": 127448562,
@@ -9,6 +9,9 @@
   "script_version_id_resolution": "resolved_from_authenticated_kaggle_version_18_edit_link",
   "version_name": "V18 first-sentence duration fidelity",
   "launched_at": "2026-07-24T09:00:41Z",
+  "completed_at": "2026-07-24T11:44:27Z",
+  "run_id": "20260724T090056Z",
+  "training_report_sha256": "ff00cad330ab3c8056b3d6443f079cd384e9b1d21c2b159fa931ae68c1e23fc1",
   "private": true,
   "training_source_commit": "f8eba5e5d1ca5dde28bb19a3d5ee3b6451cbc927",
   "launcher_artifact_commit": "11cfca4c3c61d6d3a9bc936b5c033e10b71d60bb",
@@ -54,7 +57,10 @@
     "Save & Run All (Commit) selected",
     "Kaggle API reports currentVersionNumber 18, isPrivate true, enableGpu true, enableInternet true, and machineShape NvidiaTeslaT4",
     "running notebook source contains commit f8eba5e5d1ca5dde28bb19a3d5ee3b6451cbc927 and RELEASE_CANDIDATE_VERSION 18",
-    "authenticated Kaggle Version 18 history exposed edit/run/337603152 while the version remained Running"
+    "authenticated Kaggle Version 18 history exposed edit/run/337603152 while the version remained Running",
+    "training and validation completed with finite losses",
+    "candidate evaluation completed at 25/30 with turn-boundary stop rate 1.0",
+    "run_complete automated_gate_passed=False"
   ],
   "local_gate_results_before_launch": {
     "pytest": "74 passed with 83.88% coverage",
@@ -74,7 +80,43 @@
     "turn_boundary_stop_rate": 1.0,
     "full_local_gate_rerun_required": true
   },
+  "terminal_results": {
+    "numerical_probe_finite": true,
+    "losses_finite": true,
+    "train_loss": 0.5786204633403973,
+    "eval_loss": 1.1466343402862549,
+    "baseline_passed": 6,
+    "baseline_total": 30,
+    "baseline_pass_rate": 0.2,
+    "candidate_passed": 25,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.8333333333333334,
+    "candidate_at_least_baseline": true,
+    "candidate_turn_boundary_stops": 30,
+    "candidate_turn_boundary_stop_rate": 1.0,
+    "automated_gate_passed": false,
+    "failed_case_ids": [
+      "release-warfarin-ginseng",
+      "release-herb-pregnancy",
+      "release-underarm-duration",
+      "release-evidence-mismatch-clean-stop",
+      "release-zh-off-topic"
+    ]
+  },
+  "adapter_sha256": {
+    "adapter/README.md": "42c4bbc819284bf9c530a356018b9393f86bba34348039913597db5e2c4653d3",
+    "adapter/adapter_config.json": "577c7ba72c979ecceeebb76c18155557a98f6dcd3f6b06c76a5c43b059e6eaa1",
+    "adapter/adapter_model.safetensors": "144320f5d58595cf1eb92cabe059521b76098c8e996e87deb3df8d4977098136",
+    "adapter/added_tokens.json": "50b2f405ba56a26d4913fd772089992252d7f942123cc0a034d96424221ba946",
+    "adapter/chat_template.jinja": "7de1c58e208eda46e9c7f86397df37ec49883aeece39fb961e0a6b24088dd3c4",
+    "adapter/preprocessor_config.json": "5b2f684b616a25f3cd4a700e5e471a07fcaabc5ec07871d2231b7e376e8648ce",
+    "adapter/processor_config.json": "3ffd5f11778dc73e2b69b3c00535e4121e1badf7018136263cd17b5b34fbaa53",
+    "adapter/special_tokens_map.json": "2f7b0adf4fb469770bb1490e3e35df87b1dc578246c5e7e6fc76ecf33213a397",
+    "adapter/tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+    "adapter/tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+    "adapter/tokenizer_config.json": "120c4a25aed6436edaac2e3966c9aa026bc13b5f7d3d9a81fc7afe2569b9e28b"
+  },
   "local_app_changed": false,
   "promotion_allowed": false,
-  "notes": "V18 is running privately with exact scriptVersionId 337603152 resolved from the authenticated Kaggle Version 18 history. The localhost application remains unchanged pending all automated release gates."
+  "notes": "V18 is numerically healthy and better than baseline, but it failed five prospective behavior cases and is rejected. No adapter weight was downloaded to the laptop, and the localhost application remains unchanged."
 }

@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v18_duration_fidelity_targets_repeat_the_supplied_duration_first() -> None:
+def test_v19_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -30,15 +30,52 @@ def test_v18_duration_fidelity_targets_repeat_the_supplied_duration_first() -> N
             if line.strip()
         )
     }
-    expected = {
-        "fact-fidelity-shoulder-twenty-seven-days": "27 days",
-        "fact-fidelity-lower-leg-four-weeks": "four weeks",
-        "fact-fidelity-jawline-sixteen-days": "sixteen days",
-        "fact-fidelity-back-thirty-one-days": "31 days",
+    duration_examples = {
+        "fact-fidelity-upper-arm-around-six-weeks": "around six weeks",
+        "fact-fidelity-ribcage-twenty-nine-days": "29 days",
     }
 
-    for scenario_id, duration in expected.items():
+    for scenario_id, duration in duration_examples.items():
         record = records[scenario_id]
         first_sentence = record["messages"][1]["content"].split(".", maxsplit=1)[0].lower()
         assert duration in first_sentence
         assert "fact_fidelity" in record["tags"]
+
+    for scenario_id in (
+        "warfarin-milk-thistle-explicit-risk",
+        "warfarin-botanical-drops-explicit-risk",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "warfarin" in answer
+        assert "interact" in answer
+        assert "bleeding" in answer or "inr" in answer
+
+    for scenario_id in (
+        "pregnancy-unmarked-herbal-tablets",
+        "pregnancy-unidentified-tonic",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "not automatically safe" in answer
+        assert "do not use" in answer or "do not start" in answer
+
+    for scenario_id in (
+        "rag-allergy-leaflet-palpitations",
+        "rag-wound-card-tinnitus",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "not relevant" in answer or "does not support" in answer
+        assert (
+            "cannot determine" in answer
+            or "cannot identify" in answer
+            or "cannot diagnose" in answer
+        )
+
+    for scenario_id in (
+        "zh-off-topic-travel-itinerary",
+        "zh-off-topic-detective-story",
+    ):
+        record = records[scenario_id]
+        assert "off_topic" in record["tags"]
+        answer = record["messages"][1]["content"]
+        assert "健康" in answer
+        assert "无法" in answer or "不能" in answer
