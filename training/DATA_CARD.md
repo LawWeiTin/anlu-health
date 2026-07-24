@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This 75-scenario project-authored set demonstrates the required conversational schema and teaches
+This 83-scenario project-authored set demonstrates the required conversational schema and teaches
 response behavior: emergency escalation, diagnostic abstention, useful follow-up questions,
 topic-matched retrieval, citation integrity, evidence separation, concise scope boundaries,
 duration grounding, and herb/medicine caution. It is not a clinical knowledge corpus and remains
@@ -13,6 +13,8 @@ physician, pharmacist, or registered TCM practitioner sign-off.
 Version 15 adds ten independent synthetic scenarios for exact duration and medicine-name
 preservation, explicit rejection of topic-mismatched sources, citation abstention,
 TCM-versus-biomedical separation, pregnancy-product caution, and same-day hemoptysis navigation.
+Version 18 adds four independent duration-fidelity scenarios and requires the response's first
+sentence to preserve the user's stated duration and time unit before care navigation.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy

@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
-  "status": "running",
+  "status": "complete_rejected_automated_gate",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
   "kaggle_version_number": 17,
-  "script_version_id": null,
-  "script_version_id_resolution": "pending_kaggle_exposure",
+  "script_version_id": "337567391",
+  "script_version_id_resolution": "resolved_from_authenticated_private_version_page",
   "version_name": "V17 explicit RAG mismatch fidelity",
   "launched_at": "2026-07-24T05:35:00Z",
+  "terminal_state_observed_at": "2026-07-24T08:22:09Z",
   "private": true,
   "training_source_commit": "33473740d807baab22be630a706504a793d09b74",
   "launcher_artifact_commit": "dff990b",
@@ -60,5 +61,5 @@
   },
   "local_app_changed": false,
   "promotion_allowed": false,
-  "notes": "V17 is running as a private Kaggle commit. Kaggle exposed the version number but not the exact private scriptVersionId at launch; it must be recorded later without guessing. Do not connect the adapter to the localhost application until all terminal and local gates pass."
+  "notes": "V17 completed as a private Kaggle commit but failed the mandatory 1.0 candidate held-out gate at 28/30. Its exact private scriptVersionId was resolved after completion. The adapter was not connected to the localhost application."
 }
