@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 18,
+  "script_version_id": null,
+  "script_version_id_resolution": "pending_kaggle_exposure_do_not_guess",
+  "version_name": "V18 first-sentence duration fidelity",
+  "launched_at": "2026-07-24T09:00:41Z",
+  "private": true,
+  "training_source_commit": "f8eba5e5d1ca5dde28bb19a3d5ee3b6451cbc927",
+  "launcher_artifact_commit": "11cfca4c3c61d6d3a9bc936b5c033e10b71d60bb",
+  "launch_registry_parent_commit": "f6726f16d0cccb3d809c980409c81b8d7c229d43",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "349941b339d5b9646b66cefc36a012a51a774f40efcececc505a8851a719b4cc",
+    "launcher_sha256": "b01c9d9a6d995e2af6ef539e37143adc84b33223b117848614487f2799fb8580",
+    "notebook_sha256": "0aa2ca0ea612392423796167fd182bf1fecbceeeecbadcf75ab89c3b56d40d86",
+    "code_cell_count": 1,
+    "verified_before_launch": true,
+    "verified_running_source_commit": "f8eba5e5d1ca5dde28bb19a3d5ee3b6451cbc927",
+    "verified_release_candidate_version": 18
+  },
+  "private_drive_handoff": {
+    "file_id": "1bcup2YPIX0dw--g_FpC_TLX7gpRfy5mY",
+    "file_name": "Anlu Health - MedGemma V18 Private Kaggle Launcher.ipynb",
+    "mime_type": "application/x-ipynb+json",
+    "size_bytes": 161646,
+    "shared": false,
+    "updated_in_place": true,
+    "parent_folder_id": "1vUOwrLKz_Bc4JRouGXMUqtZAGI5xKo8R"
+  },
+  "launch_security": {
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "accelerator": "GPU T4 x2",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "read-only",
+    "secret_masked_in_ui": true,
+    "secret_value_opened": false,
+    "secret_value_printed": false,
+    "secret_value_written_to_disk": false
+  },
+  "observed_launch_signals": [
+    "Kaggle active event: Anlu Health - MedGemma QLoRA Release Candidate Version #18 with GPU T4 x2 Running",
+    "Save & Run All (Commit) selected",
+    "Kaggle API reports currentVersionNumber 18, isPrivate true, enableGpu true, enableInternet true, and machineShape NvidiaTeslaT4",
+    "running notebook source contains commit f8eba5e5d1ca5dde28bb19a3d5ee3b6451cbc927 and RELEASE_CANDIDATE_VERSION 18"
+  ],
+  "local_gate_results_before_launch": {
+    "pytest": "74 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "83/83 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "5/5 passed"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V18 is running privately. Kaggle has not exposed its exact private scriptVersionId, so it remains null rather than guessed. The localhost application remains unchanged pending all automated release gates."
+}
