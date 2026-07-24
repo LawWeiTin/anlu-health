@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "prepared_not_launched",
+  "status": "awaiting_user_oauth_completion",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
   "planned_kaggle_version_number": 17,
@@ -46,7 +46,10 @@
     "tracked_secret_scan": "passed"
   },
   "launch_blocker": {
-    "reason": "Kaggle requires the account to link to Google Drive before it can import the private launcher. Granting that account permission requires explicit action-time user confirmation.",
+    "reason": "The user explicitly approved linking Kaggle to Google Drive at 2026-07-24T05:17:56Z. Kaggle then attempted to open its Google OAuth authorization window, but that authentication window is not exposed to browser automation and must be completed by the user in the preserved Kaggle tab.",
+    "user_confirmation_received": true,
+    "user_confirmation_received_at": "2026-07-24T05:17:56Z",
+    "oauth_completion_required_from_user": true,
     "secrets_exposed": false,
     "local_app_changed": false
   },
@@ -58,5 +61,5 @@
     "local_full_gate_rerun_required": true
   },
   "promotion_allowed": false,
-  "notes": "The V16 result is terminal and recorded. V17 is fully prepared but has not been launched, and the localhost application remains on its existing experimental configuration."
+  "notes": "The V16 result is terminal and recorded. V17 is fully prepared but has not been launched. The user only needs to complete the Google authorization opened by Kaggle and then report that it is done; the localhost application remains on its existing experimental configuration."
 }
