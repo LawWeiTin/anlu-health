@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 19,
+  "script_version_id": 337635680,
+  "script_version_id_resolution": "resolved_from_authenticated_kaggle_version_19_edit_link",
+  "version_name": "V19 explicit safety and scope fidelity",
+  "launched_at": "2026-07-24T12:04:00Z",
+  "launch_time_precision": "minute",
+  "private": true,
+  "training_source_commit": "86d68a87269b746aba243d2c4be90001c62fe83d",
+  "launcher_artifact_commit": "582597719b4d7c0acd8dab9ed7ae2855b16e8411",
+  "launch_registry_parent_commit": "551a6c3642d1a780aa14096670d5341bccfa2e35",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "d5eecbb5d75ca3f674280a9dca0b9543e7aa35c6d1673ae9491f42994d936aae",
+    "launcher_sha256": "617d81bbb849ba730f12687b9bcefd1a4899c419b3308edc3d536ba8f0adfc8e",
+    "notebook_sha256": "adcf1e94696151ce59cbe0d30bb3a57784bea4eeca75df99c18cd8dbf2e1efa3",
+    "code_cell_count": 1,
+    "verified_before_launch": true,
+    "verified_running_source_commit": "86d68a87269b746aba243d2c4be90001c62fe83d",
+    "verified_release_candidate_version": 19
+  },
+  "private_drive_handoff": {
+    "file_id": "1bcup2YPIX0dw--g_FpC_TLX7gpRfy5mY",
+    "file_name": "Anlu Health - MedGemma V19 Private Kaggle Launcher.ipynb",
+    "mime_type": "application/x-ipynb+json",
+    "size_bytes": 171146,
+    "shared": false,
+    "updated_in_place": true,
+    "parent_folder_id": "1vUOwrLKz_Bc4JRouGXMUqtZAGI5xKo8R"
+  },
+  "launch_security": {
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "accelerator": "GPU T4 x2",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "read-only",
+    "secret_masked_in_ui": true,
+    "secret_value_opened": false,
+    "secret_value_printed": false,
+    "secret_value_written_to_disk": false
+  },
+  "observed_launch_signals": [
+    "Kaggle active event: Anlu Health - MedGemma QLoRA Release Candidate Version #19 with GPU T4 x2 Running",
+    "Save & Run All (Commit) selected",
+    "running notebook source contains commit 86d68a87269b746aba243d2c4be90001c62fe83d and RELEASE_CANDIDATE_VERSION 19",
+    "authenticated Kaggle Version 19 history exposed edit/run/337635680 while the version remained Running",
+    "Kaggle CLI reports KernelWorkerStatus.RUNNING"
+  ],
+  "local_gate_results_before_launch": {
+    "pytest": "74 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "93/93 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, verified snapshot checksums, no embedded token"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V19 is a targeted correction for the five V18 held-out failures. The evaluator and held-out suite are unchanged. No adapter weight is stored on the laptop, and the localhost application remains unchanged while training and automated release gates are pending."
+}
