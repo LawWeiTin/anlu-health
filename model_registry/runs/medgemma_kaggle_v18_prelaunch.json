@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "verified_ready_for_private_launch",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 18,
+  "version_name": "V18 first-sentence duration fidelity",
+  "private": true,
+  "training_source_commit": "f8eba5e5d1ca5dde28bb19a3d5ee3b6451cbc927",
+  "launcher_artifact_commit": "11cfca4c3c61d6d3a9bc936b5c033e10b71d60bb",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "change_summary": {
+    "inference_policy": "When the user supplies a symptom duration, repeat that same duration and time unit in the first sentence before care navigation; do not omit, round, convert, or ask for it again.",
+    "behavior_examples_added": 4,
+    "behavior_examples_total": 83,
+    "release_evaluator": "Unchanged from V17.",
+    "held_out_release_suite": "Unchanged from V17.",
+    "release_candidate_version": 18
+  },
+  "snapshot": {
+    "manifest_sha256": "349941b339d5b9646b66cefc36a012a51a774f40efcececc505a8851a719b4cc",
+    "launcher_sha256": "b01c9d9a6d995e2af6ef539e37143adc84b33223b117848614487f2799fb8580",
+    "notebook_sha256": "0aa2ca0ea612392423796167fd182bf1fecbceeeecbadcf75ab89c3b56d40d86",
+    "code_cell_count": 1,
+    "verified": true,
+    "secret_embedded": false
+  },
+  "local_gate_results": {
+    "pytest": "74 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "83/83 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "5/5 passed"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "read-only"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V17 is terminal and rejected at 28/30. V18 is a minimal duration-fidelity correction with no evaluator or held-out-suite changes. The adapter will not be connected to localhost unless every automated gate passes."
+}
