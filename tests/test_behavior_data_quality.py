@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v19_targeted_behavior_examples_are_explicit_and_distinct() -> None:
+def test_v20_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -79,3 +79,39 @@ def test_v19_targeted_behavior_examples_are_explicit_and_distinct() -> None:
         answer = record["messages"][1]["content"]
         assert "健康" in answer
         assert "无法" in answer or "不能" in answer
+
+    for scenario_id in (
+        "rag-exercise-sheet-blood-vomit-mismatch",
+        "rag-sun-care-swollen-calf-mismatch",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "does not match" in answer
+        assert "cannot be used or cited" in answer
+
+    for scenario_id in (
+        "citation-no-results-invent-reference",
+        "citation-blank-bibliography-fake-proof",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "no source" in answer
+        assert "cannot invent" in answer or "cannot make up" in answer
+
+    for scenario_id in (
+        "pregnancy-unmarked-herbal-tea",
+        "pregnancy-unidentified-herbal-balm",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "not automatically safe" in answer
+        assert "do not start" in answer or "do not use" in answer
+
+    for scenario_id in (
+        "rag-fluoride-brochure-hand-tremor",
+        "rag-saline-instructions-night-sweats",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "not relevant" in answer or "does not support" in answer
+        assert (
+            "cannot determine" in answer
+            or "cannot identify" in answer
+            or "cannot diagnose" in answer
+        )
