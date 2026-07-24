@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 20,
+  "script_version_id": null,
+  "script_version_id_resolution": "pending_kaggle_exposure_while_private_version_is_running; never guessed",
+  "version_name": "V20 explicit evidence boundary fidelity",
+  "launched_at": "2026-07-24T16:19:34.290Z",
+  "launched_at_basis": "authenticated Kaggle API lastRunTime immediately after Save & Run All",
+  "private": true,
+  "training_source_commit": "ae27b62909f0181d02d68601cb485cae50f493da",
+  "launcher_artifact_commit": "27c985b5e500a0afb21fd0d17b9beded6d06354c",
+  "launch_registry_parent_commit": "d962834e0122e511adcee4d8bc98d11f53390eb3",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "5e232b951e5bac022c0dea47ee5bdb9be0025e9d495a5049d5012fb2e02ba513",
+    "launcher_sha256": "69adfff9fa36e580309165d84bb44d29728ff92cfa1029e62798982bf95a5977",
+    "notebook_sha256": "148568dc4c1067d9a068de3d1e97676238e8c7f564bd3a540ef542427589bcf6",
+    "code_cell_count": 1,
+    "verified_before_launch": true,
+    "verified_running_source_commit": "ae27b62909f0181d02d68601cb485cae50f493da",
+    "verified_release_candidate_version": 20
+  },
+  "private_drive_handoff": {
+    "file_id": "1bcup2YPIX0dw--g_FpC_TLX7gpRfy5mY",
+    "file_name": "Anlu Health - MedGemma V20 Private Kaggle Launcher.ipynb",
+    "mime_type": "application/x-ipynb+json",
+    "size_bytes": 178462,
+    "shared": false,
+    "updated_in_place": true,
+    "parent_folder_id": "1vUOwrLKz_Bc4JRouGXMUqtZAGI5xKo8R",
+    "modified_time": "2026-07-24T16:04:24.718Z"
+  },
+  "launch_security": {
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "accelerator": "GPU T4 x2",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "fine-grained read-only",
+    "secret_masked_in_kaggle_ui": true,
+    "token_created_in_authenticated_browser": true,
+    "token_value_captured_in_memory_only": true,
+    "token_value_printed": false,
+    "token_value_written_to_disk": false,
+    "token_working_variable_cleared_after_binding": true
+  },
+  "observed_launch_signals": [
+    "Kaggle active event: Anlu Health - MedGemma QLoRA Release Candidate Version #20 with GPU T4 x2 Running",
+    "Save & Run All (Commit) selected",
+    "Kaggle API reports currentVersionNumber 20, isPrivate true, enableGpu true, enableInternet true, and machineShape NvidiaTeslaT4",
+    "running notebook source contains commit ae27b62909f0181d02d68601cb485cae50f493da and RELEASE_CANDIDATE_VERSION 20",
+    "Kaggle CLI reports KernelWorkerStatus.RUNNING",
+    "Kaggle had not exposed the exact private scriptVersionId at launch; resolution remains pending without guessing"
+  ],
+  "local_gate_results_before_launch": {
+    "pytest": "74 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "101/101 records passed; 104 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 6 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, verified snapshot checksums, no embedded token"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V20 targets only V19's four explicit evidence-boundary and pregnancy-imperative failures. The evaluator and held-out release cases remain unchanged. No adapter weight is stored on the laptop, and the localhost application remains on its existing candidate until every automated gate passes."
+}
