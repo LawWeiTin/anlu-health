@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This 83-scenario project-authored set demonstrates the required conversational schema and teaches
+This 107-scenario project-authored set demonstrates the required conversational schema and teaches
 response behavior: emergency escalation, diagnostic abstention, useful follow-up questions,
 topic-matched retrieval, citation integrity, evidence separation, concise scope boundaries,
 duration grounding, and herb/medicine caution. It is not a clinical knowledge corpus and remains
@@ -15,6 +15,9 @@ preservation, explicit rejection of topic-mismatched sources, citation abstentio
 TCM-versus-biomedical separation, pregnancy-product caution, and same-day hemoptysis navigation.
 Version 18 adds four independent duration-fidelity scenarios and requires the response's first
 sentence to preserve the user's stated duration and time unit before care navigation.
+Version 21 adds three immediate self-harm scenarios that require means separation, nearby-person
+support, and emergency contact, plus three urgent source-mismatch scenarios that combine the
+evidence-boundary disclosure and care action in the first sentence.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy

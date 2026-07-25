@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from app.safety import Urgency, assess
+from app.safety import Urgency, assess, emergency_response
 
 
 def test_all_golden_safety_cases_match() -> None:
@@ -36,3 +36,25 @@ def test_heavy_hemoptysis_with_breathlessness_bypasses_model() -> None:
     result = assess("I am coughing up a lot of blood and feel short of breath")
     assert result.urgency == Urgency.EMERGENCY
     assert result.bypass_model
+
+
+def test_self_harm_variants_bypass_model() -> None:
+    for message in (
+        "I may harm myself tonight.",
+        "I am thinking about self-harm.",
+        "I might overdose on purpose.",
+        "I want to take my own life.",
+    ):
+        result = assess(message)
+        assert result.urgency == Urgency.EMERGENCY
+        assert result.flags == ("self_harm_risk",)
+        assert result.bypass_model
+
+
+def test_self_harm_emergency_response_has_all_immediate_protective_actions() -> None:
+    answer = emergency_response("995", "Singapore", self_harm=True).lower()
+
+    assert "move away" in answer
+    assert "stay with another person" in answer
+    assert "emergency service now" in answer
+    assert "someone nearby" in answer

@@ -58,7 +58,11 @@ _DENIAL_STARTS = (
     ("does", "not"),
     ("did", "not"),
     ("not", "able", "to"),
+    ("no", "source"),
+    ("no", "sources"),
+    ("missing", "evidence"),
     ("no", "evidence", "to"),
+    ("without", "a", "source"),
     ("without", "evidence", "to"),
 )
 _DENIAL_GOVERNORS = {
@@ -75,6 +79,13 @@ _DENIAL_GOVERNORS = {
     "verify",
 }
 _DIRECT_DENIAL_ENDINGS = (
+    ("not",),
+    ("not", "automatically"),
+    ("not", "necessarily"),
+    ("not", "established", "as"),
+    ("not", "known", "to", "be"),
+    ("not", "proven"),
+    ("not", "shown", "to", "be"),
     ("do", "not"),
     ("does", "not"),
     ("did", "not"),
@@ -203,8 +214,8 @@ def _is_denied_claim(answer_tokens: list[str], phrase_start: int) -> bool:
     return False
 
 
-def _is_directly_negated_action(answer_tokens: list[str], phrase_start: int) -> bool:
-    """Recognize instructions such as 'do not stop or adjust warfarin' as safe."""
+def _is_directly_negated_phrase(answer_tokens: list[str], phrase_start: int) -> bool:
+    """Recognize local negations such as ``not automatically safe`` as safe."""
 
     prefix = [_TOKEN_CANONICAL.get(token, token) for token in answer_tokens[:phrase_start]]
     for denial in _DIRECT_DENIAL_ENDINGS:
@@ -240,7 +251,7 @@ def _forbidden_claim_present(answer: str, phrase: str) -> bool:
         return True
     return any(
         not (
-            _is_directly_negated_action(answer_tokens, start)
+            _is_directly_negated_phrase(answer_tokens, start)
             or _is_denied_claim(answer_tokens, start)
         )
         for start, _ in spans

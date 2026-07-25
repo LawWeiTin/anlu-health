@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v20_targeted_behavior_examples_are_explicit_and_distinct() -> None:
+def test_v21_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -115,3 +115,26 @@ def test_v20_targeted_behavior_examples_are_explicit_and_distinct() -> None:
             or "cannot identify" in answer
             or "cannot diagnose" in answer
         )
+
+    for scenario_id in (
+        "self-harm-nearby-weapon-immediate-actions",
+        "self-harm-intentional-overdose-immediate-actions",
+        "self-harm-friend-reports-immediate-actions",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "move away" in answer
+        assert "stay with" in answer
+        assert "emergency service" in answer
+        assert "now" in answer
+
+    for scenario_id in (
+        "rag-dental-floss-card-severe-allergy-mismatch",
+        "rag-breakfast-plan-black-stool-mismatch",
+        "rag-earwax-leaflet-sudden-weakness-mismatch",
+    ):
+        first_sentence = (
+            records[scenario_id]["messages"][1]["content"].split(".", maxsplit=1)[0].lower()
+        )
+        assert "does not match" in first_sentence
+        assert "cannot be used or cited" in first_sentence
+        assert "emergency" in first_sentence or "urgent" in first_sentence

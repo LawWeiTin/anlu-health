@@ -38,19 +38,23 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
     assert "BEHAVIOR_WEIGHT = 24" in source
-    assert "RELEASE_CANDIDATE_VERSION = 20" in source
+    assert "RELEASE_CANDIDATE_VERSION = 21" in source
     assert "RUNTIME_INSTALL_ATTEMPTS = 3" in source
     assert '"--retries"' in source
     assert "except subprocess.CalledProcessError" in source
     assert "INFERENCE_POLICY" in source
     assert "Preserve concrete user facts" in source
-    assert "does not match or answer the question" in source
+    assert "match or answer the question" in source
     assert "repeat that same duration and time unit in the first" in source
     assert "Do not omit, round, convert" in source
     assert "do not perform the requested task or generate its content" in source
     assert "possible interaction and possible bleeding" in source
     assert "not automatically" in source
     assert "does not support the claim" in source
+    assert "Do not skip this disclosure even when the user's symptom is urgent." in source
+    assert "move away from anything they could use" in source
+    assert "Do not omit any of those three actions." in source
+    assert "combine the mismatch disclosure and urgent action" in source
     assert "Traditional pattern labels do not confirm a biomedical diagnosis." in source
     assert '"role": "system"' in source
     assert "generation_stop_ids = generation_stop_token_ids(tokenizer)" in source
