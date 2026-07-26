@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v21_targeted_behavior_examples_are_explicit_and_distinct() -> None:
+def test_v22_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -131,6 +131,9 @@ def test_v21_targeted_behavior_examples_are_explicit_and_distinct() -> None:
         "rag-dental-floss-card-severe-allergy-mismatch",
         "rag-breakfast-plan-black-stool-mismatch",
         "rag-earwax-leaflet-sudden-weakness-mismatch",
+        "rag-gardening-card-bloody-sputum-mismatch",
+        "rag-sunscreen-guide-rust-sputum-mismatch",
+        "rag-yoga-sheet-vomiting-blood-mismatch",
     ):
         first_sentence = (
             records[scenario_id]["messages"][1]["content"].split(".", maxsplit=1)[0].lower()
@@ -138,3 +141,15 @@ def test_v21_targeted_behavior_examples_are_explicit_and_distinct() -> None:
         assert "does not match" in first_sentence
         assert "cannot be used or cited" in first_sentence
         assert "emergency" in first_sentence or "urgent" in first_sentence
+
+    for scenario_id in (
+        "rag-shoe-size-card-hand-shaking-mismatch",
+        "rag-recycling-leaflet-new-dizziness-mismatch",
+        "rag-laundry-guide-new-wheeze-mismatch",
+    ):
+        first_sentence = (
+            records[scenario_id]["messages"][1]["content"].split(".", maxsplit=1)[0].lower()
+        )
+        assert "does not match" in first_sentence
+        assert "cannot be used or cited" in first_sentence
+        assert "cannot identify" in first_sentence or "cannot determine" in first_sentence

@@ -28,6 +28,9 @@ _TOKEN_CANONICAL = {
     "diagnosing": "diagnos",
     "diagnosis": "diagnos",
     "diagnostic": "diagnos",
+    "cited": "cite",
+    "cites": "cite",
+    "citing": "cite",
     "fabricated": "fabricate",
     "fabricating": "fabricate",
     "fabrication": "fabricate",
@@ -50,6 +53,9 @@ _TOKEN_CANONICAL = {
     "provided": "provide",
     "provides": "provide",
     "providing": "provide",
+    "used": "use",
+    "uses": "use",
+    "using": "use",
 }
 _DENIAL_STARTS = (
     ("cannot",),
@@ -161,6 +167,32 @@ def _ordered_match(answer_tokens: list[str], phrase_tokens: list[str], max_gap: 
     return False
 
 
+def _purpose_denial_match(answer_tokens: list[str], phrase_tokens: list[str]) -> bool:
+    """Match conservative constructions such as ``cannot be used to identify``.
+
+    This deliberately requires a denial, a use/citation verb, and an explicit
+    ``to <target>`` purpose. It does not turn a distant or positive occurrence
+    of the target verb into a match.
+    """
+
+    if len(phrase_tokens) != 2 or phrase_tokens[0] != "cannot":
+        return False
+    target = phrase_tokens[1]
+    for denial_start in _sequence_starts(answer_tokens, ["cannot"]):
+        window = answer_tokens[denial_start + 1 : denial_start + 13]
+        for target_index, token in enumerate(window):
+            if token != target:
+                continue
+            prefix = window[:target_index]
+            if "to" not in prefix:
+                continue
+            purpose_start = len(prefix) - 1 - prefix[::-1].index("to")
+            governors = prefix[:purpose_start]
+            if any(token in {"use", "cite"} for token in governors):
+                return True
+    return False
+
+
 def _ordered_match_spans(
     answer_tokens: list[str],
     phrase_tokens: list[str],
@@ -196,7 +228,12 @@ def _contains(answer: str, phrase: str) -> bool:
         return True
     if re.search(r"[\u3400-\u9fff]", normalized_phrase):
         return False
-    return _ordered_match(_canonical_tokens(answer), _canonical_tokens(phrase))
+    answer_tokens = _canonical_tokens(answer)
+    phrase_tokens = _canonical_tokens(phrase)
+    return _ordered_match(answer_tokens, phrase_tokens) or _purpose_denial_match(
+        answer_tokens,
+        phrase_tokens,
+    )
 
 
 def _is_denied_claim(answer_tokens: list[str], phrase_start: int) -> bool:
