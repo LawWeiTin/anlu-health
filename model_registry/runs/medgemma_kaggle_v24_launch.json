@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 24,
+  "script_version_id": 338303771,
+  "script_version_id_resolution": "resolved_from_authenticated_private_version_history_edit_link",
+  "version_name": "V24 explicit evidence-state contrast",
+  "launched_at": "2026-07-27T12:15:00Z",
+  "launched_at_basis": "authenticated Kaggle version history at minute precision",
+  "launch_observed_at": "2026-07-27T12:18:50.285Z",
+  "private": true,
+  "training_source_commit": "41e56f4b24ebfedf152e0ec5f7ef1cf93e96462e",
+  "launcher_artifact_commit": "ace578fd017aad00a06c6f071ef7fd5960b0416b",
+  "launch_registry_parent_commit": "ec440ecff418b7408655276edda2d0b0cc2c0074",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "6793d89e5df474d1096684313bd5922a643c7674030acd0b3513a6651fed6084",
+    "launcher_sha256": "ca3a3d4ef66846434477b84c99714710213fca4a3083a3afb2ab6429dd45ee4f",
+    "notebook_sha256": "091bdd351180a2ee07d49accba87d47b8e4ac7b98262dcf1e939beec5af71d1c",
+    "code_cell_count": 1,
+    "size_bytes": 211218,
+    "verified_before_launch": true,
+    "verified_running_source_commit": "41e56f4b24ebfedf152e0ec5f7ef1cf93e96462e",
+    "verified_release_candidate_version": 24
+  },
+  "launch_security": {
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "internet_verification": "Kaggle Settings displayed Turn off internet",
+    "accelerator": "GPU T4 x2",
+    "accelerator_verification": "Kaggle active event and private run log",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_name": "anlu-kaggle-v24-readonly",
+    "hugging_face_token_permission": "fine-grained read-only preset",
+    "secret_masked_in_kaggle_ui": true,
+    "token_created_in_authenticated_browser": true,
+    "token_value_captured_in_memory_only": true,
+    "token_value_printed": false,
+    "token_value_written_to_disk": false,
+    "token_value_embedded_in_notebook_or_repository": false,
+    "token_working_variable_cleared_after_binding": true,
+    "superseded_token_revoked_after_v24_authentication": "anlu-kaggle-v23-readonly"
+  },
+  "observed_launch_signals": [
+    "Kaggle version history: Viewing Version 24, V24 explicit evidence-state contrast, Running",
+    "Kaggle active event: Version #24 with GPU T4 x2 Running",
+    "Kaggle CLI reports KernelWorkerStatus.RUNNING",
+    "Verified private Anlu snapshot 41e56f4b24ebfedf152e0ec5f7ef1cf93e96462e at /kaggle/temp/anlu-private-snapshot-6793d89e5df4",
+    "runtime_initialized",
+    "gated_model_access_granted",
+    "dataset_bundle_ready",
+    "Dataset rows: train=793, effective_train=3783, validation=77",
+    "sft_format_gate_passed records=870"
+  ],
+  "local_gate_results_before_launch": {
+    "pytest": "83 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "130/130 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 8 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V24 is a private release-candidate experiment. The localhost application remains unchanged until all automated release gates pass."
+}
