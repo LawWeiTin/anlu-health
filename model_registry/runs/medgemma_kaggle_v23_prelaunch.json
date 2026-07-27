@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "verified_ready_for_private_launch",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 23,
+  "version_name": "V23 strict supplied-source fidelity",
+  "private": true,
+  "training_source_commit": "3182b3fb5b43ca7065574e60b5c5c63278250e86",
+  "launcher_artifact_commit": "17706201bc02d42ada4dc3b0301aaeb837a94e69",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "v22_terminal_evidence": {
+    "candidate_passed": 28,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.9333333333333333,
+    "turn_boundary_stop_rate": 1.0,
+    "losses_finite": true,
+    "genuine_failure": "release-wrong-rag-topic",
+    "evaluator_false_negative": "release-citation-negated-claim",
+    "secondary_infrastructure_error": "A stale V21 cell ran after V22 saved its failed release report."
+  },
+  "change_summary": {
+    "inference_policy": [
+      "A mismatched-source response must identify what the supplied source actually covers.",
+      "Only the supplied source title and summary may determine topic match.",
+      "Symptom text elsewhere in the prompt may never be treated as source content."
+    ],
+    "release_evaluator": "A narrow general matcher accepts a source/evidence noun plus an explicit absence or failed-retrieval predicate, including 'a current source was not found'.",
+    "release_evaluator_negative_controls": [
+      "Positive 'a current source was found' remains rejected.",
+      "A missing diagnosis plus a positive source remains rejected.",
+      "The attribute-negation construction 'source was not found to be inaccurate' remains rejected."
+    ],
+    "behavior_examples_added": 8,
+    "behavior_examples_total": 121,
+    "held_out_release_suite": "Unchanged from V22.",
+    "release_candidate_version": 23
+  },
+  "snapshot": {
+    "manifest_sha256": "3408f3ae77675714c10b91bc129bce3ff88297825af989ba4bd644f54a67d094",
+    "launcher_sha256": "94328f8bd5e17aae6210bb85e9aa35f4f8f926a19b7d3ea7322a37c031805946",
+    "notebook_sha256": "443990a6264c3dfc72ec872e1a246e7ba0d4736133031c29d45c1a5158420783",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 201338,
+    "verified": true,
+    "secret_embedded": false
+  },
+  "local_gate_results": {
+    "pytest": "83 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "121/121 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 8 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "fine-grained read-only",
+    "import_must_replace_not_append": true
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V23 is the smallest evidence-backed follow-up to V22. The candidate notebook is verified as one cell before import, no adapter weights were downloaded locally, and the localhost candidate remains unchanged."
+}
