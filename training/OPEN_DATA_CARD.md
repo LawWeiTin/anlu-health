@@ -16,10 +16,10 @@ clinical model and is not intended to learn diagnosis or personalized treatment.
   the official test-ground-truth file is excluded from training and remains available for evaluation.
 - **Anlu authored safety set**: synthetic project-authored behavior examples covering small talk,
   topic mismatch, citation integrity, red-flag navigation, lump assessment, medicine-herb safety,
-  TCM evidence separation, and English/Chinese prompts. No real user messages. Clinical review is
-  still pending, so these examples cannot independently authorize production use. During training,
-  this behavior subset receives a sampling weight of twenty-four to keep generic biomedical QA from
-  overwhelming the intended conversational behavior.
+  TCM evidence separation, evidence-state contrasts, and English/Chinese prompts. No real user
+  messages. Clinical review is still pending, so these examples cannot independently authorize
+  production use. During training, this behavior subset receives a sampling weight of twenty-four
+  to keep generic biomedical QA from overwhelming the intended conversational behavior.
 
 MedMCQA is recorded but evaluation-only because entrance-exam multiple-choice responses are not the
 target conversational behavior. Scraped patient consultations, credentialed clinical records, and

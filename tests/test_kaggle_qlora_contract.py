@@ -38,7 +38,7 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
     assert "BEHAVIOR_WEIGHT = 24" in source
-    assert "RELEASE_CANDIDATE_VERSION = 23" in source
+    assert "RELEASE_CANDIDATE_VERSION = 24" in source
     assert "RUNTIME_INSTALL_ATTEMPTS = 3" in source
     assert '"--retries"' in source
     assert "except subprocess.CalledProcessError" in source
@@ -56,6 +56,11 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "identify what the supplied source actually" in source
     assert "Compare only the supplied" in source
     assert "Never infer or claim a match" in source
+    assert "distinguish exactly three evidence states" in source
+    assert "never call this a no-source state" in source
+    assert 'Never say "no source was supplied" when any source' in source
+    assert "I cannot choose, invent, or cite one." in source
+    assert "Never say that you can choose, invent, or cite an unretrieved source." in source
     assert "move away from anything they could use" in source
     assert "Do not omit any of those three actions." in source
     assert "combine the mismatch disclosure and urgent action" in source

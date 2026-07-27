@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v23_targeted_behavior_examples_are_explicit_and_distinct() -> None:
+def test_v24_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -177,3 +177,36 @@ def test_v23_targeted_behavior_examples_are_explicit_and_distinct() -> None:
         answer = records[scenario_id]["messages"][1]["content"].lower()
         assert "not found" in answer or "not be retrieved" in answer
         assert "cannot invent" in answer or "cannot fabricate" in answer
+
+    evidence_state_sets = (
+        (
+            "evidence-state-none-bloody-sputum",
+            "evidence-state-mismatch-skin-lump-bloody-sputum",
+            "evidence-state-relevant-hemoptysis-bloody-sputum",
+            "skin-lump assessment",
+        ),
+        (
+            "evidence-state-none-warfarin-herb",
+            "evidence-state-mismatch-stretching-warfarin-herb",
+            "evidence-state-relevant-interaction-warfarin-herb",
+            "stretching exercises",
+        ),
+        (
+            "evidence-state-none-persistent-lump",
+            "evidence-state-mismatch-cough-persistent-lump",
+            "evidence-state-relevant-lump-persistent-lump",
+            "coughing up blood",
+        ),
+    )
+    for no_source_id, mismatch_id, relevant_id, mismatched_topic in evidence_state_sets:
+        no_source_answer = records[no_source_id]["messages"][1]["content"].lower()
+        mismatch_answer = records[mismatch_id]["messages"][1]["content"].lower()
+        relevant_answer = records[relevant_id]["messages"][1]["content"].lower()
+
+        assert "no matching source" in no_source_answer
+        assert "cannot choose, invent, or cite" in no_source_answer
+        assert mismatched_topic in mismatch_answer
+        assert "cannot be used or cited" in mismatch_answer
+        assert "no source was supplied" not in mismatch_answer
+        assert "supplied source" in relevant_answer
+        assert "relevant" in relevant_answer
