@@ -5,8 +5,8 @@
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
   "kaggle_kernel_id": 127448562,
   "kaggle_version_number": 23,
-  "script_version_id": null,
-  "script_version_id_resolution": "pending_authenticated_private_version_history",
+  "script_version_id": 338180981,
+  "script_version_id_resolution": "resolved_from_authenticated_private_version_history",
   "version_name": "V23 strict supplied-source fidelity",
   "launched_at": "2026-07-27T00:50:23.727Z",
   "launched_at_basis": "authenticated Kaggle API last_run_time immediately after Save & Run All",
@@ -49,7 +49,9 @@
     "Kaggle active event: Anlu Health - MedGemma QLoRA Release Candidate Version #23 with GPU T4 x2 Running",
     "Save & Run All (Commit) selected",
     "running notebook source contains commit 3182b3fb5b43ca7065574e60b5c5c63278250e86 and RELEASE_CANDIDATE_VERSION 23",
-    "Kaggle CLI reports KernelWorkerStatus.RUNNING"
+    "authenticated private version history exposed scriptVersionId 338180981",
+    "Kaggle CLI reports KernelWorkerStatus.RUNNING",
+    "baseline held-out evaluation started without a traceback"
   ],
   "local_gate_results_before_launch": {
     "pytest": "83 passed with 83.98% coverage",
