@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v22_targeted_behavior_examples_are_explicit_and_distinct() -> None:
+def test_v23_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -153,3 +153,27 @@ def test_v22_targeted_behavior_examples_are_explicit_and_distinct() -> None:
         assert "does not match" in first_sentence
         assert "cannot be used or cited" in first_sentence
         assert "cannot identify" in first_sentence or "cannot determine" in first_sentence
+
+    supplied_topic_examples = {
+        "source-boundary-kitchen-burns-maroon-stool": "kitchen-burn prevention",
+        "source-boundary-houseplants-red-mucus": "houseplant care",
+        "source-boundary-dental-cleaning-facial-droop": "routine dental cleaning",
+        "source-boundary-helmet-fit-chest-pressure": "helmet fit",
+        "source-boundary-diaper-rash-adult-tremor": "infant diaper-rash care",
+        "source-boundary-sunscreen-palpitations": "sunscreen selection",
+    }
+    for scenario_id, supplied_topic in supplied_topic_examples.items():
+        first_sentence = (
+            records[scenario_id]["messages"][1]["content"].split(".", maxsplit=1)[0].lower()
+        )
+        assert supplied_topic in first_sentence
+        assert "cannot be used or cited" in first_sentence
+        assert "not" in first_sentence
+
+    for scenario_id in (
+        "citation-zero-records-recurring-headache",
+        "citation-retrieval-failed-tinnitus",
+    ):
+        answer = records[scenario_id]["messages"][1]["content"].lower()
+        assert "not found" in answer or "not be retrieved" in answer
+        assert "cannot invent" in answer or "cannot fabricate" in answer

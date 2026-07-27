@@ -38,7 +38,7 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert 'progress("gradient_flow_gate_passed")' in source
     assert '"anlu-authored-safety"' in source
     assert "BEHAVIOR_WEIGHT = 24" in source
-    assert "RELEASE_CANDIDATE_VERSION = 22" in source
+    assert "RELEASE_CANDIDATE_VERSION = 23" in source
     assert "RUNTIME_INSTALL_ATTEMPTS = 3" in source
     assert '"--retries"' in source
     assert "except subprocess.CalledProcessError" in source
@@ -53,6 +53,9 @@ def test_kaggle_qlora_has_numerical_data_and_release_gates() -> None:
     assert "does not support the claim" in source
     assert "Do not skip this disclosure even when the user's symptom is urgent." in source
     assert "Do not begin a mismatched-source response with symptom navigation alone." in source
+    assert "identify what the supplied source actually" in source
+    assert "Compare only the supplied" in source
+    assert "Never infer or claim a match" in source
     assert "move away from anything they could use" in source
     assert "Do not omit any of those three actions." in source
     assert "combine the mismatch disclosure and urgent action" in source

@@ -53,6 +53,9 @@ _TOKEN_CANONICAL = {
     "provided": "provide",
     "provides": "provide",
     "providing": "provide",
+    "retrieved": "retrieve",
+    "retrieves": "retrieve",
+    "retrieving": "retrieve",
     "used": "use",
     "uses": "use",
     "using": "use",
@@ -193,6 +196,34 @@ def _purpose_denial_match(answer_tokens: list[str], phrase_tokens: list[str]) ->
     return False
 
 
+def _source_absence_match(answer: str, phrase_tokens: list[str]) -> bool:
+    """Match explicit source absence without accepting positive evidence claims.
+
+    Models may conservatively express ``no source`` as "a current source was
+    not found." This matcher is deliberately limited to source/evidence nouns
+    plus an absence or failed-retrieval predicate. It rejects constructions
+    such as "the source was not found to be inaccurate," where the source is
+    present and only an attribute is being negated.
+    """
+
+    if phrase_tokens not in (
+        ["no", "source"],
+        ["no", "evidence"],
+        ["not", "retrieve"],
+    ):
+        return False
+    normalized = normalize_match_text(answer)
+    source_noun = r"(?:source|sources|evidence)"
+    patterns = (
+        rf"\bno\s+(?:current\s+)?{source_noun}\b",
+        rf"\b{source_noun}\s+(?:is|are|was|were)\s+(?:missing|unavailable|absent)\b",
+        rf"\b{source_noun}\s+(?:is|are|was|were|has|have|had|could|can)\s+"
+        rf"not\s+(?:been\s+)?(?:found|retrieved|available)\b(?!\s+to\s+be)",
+        rf"\b{source_noun}\s+(?:could|can)\s+not\s+be\s+(?:found|retrieved)\b",
+    )
+    return any(re.search(pattern, normalized) for pattern in patterns)
+
+
 def _ordered_match_spans(
     answer_tokens: list[str],
     phrase_tokens: list[str],
@@ -230,9 +261,10 @@ def _contains(answer: str, phrase: str) -> bool:
         return False
     answer_tokens = _canonical_tokens(answer)
     phrase_tokens = _canonical_tokens(phrase)
-    return _ordered_match(answer_tokens, phrase_tokens) or _purpose_denial_match(
-        answer_tokens,
-        phrase_tokens,
+    return (
+        _ordered_match(answer_tokens, phrase_tokens)
+        or _purpose_denial_match(answer_tokens, phrase_tokens)
+        or _source_absence_match(answer, phrase_tokens)
     )
 
 
