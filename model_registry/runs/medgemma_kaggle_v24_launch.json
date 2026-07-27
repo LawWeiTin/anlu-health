@@ -59,8 +59,16 @@
     "gated_model_access_granted",
     "dataset_bundle_ready",
     "Dataset rows: train=793, effective_train=3783, validation=77",
-    "sft_format_gate_passed records=870"
+    "sft_format_gate_passed records=870",
+    "numerical_precision_gate_passed"
   ],
+  "latest_health_observation": {
+    "observed_at": "2026-07-27T12:21:26.639Z",
+    "runtime_seconds": 356.7,
+    "status": "running",
+    "traceback_observed": false,
+    "runtime_error_observed": false
+  },
   "local_gate_results_before_launch": {
     "pytest": "83 passed with 83.98% coverage",
     "ruff": "passed",
