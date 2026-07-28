@@ -93,6 +93,7 @@ _DENIAL_GOVERNORS = {
 _DIRECT_DENIAL_ENDINGS = (
     ("not",),
     ("not", "automatically"),
+    ("not", "considered", "automatically"),
     ("not", "necessarily"),
     ("not", "established", "as"),
     ("not", "known", "to", "be"),

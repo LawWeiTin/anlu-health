@@ -33,6 +33,9 @@ by the application and evaluation harness. The topics and symptoms are distinct 
 cases, while every target repeats the supplied topic and rejects it before care navigation. The
 release evaluator also accepts the strictly equivalent direct denials "cannot support" and
 "does not support" without accepting positive support claims or unrelated negations.
+Version 26 leaves the behavior data and held-out suite unchanged. It fixes the evaluator's bounded
+negation window so "not considered automatically safe during pregnancy" is treated as a denial,
+while a later positive reassurance in the same answer still fails.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy
