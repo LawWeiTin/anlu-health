@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "verified_ready_for_private_launch",
+  "status": "failed_accelerator_gate",
   "verified_at": "2026-07-28T11:49:36.1804851Z",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
@@ -83,5 +83,5 @@
   },
   "local_app_changed": false,
   "promotion_allowed": false,
-  "notes": "V27 is the correctly versioned evaluator-only follow-up after V26 was consumed by a private Quick Save during Colab synchronization. Training data, held-out cases, and model hyperparameters remain unchanged. The adapter stays remote and the localhost candidate remains unchanged."
+  "notes": "V27 launched from the verified private snapshot, but the worker exposed no CUDA device despite the viewer's GPU tag. The explicit startup gate stopped the run before model access or training. V27 is not a release candidate and the localhost candidate remains unchanged."
 }

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "failed_accelerator_gate",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 27,
+  "script_version_id": 338568198,
+  "script_version_id_resolution": "observed_in_authenticated_private_Kaggle_URL",
+  "private": true,
+  "version_type": "Save & Run All",
+  "training_source_commit": "21732333eebc1f5f6e5663625f692735dea34567",
+  "launcher_artifact_commit": "0cef22a107d910afd6ada309010636777c6fa260",
+  "launch_registry_parent_commit": "3e20a73dc856ca405a7ecc864a7d765dfdbcbd20",
+  "snapshot": {
+    "manifest_sha256": "21a18fc94cf0bcdc6fbb38a94109095ce928be7252424ffad6422684f080ca8d",
+    "launcher_sha256": "d8bed993900bc8a1e56321558e7952f5c892ecaed99db4e8c36793e268a8a090",
+    "notebook_sha256": "7e57cb7ccde2ec219fdd7166947631f0fa48d9fb104f7625296707b5d30f7578",
+    "code_cell_count": 1,
+    "verified_running_source_commit": "21732333eebc1f5f6e5663625f692735dea34567",
+    "verified_release_candidate_version": 27
+  },
+  "runtime": {
+    "display": "1m 32s",
+    "viewer_accelerator_tag": "GPU T4 x2",
+    "cuda_available": false,
+    "training_executed": false,
+    "model_access_attempted": false,
+    "adapter_produced": false,
+    "training_report_produced": false
+  },
+  "failure": {
+    "observed_at_seconds": 84.5,
+    "type": "RuntimeError",
+    "message": "Enable a Kaggle GPU before running.",
+    "source_file": "training/medgemma_kaggle_qlora.py",
+    "source_line": 166,
+    "classification": "worker_accelerator_not_provisioned",
+    "traceback_recorded": true
+  },
+  "security": {
+    "notebook_visibility": "private",
+    "token_value_opened": false,
+    "token_value_printed": false,
+    "token_value_copied": false,
+    "token_value_written_to_disk": false
+  },
+  "smallest_safe_follow_up": "Relaunch the identical evaluator fix as V28 through the private kernel metadata path with enable_gpu=true, enable_internet=true, and is_private=true so accelerator provisioning is explicit.",
+  "local_app_changed": false,
+  "promotion_allowed": false
+}
