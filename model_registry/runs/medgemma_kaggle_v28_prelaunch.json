@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "verified_ready_for_private_launch",
+  "status": "failed_accelerator_gate",
   "verified_at": "2026-07-28T12:09:07.8357741Z",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
@@ -62,7 +62,7 @@
   "launch_requirements": {
     "notebook_visibility": "private",
     "accelerator": "GPU",
-    "accelerator_provisioning": "kernel-metadata enable_gpu=true plus kaggle kernels push --accelerator gpu",
+    "accelerator_provisioning": "kernel-metadata enable_gpu=true plus kaggle kernels push --accelerator gpu; Kaggle interpreted the generic shape as its default NvidiaTeslaP100",
     "internet_enabled": true,
     "encrypted_secret_binding": "HF_TOKEN",
     "encrypted_secret_binding_count": 1,
@@ -79,5 +79,5 @@
   },
   "local_app_changed": false,
   "promotion_allowed": false,
-  "notes": "V28 keeps the evaluator-only source change and provisions the private Kaggle accelerator explicitly through tracked kernel metadata and the CLI accelerator override. Training data, held-out cases, and model hyperparameters remain unchanged."
+  "notes": "V28 kept the evaluator-only source change, but the generic CLI accelerator value provisioned a Tesla P100 with compute capability 6.0. The pinned Kaggle PyTorch runtime supports sm_70 and newer, and the explicit T4-or-newer safety gate stopped the run before model access or training. V29 will use Kaggle's documented NvidiaTeslaT4 machine-shape identifier without weakening the gate. Training data, held-out cases, and model hyperparameters remain unchanged."
 }

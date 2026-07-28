@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "failed_accelerator_gate",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 28,
+  "script_version_id": 338569610,
+  "script_version_id_resolution": "observed_in_authenticated_private_Kaggle_URL",
+  "private": true,
+  "version_type": "Save & Run All",
+  "launched_at": "2026-07-28T12:10:00Z",
+  "launch_method": "kaggle_cli_kernel_push",
+  "training_source_commit": "1935cec89019c4b8d2358a4d1e2c9ffc42e8a4a9",
+  "launcher_artifact_commit": "18ac11c9b4783a64a83370f243e0ba074b6a5dbe",
+  "launch_registry_parent_commit": "66ad49dfc1e167443c08423260c90a5f6c3f4f64",
+  "snapshot": {
+    "manifest_sha256": "eabd8625a802894409014036e87ee5747f0835538bcf57456ec5a644bfeff412",
+    "launcher_sha256": "42bd3bab2c17a4662af12de86fef480d4372db5f245104628a58fc770b595159",
+    "notebook_sha256": "2ef26feb5205460b1d7d6e15e3c9854d07cd571689e4b63f87c728b690ef373a",
+    "code_cell_count": 1,
+    "verified_running_source_commit": "1935cec89019c4b8d2358a4d1e2c9ffc42e8a4a9",
+    "verified_release_candidate_version": 28
+  },
+  "runtime": {
+    "display": "1m 5s",
+    "requested_accelerator": "gpu",
+    "provisioned_accelerator": "Tesla P100-PCIE-16GB",
+    "cuda_compute_capability": "6.0",
+    "pytorch_supported_cuda_architectures": [
+      "sm_70",
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "training_executed": false,
+    "model_access_attempted": false,
+    "adapter_produced": false,
+    "training_report_produced": false
+  },
+  "failure": {
+    "observed_at_seconds": 65.2,
+    "type": "RuntimeError",
+    "message": "A T4-or-newer GPU is required.",
+    "source_file": "training/medgemma_kaggle_qlora.py",
+    "source_line": 167,
+    "classification": "incompatible_default_p100_accelerator",
+    "traceback_recorded": true,
+    "root_cause": "The generic Kaggle CLI accelerator value gpu selected NvidiaTeslaP100. The provisioned P100 has compute capability 6.0, below both the pinned runtime's sm_70 minimum and the release candidate's explicit T4-or-newer gate."
+  },
+  "security": {
+    "notebook_visibility": "private",
+    "token_value_opened": false,
+    "token_value_printed": false,
+    "token_value_copied": false,
+    "token_value_written_to_disk": false
+  },
+  "smallest_safe_follow_up": "Relaunch the unchanged evaluator fix as V29 with the documented Kaggle CLI machine shape NvidiaTeslaT4. Keep the T4-or-newer gate, private visibility, internet setting, and single encrypted fine-grained read-only HF_TOKEN binding unchanged.",
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "recorded_at": "2026-07-28T12:16:22.1678898Z"
+}
