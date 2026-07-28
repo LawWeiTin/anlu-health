@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "verified_ready_for_private_launch",
+  "status": "superseded_by_sync_only_version",
   "verified_at": "2026-07-28T11:42:53.2563079Z",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
@@ -75,5 +75,5 @@
   },
   "local_app_changed": false,
   "promotion_allowed": false,
-  "notes": "V26 is the smallest evaluator-only follow-up to V25. Training data, held-out cases, and model hyperparameters are unchanged. The private adapter will remain remote and the localhost candidate remains unchanged."
+  "notes": "The verified V26 snapshot was pulled from the linked private Drive notebook, but Kaggle's Colab sync immediately created immutable Version 26 as a Quick Save before Save & Run All could be selected. It did not execute training and is not a release candidate. The identical evaluator fix is being rebuilt with RELEASE_CANDIDATE_VERSION 27 for a correctly configured private run."
 }
