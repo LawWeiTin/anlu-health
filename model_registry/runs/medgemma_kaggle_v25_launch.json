@@ -53,14 +53,15 @@
     "Kaggle active event: Version #25 with GPU T4 x2 Running",
     "Running one-cell notebook contains source commit 2d35760b23b32b36a7e5da22c9946c97b6a1cdae",
     "Running one-cell notebook contains RELEASE_CANDIDATE_VERSION = 25",
-    "Baseline held-out evaluation started without a traceback"
+    "Baseline held-out evaluation started without a traceback",
+    "gradient_flow_gate_passed"
   ],
   "latest_health_observation": {
-    "observed_at": "2026-07-28T02:17:06.9486760Z",
+    "observed_at": "2026-07-28T02:22:37.2002200Z",
     "status": "running",
-    "phase": "baseline held-out evaluation",
-    "latest_bounded_log": "baseline release-zh-neck-lump: FAIL (8.16s)",
-    "latest_log_interpretation": "Expected baseline-suite outcome; not a candidate failure",
+    "phase": "post-baseline training initialization",
+    "latest_bounded_log": "gradient_flow_gate_passed",
+    "latest_log_interpretation": "The trainable adapter path produced gradients and passed the notebook's gradient-flow gate",
     "traceback_observed": false,
     "runtime_error_observed": false
   },
