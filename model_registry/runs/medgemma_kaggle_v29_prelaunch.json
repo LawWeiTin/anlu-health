@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "verified_ready_for_private_launch",
+  "status": "failed_secret_binding_gate",
   "verified_at": "2026-07-28T12:24:25.0575280Z",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
@@ -86,5 +86,5 @@
   },
   "local_app_changed": false,
   "promotion_allowed": false,
-  "notes": "V29 changes only the immutable release-candidate number and the explicit Kaggle accelerator machine shape after V28's P100 provisioning failure. The evaluator-only source fix, training data, held-out cases, and model hyperparameters remain unchanged."
+  "notes": "V29 successfully provisioned GPU T4 x2, but the CLI-created notebook version did not have an HF_TOKEN secret attached. Kaggle's secret service returned HTTP 400 before gated-model access, dataset preparation, training, or evaluation. The evaluator-only source fix, training data, held-out cases, and model hyperparameters remain unchanged. Do not relaunch until exactly one existing fine-grained read-only token is attached under the label HF_TOKEN without exposing its value."
 }
