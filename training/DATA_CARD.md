@@ -42,6 +42,10 @@ read-only `HF_TOKEN` binding to the private Kaggle notebook.
 Version 31 again leaves data, evaluation, and hyperparameters unchanged. It uses Kaggle's private
 editor Save & Run All flow after visibly enabling the encrypted `HF_TOKEN` checkbox, because the
 CLI push that created Version 30 replaced the draft and cleared its notebook-level secret binding.
+Version 32 is the immutable retry after Version 31's newly rotated token proved valid but lacked the
+selected-repository read bit. It uses a replacement fine-grained token whose only checked permission
+is `Read contents of selected repos` for `google/medgemma-1.5-4b-it`; the pinned model config returned
+HTTP 200 before the encrypted Kaggle binding was updated.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy

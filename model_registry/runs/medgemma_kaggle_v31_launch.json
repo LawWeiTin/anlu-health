@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "running_hub_access_retry",
+  "status": "cancelled_insufficient_hf_token_scope_gate",
   "platform": "kaggle",
   "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
   "kaggle_version_number": 31,
@@ -30,8 +30,8 @@
     "runtime_initialized": true,
     "encrypted_secret_retrieval_passed": true,
     "gated_model_access_granted": false,
-    "gated_model_access_status": "pending_transient_hub_retry",
-    "latest_observed_hub_access_attempt": 4,
+    "gated_model_access_status": "failed_token_scope_verification",
+    "latest_observed_hub_access_attempt": 6,
     "latest_observed_hub_access_error": "LocalEntryNotFoundError",
     "hub_access_retry_wait_seconds": 60,
     "traceback_observed": false,
@@ -60,10 +60,18 @@
     "observed_at": "2026-07-28T13:40:42.7054408Z",
     "kaggle_status": "Running",
     "kaggle_reported_elapsed": "5 minutes",
-    "latest_log": "hub_access_retry attempt=4 error=LocalEntryNotFoundError wait_seconds=60",
-    "interpretation": "The encrypted HF_TOKEN was retrieved successfully. The pinned config.json download is still retrying before gated_model_access_granted and before any dataset or training work."
+    "latest_log": "hub_access_retry attempt=6 error=LocalEntryNotFoundError wait_seconds=60",
+    "direct_hugging_face_pinned_config_probe_status": 403,
+    "interpretation": "The encrypted HF_TOKEN was retrieved successfully, but a direct authenticated request for the same pinned config.json returned HTTP 403. The run was cancelled before dataset or training work."
   },
-  "next_required_gate": "Observe gated_model_access_granted before permitting dataset preparation or training to count as a valid release run.",
+  "terminal_observation": {
+    "observed_at": "2026-07-28T13:43:41.1224951Z",
+    "kaggle_status": "Cancelled",
+    "cancelled_by_operator": true,
+    "reason": "The newly rotated fine-grained token did not carry repository-content read permission for the gated MedGemma resource.",
+    "smallest_safe_follow_up": "Create a new fine-grained token with the selected repository and Read contents of selected repos explicitly checked, verify the pinned config request returns success, then launch the next immutable release version."
+  },
+  "next_required_gate": "Verify the replacement token can read the pinned MedGemma config before launching the next immutable release version.",
   "local_app_changed": false,
   "promotion_allowed": false,
   "notes": "The localhost app candidate remains unchanged. Do not connect this adapter unless the run completes, all automated gates pass, and the private endpoint is ready for localhost-only testing."
