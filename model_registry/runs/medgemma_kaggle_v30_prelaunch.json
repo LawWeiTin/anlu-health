@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "verified_prelaunch",
+  "verified_at": "2026-07-28T12:51:54.5749878Z",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 30,
+  "version_name": "V30 encrypted secret binding recovery",
+  "private": true,
+  "training_source_commit": "9f88f23c6d26d9bf5e9d6d51a30ccde8bbfce788",
+  "launcher_artifact_commit": "2ab9621f621de9cf756cf2dd2e3e3dd71e8b12bf",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "v29_terminal_evidence": {
+    "status": "failed_secret_binding_gate",
+    "script_version_id": 338572382,
+    "provisioned_accelerator": "GPU T4 x2",
+    "runtime_initialized": true,
+    "gated_model_access_granted": false,
+    "training_executed": false,
+    "root_cause": "The CLI-created V29 run had no encrypted HF_TOKEN binding."
+  },
+  "change_summary": {
+    "training_data": "Unchanged from V29.",
+    "held_out_release_suite": "Unchanged from V29.",
+    "evaluator": "Unchanged from V29.",
+    "model_hyperparameters": "Unchanged from V29.",
+    "operational_change": "Created a repository-scoped fine-grained Hugging Face token and attached it to the private Kaggle notebook as exactly one encrypted HF_TOKEN secret.",
+    "release_candidate_version": 30
+  },
+  "snapshot": {
+    "manifest_sha256": "c9a250975e5b6e2d4f0942b38f169d147905a9a91a33db56a9307d6f94e93648",
+    "launcher_sha256": "7942f01ee54548fd7e55e954398ef454f44ccf26c5059dfde1d1003ffd3aed83",
+    "notebook_sha256": "72063034ee6a2957c3efd83f1fc6035b056690edfc62f1866dc81da6e4388269",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 218790,
+    "verified": true,
+    "embedded_source_commit": "9f88f23c6d26d9bf5e9d6d51a30ccde8bbfce788",
+    "embedded_release_candidate_version": 30,
+    "embedded_hf_token_pattern": false
+  },
+  "secret_binding": {
+    "label": "HF_TOKEN",
+    "configured_binding_count": 1,
+    "verified_in_authenticated_private_kaggle_editor": true,
+    "hugging_face_token_type": "fine-grained",
+    "hugging_face_resource": "google/medgemma-1.5-4b-it",
+    "hugging_face_permission": "read contents of selected repository",
+    "write_permissions": false,
+    "inference_permissions": false,
+    "token_value_printed": false,
+    "token_value_logged": false,
+    "token_value_written_to_disk": false,
+    "token_value_committed": false
+  },
+  "local_gate_results": {
+    "pytest": "86 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed; expected-source recall 1.0; forbidden-source rate 0.0; abstention accuracy 1.0",
+    "behavior_dataset_audit": "136/136 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 9 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "accelerator_machine_shape": "NvidiaTeslaT4",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "Launch only as a private immutable Save & Run All version. Confirm gated-model access promptly; stop and record the run if the encrypted secret is not injected. Do not update the localhost app candidate or production-promote until all automated and pending human approvals pass."
+}
