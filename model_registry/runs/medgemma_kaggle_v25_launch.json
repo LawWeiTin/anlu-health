@@ -54,14 +54,23 @@
     "Running one-cell notebook contains source commit 2d35760b23b32b36a7e5da22c9946c97b6a1cdae",
     "Running one-cell notebook contains RELEASE_CANDIDATE_VERSION = 25",
     "Baseline held-out evaluation started without a traceback",
-    "gradient_flow_gate_passed"
+    "gradient_flow_gate_passed",
+    "trainer_log step=30 epoch=0.061115355233002294 loss=1.7613 grad_norm=2.5795226097106934 learning_rate=9.998182135179173e-05"
   ],
   "latest_health_observation": {
-    "observed_at": "2026-07-28T02:22:37.2002200Z",
+    "observed_at": "2026-07-28T02:40:12.5257540Z",
     "status": "running",
-    "phase": "post-baseline training initialization",
-    "latest_bounded_log": "gradient_flow_gate_passed",
-    "latest_log_interpretation": "The trainable adapter path produced gradients and passed the notebook's gradient-flow gate",
+    "phase": "training",
+    "runtime_display": "27m",
+    "step": 30,
+    "epoch": 0.061115355233002294,
+    "loss": 1.7613,
+    "grad_norm": 2.5795226097106934,
+    "learning_rate": 9.998182135179173e-05,
+    "loss_finite": true,
+    "grad_norm_finite": true,
+    "latest_bounded_log": "trainer_log step=30 metrics={\"epoch\": 0.061115355233002294, \"grad_norm\": 2.5795226097106934, \"learning_rate\": 9.998182135179173e-05, \"loss\": 1.7613}",
+    "latest_log_interpretation": "V25 remains active on GPU T4 x2 and is training with finite loss and gradient norm",
     "traceback_observed": false,
     "runtime_error_observed": false
   },
