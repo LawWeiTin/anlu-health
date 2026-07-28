@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "running_baseline_evaluation",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 32,
+  "script_version_id": 338590746,
+  "script_version_id_resolution": "observed_in_authenticated_private_Kaggle_version_history_Open_in_Viewer_URL",
+  "private": true,
+  "version_name": "V32 verified selected-repository token scope",
+  "version_type": "Save & Run All",
+  "launched_at": "2026-07-28T13:56:00Z",
+  "launch_time_precision": "minute",
+  "launch_method": "authenticated_private_editor_Save_and_Run_All",
+  "training_source_commit": "e2bdc337eb5174995cfd6513d791f6ac7b2a2410",
+  "launcher_artifact_commit": "a58a5a847ed966abbb46ed10bb832ca1568626ef",
+  "launch_registry_parent_commit": "79d2193dd5c968a8dc65ed849addec0444103e45",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "f873bac4d60fee6d7c7b99959b13606e6930a182f8cbd655b1c514c7c3416c2d",
+    "launcher_sha256": "23a1ae428add5c38172618166adc9101aa6eb0cc42df6d4898a492112a7740c7",
+    "notebook_sha256": "f778ad37aa32f3b15369dc8fac38f2500c413cb57777fa2247e9a2893d64cddf",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 218790,
+    "verified_running_source_commit": "e2bdc337eb5174995cfd6513d791f6ac7b2a2410",
+    "verified_release_candidate_version": 32,
+    "embedded_hf_token_pattern": false
+  },
+  "runtime": {
+    "provisioned_accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "runtime_initialized": true,
+    "encrypted_secret_retrieval_passed": true,
+    "gated_model_access_granted": true,
+    "dataset_preparation_completed": true,
+    "baseline_evaluation_started": true,
+    "training_started": false,
+    "adapter_produced": false,
+    "training_report_produced": false,
+    "traceback_observed": false,
+    "runtime_error_observed": false
+  },
+  "secret_binding": {
+    "label": "HF_TOKEN",
+    "configured_binding_count": 1,
+    "mask": "*****",
+    "binding_checkbox_checked": true,
+    "accessible_checkbox_action": "Unset HF_TOKEN",
+    "hugging_face_token_type": "fine-grained",
+    "hugging_face_resource": "google/medgemma-1.5-4b-it",
+    "checked_permissions": [
+      "Read contents of selected repos"
+    ],
+    "pinned_config_probe_status": 200,
+    "write_permissions_requested": false,
+    "inference_permissions_requested": false,
+    "token_value_printed": false,
+    "token_value_logged": false,
+    "token_value_written_to_disk": false,
+    "token_value_committed": false
+  },
+  "bounded_health_observation": {
+    "observed_at": "2026-07-28T14:00:08.1751434Z",
+    "kaggle_status": "Running",
+    "kaggle_reported_elapsed": "4 minutes",
+    "phase": "baseline_held_out_evaluation",
+    "latest_log": "baseline release-wrong-rag-topic: PASS (6.58s)",
+    "interpretation": "The run reached baseline evaluation, which occurs after runtime initialization, encrypted secret retrieval, gated model access, and dataset preparation. No traceback or runtime error was visible."
+  },
+  "observed_launch_signals": [
+    "Kaggle version history: Version 32, V32 verified selected-repository token scope, Running",
+    "Kaggle active event: Version #32 with GPU T4 x2 Running",
+    "Running one-cell notebook contains source commit e2bdc337eb5174995cfd6513d791f6ac7b2a2410",
+    "Running one-cell notebook contains RELEASE_CANDIDATE_VERSION = 32",
+    "Direct authenticated pinned config probe returned HTTP 200 before launch",
+    "Baseline held-out case release-wrong-rag-topic passed without a traceback"
+  ],
+  "next_required_gate": "Complete the private Kaggle run, inspect training_report.json and adapter checksums, and require finite losses, 30/30 candidate held-out passes, candidate at least baseline, and 30/30 turn-boundary stops.",
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "The localhost app candidate remains unchanged. Do not connect this adapter unless the run completes, every automated gate passes, and the private endpoint is ready for localhost-only testing."
+}
