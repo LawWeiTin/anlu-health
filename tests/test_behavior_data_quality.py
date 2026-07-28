@@ -19,7 +19,7 @@ def test_behavior_dataset_passes_coverage_provenance_and_leakage_gates() -> None
     assert report["leakage"] == []
 
 
-def test_v24_targeted_behavior_examples_are_explicit_and_distinct() -> None:
+def test_v25_targeted_behavior_examples_are_explicit_and_distinct() -> None:
     records = {
         row["scenario_id"]: row
         for row in (
@@ -210,3 +210,27 @@ def test_v24_targeted_behavior_examples_are_explicit_and_distinct() -> None:
         assert "no source was supplied" not in mismatch_answer
         assert "supplied source" in relevant_answer
         assert "relevant" in relevant_answer
+
+    structured_source_examples = {
+        "structured-source-rehab-sudden-headache": "knee rehabilitation",
+        "structured-source-fibre-urine-blood": "dietary fibre",
+        "structured-source-infant-feeding-palpitations": "infant feeding",
+        "structured-source-stretching-facial-swelling": "gentle stretching",
+        "structured-source-flossing-one-sided-weakness": "choosing dental floss",
+        "structured-source-sleep-hygiene-black-stool": "sleep hygiene",
+    }
+    for scenario_id, supplied_topic in structured_source_examples.items():
+        record = records[scenario_id]
+        prompt = record["messages"][0]["content"].lower()
+        first_sentence = record["messages"][1]["content"].split(".", maxsplit=1)[0].lower()
+        assert any(
+            label in prompt
+            for label in (
+                "approved source supplied",
+                "supplied source title",
+                "retrieved document",
+            )
+        )
+        assert supplied_topic in first_sentence
+        assert "not" in first_sentence
+        assert "cannot be used or cited" in first_sentence

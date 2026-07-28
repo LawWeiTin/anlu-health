@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This 130-scenario project-authored set demonstrates the required conversational schema and teaches
+This 136-scenario project-authored set demonstrates the required conversational schema and teaches
 response behavior: emergency escalation, diagnostic abstention, useful follow-up questions,
 topic-matched retrieval, citation integrity, evidence separation, concise scope boundaries,
 duration grounding, and herb/medicine caution. It is not a clinical knowledge corpus and remains
@@ -28,6 +28,11 @@ Version 24 adds three matched evidence-state contrast sets. Each clinical topic 
 retrieved source, a clearly unrelated supplied source, and a relevant supplied source. Targets
 explicitly preserve the distinction: absence refuses invention, mismatch names the supplied topic
 before rejecting it, and relevant evidence supports only bounded general guidance.
+Version 25 adds six independent source-mismatch examples using the structured field labels emitted
+by the application and evaluation harness. The topics and symptoms are distinct from the held-out
+cases, while every target repeats the supplied topic and rejects it before care navigation. The
+release evaluator also accepts the strictly equivalent direct denials "cannot support" and
+"does not support" without accepting positive support claims or unrelated negations.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy

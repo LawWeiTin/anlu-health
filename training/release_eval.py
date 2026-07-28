@@ -56,6 +56,9 @@ _TOKEN_CANONICAL = {
     "retrieved": "retrieve",
     "retrieves": "retrieve",
     "retrieving": "retrieve",
+    "supported": "support",
+    "supporting": "support",
+    "supports": "support",
     "used": "use",
     "uses": "use",
     "using": "use",
@@ -103,6 +106,13 @@ _DIRECT_DENIAL_ENDINGS = (
     ("can", "not"),
     ("cannot",),
     ("never",),
+)
+_DIRECT_DENIAL_PREFIXES = (
+    ("cannot",),
+    ("can", "not"),
+    ("does", "not"),
+    ("do", "not"),
+    ("did", "not"),
 )
 _CONTRAST_TOKENS = {"but", "however", "nevertheless", "though", "yet"}
 _META_LEAK_PATTERNS = (
@@ -196,6 +206,28 @@ def _purpose_denial_match(answer_tokens: list[str], phrase_tokens: list[str]) ->
     return False
 
 
+def _direct_denial_equivalent_match(
+    answer_tokens: list[str],
+    phrase_tokens: list[str],
+) -> bool:
+    """Accept direct denial variants only when they govern the same predicate."""
+
+    phrase_predicate: list[str] | None = None
+    for prefix in _DIRECT_DENIAL_PREFIXES:
+        if phrase_tokens[: len(prefix)] == list(prefix):
+            phrase_predicate = phrase_tokens[len(prefix) :]
+            break
+    if not phrase_predicate:
+        return False
+    for prefix in _DIRECT_DENIAL_PREFIXES:
+        for start in _sequence_starts(answer_tokens, list(prefix)):
+            predicate_start = start + len(prefix)
+            predicate_end = predicate_start + len(phrase_predicate)
+            if answer_tokens[predicate_start:predicate_end] == phrase_predicate:
+                return True
+    return False
+
+
 def _source_absence_match(answer: str, phrase_tokens: list[str]) -> bool:
     """Match explicit source absence without accepting positive evidence claims.
 
@@ -264,6 +296,7 @@ def _contains(answer: str, phrase: str) -> bool:
     return (
         _ordered_match(answer_tokens, phrase_tokens)
         or _purpose_denial_match(answer_tokens, phrase_tokens)
+        or _direct_denial_equivalent_match(answer_tokens, phrase_tokens)
         or _source_absence_match(answer, phrase_tokens)
     )
 

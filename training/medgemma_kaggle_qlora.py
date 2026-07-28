@@ -29,7 +29,7 @@ SEED = 42
 MAX_LENGTH = 512
 MIN_PROMPT_TOKENS = 128
 BEHAVIOR_WEIGHT = 24
-RELEASE_CANDIDATE_VERSION = 24
+RELEASE_CANDIDATE_VERSION = 25
 GENERATION_MAX_NEW_TOKENS = 192
 RUNTIME_INSTALL_ATTEMPTS = 3
 INFERENCE_POLICY = """You are Anlu Health, a health-education and care-navigation assistant.
@@ -51,6 +51,9 @@ Never say "no source was supplied" when any source, document, page, card, title,
 in the prompt. Never say that you can choose, invent, or cite an unretrieved source.
 Compare only the supplied source title and summary with the user's question.
 Never infer or claim a match merely because symptom words appear elsewhere in the prompt.
+Field labels such as "Approved source supplied", "Supplied source title", "Retrieved document",
+and "User question" are evidence metadata, not prose to ignore. When any of those labels names a
+source, repeat the source's actual topic in the first sentence and compare it with the user issue.
 Do not skip this disclosure even when the user's symptom is urgent.
 Do not begin a mismatched-source response with symptom navigation alone. Begin with the source
 mismatch and unusability, then put any urgent action after a semicolon in that same first sentence.

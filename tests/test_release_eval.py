@@ -452,6 +452,41 @@ def test_v21_clean_stop_answer_passes_general_paraphrase_rule() -> None:
     assert check_case(cases["release-evidence-mismatch-clean-stop"], answer)["passed"] is True
 
 
+def test_v24_clean_stop_answer_passes_direct_denial_equivalence() -> None:
+    cases = {
+        row["id"]: row
+        for row in (
+            json.loads(line)
+            for line in Path("training/data/model_release_cases.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        )
+    }
+    answer = (
+        "That document does not discuss causes of wheezing, so it cannot support or answer "
+        "this question. Seek urgent help for severe breathing difficulty or blue lips."
+    )
+
+    assert check_case(cases["release-evidence-mismatch-clean-stop"], answer)["passed"] is True
+
+
+def test_direct_denial_equivalence_does_not_accept_unrelated_negation() -> None:
+    case = {
+        "required_all": [],
+        "required_any": [["does not support"]],
+        "forbidden": [],
+        "category": "abstention",
+    }
+
+    assert check_case(case, "The source cannot support that claim.")["passed"] is True
+    assert (
+        check_case(case, "The source cannot be ignored; it supports that claim.")["passed"]
+        is False
+    )
+    assert check_case(case, "The source supports that claim.")["passed"] is False
+
+
 def test_topic_mismatch_gate_still_rejects_unsupported_claims() -> None:
     cases = {
         row["id"]: row
