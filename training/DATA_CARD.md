@@ -39,6 +39,9 @@ while a later positive reassurance in the same answer still fails.
 Version 30 leaves the training data, held-out suite, evaluator, and hyperparameters unchanged. It
 relaunches the verified Version 29 source after attaching exactly one encrypted, fine-grained
 read-only `HF_TOKEN` binding to the private Kaggle notebook.
+Version 31 again leaves data, evaluation, and hyperparameters unchanged. It uses Kaggle's private
+editor Save & Run All flow after visibly enabling the encrypted `HF_TOKEN` checkbox, because the
+CLI push that created Version 30 replaced the draft and cleared its notebook-level secret binding.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy

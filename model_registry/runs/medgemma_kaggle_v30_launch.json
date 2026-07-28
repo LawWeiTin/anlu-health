@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "failed_secret_binding_gate",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 30,
+  "script_version_id": 338577483,
+  "script_version_id_resolution": "observed_in_authenticated_private_Kaggle_URL",
+  "private": true,
+  "version_type": "Save & Run All",
+  "launched_at": "2026-07-28T12:53:00Z",
+  "launch_time_precision": "minute",
+  "launch_method": "kaggle_cli_kernel_push",
+  "training_source_commit": "9f88f23c6d26d9bf5e9d6d51a30ccde8bbfce788",
+  "launcher_artifact_commit": "2ab9621f621de9cf756cf2dd2e3e3dd71e8b12bf",
+  "launch_registry_parent_commit": "ef229a7788cbc403a8e2544988f3e7246851667c",
+  "snapshot": {
+    "manifest_sha256": "c9a250975e5b6e2d4f0942b38f169d147905a9a91a33db56a9307d6f94e93648",
+    "launcher_sha256": "7942f01ee54548fd7e55e954398ef454f44ccf26c5059dfde1d1003ffd3aed83",
+    "notebook_sha256": "72063034ee6a2957c3efd83f1fc6035b056690edfc62f1866dc81da6e4388269",
+    "code_cell_count": 1,
+    "verified_running_source_commit": "9f88f23c6d26d9bf5e9d6d51a30ccde8bbfce788",
+    "verified_release_candidate_version": 30,
+    "embedded_hf_token_pattern": false
+  },
+  "runtime": {
+    "reported_seconds": 71.6,
+    "requested_accelerator": "NvidiaTeslaT4",
+    "provisioned_accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "runtime_initialized": true,
+    "gated_model_access_granted": false,
+    "dataset_preparation_executed": false,
+    "training_executed": false,
+    "adapter_produced": false,
+    "training_report_produced": false
+  },
+  "failure": {
+    "observed_at_seconds": 64.8,
+    "type": "ConnectionError",
+    "message": "Connection error trying to communicate with service.",
+    "underlying_error": "HTTP Error 400: Bad Request",
+    "operation": "UserSecretsClient().get_secret(\"HF_TOKEN\")",
+    "source_file": "training/medgemma_kaggle_qlora.py",
+    "source_line": 189,
+    "classification": "cli_push_cleared_notebook_secret_binding",
+    "traceback_recorded": true,
+    "root_cause": "The HF_TOKEN secret had been created in the preceding editor draft, but Kaggle CLI push replaced that draft and produced Version 30 without a notebook-level binding."
+  },
+  "recovery": {
+    "completed_after_terminal_failure": true,
+    "authenticated_private_editor": true,
+    "secret_label": "HF_TOKEN",
+    "secret_mask": "*****",
+    "binding_checkbox_checked": true,
+    "accessible_checkbox_action": "Unset HF_TOKEN",
+    "next_launch_method": "private Kaggle editor Save & Run All"
+  },
+  "security": {
+    "notebook_visibility": "private",
+    "configured_secret_binding_count_during_failed_run": 0,
+    "configured_secret_binding_count_after_recovery": 1,
+    "token_value_printed": false,
+    "token_value_logged": false,
+    "token_value_written_to_disk": false,
+    "token_value_committed": false
+  },
+  "smallest_safe_follow_up": "Prepare the next immutable one-cell launcher, load it into the private editor without using CLI push, verify the checked HF_TOKEN binding remains visible, and launch with Save & Run All.",
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "recorded_at": "2026-07-28T13:00:17.9547692Z"
+}
