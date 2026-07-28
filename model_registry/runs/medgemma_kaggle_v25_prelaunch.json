@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "verified_ready_for_private_launch",
+  "verified_at": "2026-07-28T01:58:52.9164818Z",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 25,
+  "version_name": "V25 structured source-boundary fidelity",
+  "private": true,
+  "training_source_commit": "2d35760b23b32b36a7e5da22c9946c97b6a1cdae",
+  "launcher_artifact_commit": "0ca3b2390fe4f7b30b34f45dd281eec90d1014b7",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "v24_terminal_evidence": {
+    "losses_finite": true,
+    "candidate_passed": 28,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.9333333333333333,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "genuine_failure": "release-wrong-rag-topic",
+    "evaluator_false_negative": "release-evidence-mismatch-clean-stop",
+    "training_report_sha256": "fd2ad8b5e40545a0d10a626cb7fbcbac0620bddbade3d168306878098876d852",
+    "failure_analysis": "model_registry/runs/medgemma_kaggle_v24_failure_analysis.json"
+  },
+  "change_summary": {
+    "held_out_release_suite": "Unchanged from V24.",
+    "evaluator_integrity": "Accepts direct cannot-support and does-not-support equivalence only when the denial immediately governs the same predicate; positive support and unrelated negations remain failures.",
+    "structured_source_examples_added": 6,
+    "behavior_examples_total": 136,
+    "behavior_sampling_weight": 24,
+    "inference_policy": "Treats Approved source supplied, Supplied source title, Retrieved document, and User question labels as evidence metadata and requires the supplied topic in the first sentence.",
+    "release_candidate_version": 25
+  },
+  "snapshot": {
+    "manifest_sha256": "c1bac510abf1be97f5f4b38c6154b92d33684bd63114945863de3b2db8110c3c",
+    "launcher_sha256": "4e364921df978b853fbf32f5425a8ad463a26881362274c61c7a439044eb1008",
+    "notebook_sha256": "3ea3512cd980132709ef5cab292a55d23d7fcc116583e23e8de6a3cd1664f618",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 218734,
+    "verified": true,
+    "embedded_hf_token_pattern": false
+  },
+  "local_gate_results": {
+    "pytest": "85 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed; expected-source recall 1.0; forbidden-source rate 0.0; abstention accuracy 1.0",
+    "behavior_dataset_audit": "136/136 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 9 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "fine-grained read-only",
+    "import_must_replace_not_append": true
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V25 is the smallest evidence-backed follow-up to V24. The held-out suite is unchanged, the genuine model failure remains enforced, and the private adapter will remain off the laptop."
+}
