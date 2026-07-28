@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "running",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 25,
+  "script_version_id": null,
+  "script_version_id_resolution": "pending_authenticated_private_version_history_exposure; not guessed",
+  "version_name": "V25 structured source-boundary fidelity",
+  "launched_at": "2026-07-28T02:11:00Z",
+  "launched_at_basis": "authenticated Kaggle version history at minute precision",
+  "launch_observed_at": "2026-07-28T02:17:06.9486760Z",
+  "private": true,
+  "training_source_commit": "2d35760b23b32b36a7e5da22c9946c97b6a1cdae",
+  "launcher_artifact_commit": "0ca3b2390fe4f7b30b34f45dd281eec90d1014b7",
+  "launch_registry_parent_commit": "ab70e79ea95ab3be9cbf487deeca5d506f8a8d07",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "c1bac510abf1be97f5f4b38c6154b92d33684bd63114945863de3b2db8110c3c",
+    "launcher_sha256": "4e364921df978b853fbf32f5425a8ad463a26881362274c61c7a439044eb1008",
+    "notebook_sha256": "3ea3512cd980132709ef5cab292a55d23d7fcc116583e23e8de6a3cd1664f618",
+    "code_cell_count": 1,
+    "size_bytes": 218734,
+    "verified_before_launch": true,
+    "verified_running_source_commit": "2d35760b23b32b36a7e5da22c9946c97b6a1cdae",
+    "verified_release_candidate_version": 25
+  },
+  "launch_security": {
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "internet_verification": "Kaggle Settings displayed Turn off internet",
+    "accelerator": "GPU T4 x2",
+    "accelerator_verification": "Kaggle authenticated active event displayed Version #25 with GPU T4 x2",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "existing dedicated fine-grained read-only binding",
+    "secret_attached": true,
+    "secret_masked_in_kaggle_ui": true,
+    "token_value_opened": false,
+    "token_value_printed": false,
+    "token_value_copied": false,
+    "token_value_written_to_disk": false,
+    "token_value_embedded_in_notebook_or_repository": false
+  },
+  "observed_launch_signals": [
+    "Kaggle version history: Viewing Version 25, V25 structured source-boundary fidelity, Running",
+    "Kaggle active event: Version #25 with GPU T4 x2 Running",
+    "Running one-cell notebook contains source commit 2d35760b23b32b36a7e5da22c9946c97b6a1cdae",
+    "Running one-cell notebook contains RELEASE_CANDIDATE_VERSION = 25",
+    "Baseline held-out evaluation started without a traceback"
+  ],
+  "latest_health_observation": {
+    "observed_at": "2026-07-28T02:17:06.9486760Z",
+    "status": "running",
+    "phase": "baseline held-out evaluation",
+    "latest_bounded_log": "baseline release-zh-neck-lump: FAIL (8.16s)",
+    "latest_log_interpretation": "Expected baseline-suite outcome; not a candidate failure",
+    "traceback_observed": false,
+    "runtime_error_observed": false
+  },
+  "local_gate_results_before_launch": {
+    "pytest": "85 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed; expected-source recall 1.0; forbidden-source rate 0.0; abstention accuracy 1.0",
+    "behavior_dataset_audit": "136/136 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 9 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V25 launched privately with the verified one-cell source snapshot, GPU T4 x2, internet enabled, and exactly one encrypted HF_TOKEN binding. The exact private scriptVersionId remains pending authenticated exposure and is not guessed. The localhost candidate remains unchanged."
+}
