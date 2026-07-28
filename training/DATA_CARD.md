@@ -36,6 +36,9 @@ release evaluator also accepts the strictly equivalent direct denials "cannot su
 Version 29 leaves the behavior data and held-out suite unchanged. It fixes the evaluator's bounded
 negation window so "not considered automatically safe during pregnancy" is treated as a denial,
 while a later positive reassurance in the same answer still fails.
+Version 30 leaves the training data, held-out suite, evaluator, and hyperparameters unchanged. It
+relaunches the verified Version 29 source after attaching exactly one encrypted, fine-grained
+read-only `HF_TOKEN` binding to the private Kaggle notebook.
 The held-out release prompts were not copied into training.
 
 ## Provenance and privacy
