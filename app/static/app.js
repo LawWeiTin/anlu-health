@@ -92,6 +92,8 @@ function closeAuthModal() {
 function showApp(user) {
   state.user = user;
   closeAuthModal();
+  $("#medical-disclaimer").checked = false;
+  $("#chat-consent-error").textContent = "";
   $("#auth-shell").classList.add("hidden");
   $("#app-shell").classList.remove("hidden");
   $("#user-email").textContent = user.email;
@@ -128,7 +130,7 @@ async function loadRuntimeStatus() {
       $("#processing-disclosure").textContent =
         "This local build uses deterministic mock inference and embeddings. Questions stay on this laptop, conversation history is disabled, and health text is excluded from application logs. Hosted deployments use a separately configured inference provider.";
       $("#terms-disclosure").textContent =
-        "I understand this is educational information, not diagnosis or treatment, and that this local experiment uses deterministic mock inference rather than a clinical model.";
+        "I understand this provides educational possibilities and examples, not diagnosis or personalized treatment, and that this local experiment uses deterministic mock inference rather than a clinical model.";
       return;
     }
     $("#runtime-status-label").textContent = "Private V32 model active";
@@ -139,7 +141,7 @@ async function loadRuntimeStatus() {
     $("#processing-disclosure").textContent =
       `Questions are processed by the configured private model endpoint. ${retrievalDisclosure} Conversation history is disabled unless explicitly enabled, and health text is excluded from application logs.`;
     $("#terms-disclosure").textContent =
-      "I understand this is educational information, not diagnosis or treatment, and that my question is processed by the configured private model endpoint.";
+      "I understand this provides educational possibilities and examples, not diagnosis or personalized treatment, and that my question is processed by the configured private model endpoint.";
   } catch (_) {
     // The main application will surface readiness failures when an action is attempted.
   }
@@ -181,6 +183,8 @@ function addTyping() {
 const answerHeadings = new Set([
   "What to do now",
   "What this may mean",
+  "Possible explanations",
+  "Concrete examples",
   "What to watch",
   "Traditional Chinese medicine perspective",
   "Helpful follow-up questions",
@@ -270,6 +274,19 @@ function addAssistantMessage(payload) {
       tier.textContent = source.evidence_tier.replaceAll("_", " ");
       link.append(details, tier);
       sources.appendChild(link);
+      if (source.license?.includes("Open Government Licence")) {
+        const attribution = document.createElement("small");
+        attribution.className = "source-attribution";
+        attribution.append("Information from the NHS website is licensed under the ");
+        const licenceLink = document.createElement("a");
+        licenceLink.href =
+          "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/";
+        licenceLink.target = "_blank";
+        licenceLink.rel = "noopener noreferrer";
+        licenceLink.textContent = "Open Government Licence v3.0";
+        attribution.append(licenceLink, ".");
+        sources.appendChild(attribution);
+      }
     });
     content.appendChild(sources);
   }
@@ -292,6 +309,13 @@ function addAssistantMessage(payload) {
 
 async function sendMessage(text) {
   if (state.sending || !text.trim()) return;
+  if (!$("#medical-disclaimer").checked) {
+    $("#chat-consent-error").textContent =
+      "Please agree to the educational-use acknowledgement before using the chatbot.";
+    $("#medical-disclaimer").focus();
+    return;
+  }
+  $("#chat-consent-error").textContent = "";
   state.sending = true;
   $("#send-button").disabled = true;
   $("#welcome").classList.add("hidden");
@@ -307,6 +331,7 @@ async function sendMessage(text) {
         message: text.trim(),
         care_mode: $("#care-mode").value,
         conversation_id: state.conversationId,
+        medical_disclaimer_accepted: true,
       }),
     });
     state.conversationId = payload.conversation_id || state.conversationId;
@@ -380,6 +405,9 @@ $("#chat-form").addEventListener("submit", (event) => {
 });
 
 $("#message-input").addEventListener("input", resizeComposer);
+$("#medical-disclaimer").addEventListener("change", () => {
+  if ($("#medical-disclaimer").checked) $("#chat-consent-error").textContent = "";
+});
 $("#message-input").addEventListener("keydown", (event) => {
   if (event.key === "Enter" && !event.shiftKey) {
     event.preventDefault();

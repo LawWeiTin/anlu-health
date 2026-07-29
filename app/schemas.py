@@ -55,6 +55,7 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=2, max_length=4000)
     care_mode: Literal["biomedical", "integrative"] = "integrative"
     conversation_id: str | None = None
+    medical_disclaimer_accepted: Literal[True]
 
     @field_validator("message")
     @classmethod
@@ -71,6 +72,7 @@ class SourceOut(BaseModel):
     publisher: str
     url: str
     evidence_tier: str
+    license: str
     reviewed_on: date
 
 

@@ -75,8 +75,8 @@ def validate_document(document: dict[str, Any], entries: list[dict[str, Any]]) -
     entry = registry_entry(entries, document["source_key"])
     if not entry or not entry.get("approved"):
         raise ValueError(f"{document['source_key']}: source is not approved in the registry")
-    if entry.get("use") == "evaluation_only":
-        raise ValueError(f"{document['source_key']}: evaluation-only data cannot enter RAG")
+    if entry.get("use") != "RAG":
+        raise ValueError(f"{document['source_key']}: non-RAG data cannot enter the RAG index")
     if document["publisher"] != entry["publisher"]:
         raise ValueError(f"{document['source_key']}: publisher does not match registry")
     if document["license"] != entry["license_label"]:
@@ -127,6 +127,23 @@ def ingest(path: Path, registry_path: Path, dry_run: bool = False) -> tuple[int,
     source_count = 0
     chunk_count = 0
     with session_factory()() as db:
+        retired_keys = [
+            entry["source_key"]
+            for entry in entries
+            if entry.get("source_key") and entry.get("use") != "RAG"
+        ]
+        if retired_keys:
+            retired_sources = db.scalars(
+                select(KnowledgeSource).where(KnowledgeSource.source_key.in_(retired_keys))
+            ).all()
+            for retired_source in retired_sources:
+                retired_source.approved = False
+                retired_source.updated_at = utcnow()
+                db.execute(
+                    delete(KnowledgeChunk).where(
+                        KnowledgeChunk.source_id == retired_source.id
+                    )
+                )
         for document in documents:
             checksum = hashlib.sha256(document["content"].encode("utf-8")).hexdigest()
             source = db.scalar(

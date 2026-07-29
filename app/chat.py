@@ -16,8 +16,9 @@ from app.security import Cipher, short_fingerprint
 
 logger = logging.getLogger("anlu.audit")
 DISCLAIMER = (
-    "Educational information only—not a diagnosis or treatment plan. For emergencies, contact local "
-    "emergency services; for personal medical decisions, consult a qualified clinician."
+    "Educational information only—not a diagnosis, exclusion of disease, or personalized treatment "
+    "plan. Examples may not apply to you. For emergencies, contact local emergency services; for "
+    "personal medical decisions, consult a qualified clinician."
 )
 UNVERIFIED_MODEL_RESPONSE = (
     "The model response did not pass the evidence and safety checks, so I will not present it as "
@@ -289,6 +290,7 @@ class ChatService:
                 publisher=item.source.publisher,
                 url=item.source.url,
                 evidence_tier=item.source.evidence_tier,
+                license=item.source.license,
                 reviewed_on=item.source.reviewed_on,
             )
             for citation_id, item in chunks

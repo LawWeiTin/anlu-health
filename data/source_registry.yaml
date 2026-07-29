@@ -1,7 +1,65 @@
-version: 2
-last_reviewed: 2026-07-19
-policy: Only entries marked approved may enter the production RAG index.
+version: 3
+last_reviewed: 2026-07-29
+policy: Only approved entries whose use is RAG may enter the production RAG index.
 sources:
+  - source_key: nhs-hemoptysis
+    title: NHS Coughing up blood
+    publisher: NHS
+    url: https://www.nhs.uk/symptoms/coughing-up-blood/
+    reuse_basis: NHS Website Content reused and adapted under the Open Government Licence v3.0 with per-use attribution and source link.
+    license_label: Open Government Licence v3.0
+    evidence_tier: government_consumer
+    topics: [hemoptysis]
+    keywords: [coughing blood, coughing up blood, blood in phlegm, bloody mucus, hemoptysis, blood streaked mucus]
+    languages: [en]
+    approved: true
+    review_interval_days: 7
+    use: RAG
+    notes: Refresh at least every 7 days and preserve NHS attribution; adapted content is not NHS clinically approved.
+
+  - source_key: nhs-lumps
+    title: NHS Lumps
+    publisher: NHS
+    url: https://www.nhs.uk/symptoms/lumps/
+    reuse_basis: NHS Website Content reused and adapted under the Open Government Licence v3.0 with per-use attribution and source link.
+    license_label: Open Government Licence v3.0
+    evidence_tier: government_consumer
+    topics: [lumps_masses]
+    keywords: [skin lump, painless lump, back lump, mass, nodule, bump, swelling, jaw lump, armpit lump]
+    languages: [en]
+    approved: true
+    review_interval_days: 7
+    use: RAG
+    notes: Refresh at least every 7 days and preserve NHS attribution; adapted content is not NHS clinically approved.
+
+  - source_key: fda-pregnancy-nutrition
+    title: FDA Dietary Advice Before and During Pregnancy
+    publisher: U.S. Food and Drug Administration
+    url: https://www.fda.gov/food/people-risk-foodborne-illness/dietary-advice-and-during-pregnancy
+    reuse_basis: U.S. federal government work; project-authored summary with source attribution.
+    license_label: U.S. government work
+    evidence_tier: government_consumer
+    topics: [pregnancy_nutrition]
+    keywords: [pregnancy diet, pregnant diet, foods during pregnancy, pregnancy nutrition, balanced diet, folic acid, whole grains, protein foods]
+    languages: [en]
+    approved: true
+    review_interval_days: 90
+    use: RAG
+
+  - source_key: nih-iron-foods
+    title: NIH Office of Dietary Supplements Iron Fact Sheet for Consumers
+    publisher: National Institutes of Health Office of Dietary Supplements
+    url: https://ods.od.nih.gov/factsheets/Iron-Consumer/
+    reuse_basis: U.S. federal government work; project-authored summary with source attribution.
+    license_label: U.S. government work
+    evidence_tier: government_consumer
+    topics: [pregnancy_nutrition, iron_nutrition]
+    keywords: [iron foods, high iron foods, iron rich foods, pregnancy iron, iron deficiency, lentils, spinach, beans, fortified cereal]
+    languages: [en]
+    approved: true
+    review_interval_days: 90
+    use: RAG
+
   - source_key: medlineplus-hemoptysis
     title: MedlinePlus Coughing up blood
     publisher: U.S. National Library of Medicine
@@ -14,8 +72,8 @@ sources:
     languages: [en]
     approved: true
     review_interval_days: 90
-    use: RAG
-    notes: Reviewed summary for hemoptysis triage; keep emergency criteria aligned with source review.
+    use: training_only
+    notes: Retained only as historical training-data provenance. The linked encyclopedia page prohibits automated extraction, embedding, and RAG use.
 
   - source_key: medlineplus-skin-lumps
     title: MedlinePlus health topics and medical encyclopedia
@@ -29,8 +87,8 @@ sources:
     languages: [en, es]
     approved: true
     review_interval_days: 90
-    use: RAG
-    notes: Prefer daily XML topics. Seed entries are project-authored summaries, not copied encyclopedia prose.
+    use: training_only
+    notes: Retained only as historical training-data provenance. The linked encyclopedia item is not approved for automated extraction, embedding, or RAG use.
 
   - source_key: medlineplus-ankle-pain
     title: MedlinePlus Ankle pain

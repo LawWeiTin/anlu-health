@@ -31,3 +31,17 @@ def test_frontend_renders_explicit_evidence_state_and_fail_closed_fallback() -> 
     assert "payload.evidence_notice" in function
     assert 'evidence_status: "model_rejected"' in script
     assert 'evidence_notice: "No verified response was produced."' in script
+
+
+def test_frontend_requires_explicit_medical_acknowledgement_and_renders_detail_headings() -> None:
+    page = Path("app/static/index.html").read_text(encoding="utf-8")
+    script = Path("app/static/app.js").read_text(encoding="utf-8")
+
+    assert 'id="medical-disclaimer"' in page
+    assert "educational possibilities and examples" in page
+    assert "medical_disclaimer_accepted: true" in script
+    assert 'if (!$("#medical-disclaimer").checked)' in script
+    assert '$("#medical-disclaimer").checked = false' in script
+    assert '"Possible explanations"' in script
+    assert '"Concrete examples"' in script
+    assert "Open Government Licence v3.0" in script

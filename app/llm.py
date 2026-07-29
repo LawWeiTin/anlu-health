@@ -13,13 +13,26 @@ class ModelError(RuntimeError):
 
 
 _V32_SYSTEM_PROMPT = """You are Anlu Health, a health-education and care-navigation assistant.
-Respond directly without revealing internal analysis. Never diagnose, claim certainty, prescribe,
-or choose a personalized dose. Use only claims supported by the supplied source excerpts. First
-state whether a supplied source is relevant to the user's issue. Preserve concrete user facts such
-as symptom duration, medicine names, and time units. Never downgrade the application's minimum
-urgency. For a mismatched source, name its actual topic and say it cannot be used or cited. Reply in
-the user's language, in plain text without XML or angle-bracket tags, using no more than 110 words.
-When a source is relevant, cite its supplied ID such as [S1]."""
+Respond directly without revealing internal analysis. Never diagnose, rule out disease, claim
+certainty, prescribe, or choose a personalized dose. Use only claims supported by the supplied
+source excerpts. First state whether one or more supplied sources are relevant to the user's issue.
+Preserve concrete user facts such as symptom duration, medicine names, and time units. Never
+downgrade the application's minimum urgency. For a mismatched source, name its actual topic and say
+it cannot be used or cited.
+
+When evidence supports it, be usefully detailed:
+- For symptoms, explain 3-6 possible causes or categories, from common explanations to important
+  serious possibilities, and the example pattern each can represent. Repeatedly frame these as
+  possibilities rather than a diagnosis.
+- For nutrition, name concrete foods and give 1-3 practical meal or snack examples made only from
+  foods present in the supplied evidence. Do not create a personalized meal, supplement, or dose
+  plan.
+- If the sources do not support examples or causes, state that limitation instead of guessing.
+
+Use clear headings when applicable: What to do now, Possible explanations, Concrete examples, What
+to watch, and Helpful follow-up questions. Aim for 180-280 words when evidence supports that detail;
+urgent instructions may be shorter. Reply in the user's language, in plain text without XML or
+angle-bracket tags. Cite the supplied ID, such as [S1], in every factual medical section."""
 
 
 def endpoint_messages(
@@ -51,11 +64,12 @@ def endpoint_messages(
         f"Safety flags: {values['safety_flags']}\n\n"
         f"Supplied source records:\n{values['approved_sources']}\n\n"
         f"User issue: {values['question']}\n\n"
-        "Decide whether a supplied source title and excerpt directly cover the user issue. "
-        'If exactly one matches, start with "The supplied source is relevant to", give only '
-        "supported care navigation, and cite its supplied ID. If none matches, name the supplied "
-        "source's actual topic, say it cannot be used or cited, and do not cite it. Never call a "
-        "source absent when a source record is present."
+        "Decide which supplied source titles and excerpts directly cover the user issue. "
+        'If one or more match, start with "The supplied source is relevant to" or "The supplied '
+        'sources are relevant to", then follow the detailed response contract and cite every '
+        "source used by its supplied ID. If none matches, name the supplied source's actual topic, "
+        "say it cannot be used or cited, and do not cite it. Never call a source absent when a "
+        "source record is present."
     )
     return _V32_SYSTEM_PROMPT, framed_prompt
 
@@ -111,6 +125,8 @@ class MockMedicalModel(ModelProvider):
         general_citation = f" [{source_titles[0][0]}]" if source_titles else ""
         lump_citation = citation_for("lump", "swelling") or general_citation
         hemoptysis_citation = citation_for("coughing up blood", "hemoptysis") or general_citation
+        pregnancy_citation = citation_for("pregnancy", "dietary advice") or general_citation
+        iron_citation = citation_for("iron") or pregnancy_citation
         tcm_citation = citation_for("traditional chinese", "herb", "proprietary medicine")
         follow_up = (
             "When did this start, and is it changing? What other symptoms are present? What medicines, "
@@ -135,10 +151,17 @@ class MockMedicalModel(ModelProvider):
                 "Call 995 now if there is more than a few teaspoons of blood, the bleeding will not stop, "
                 "or you also have trouble breathing, chest or upper-back pain, a very fast heartbeat, "
                 f"dizziness, or fainting.{hemoptysis_citation}\n\n"
-                "What this may mean\n"
-                "Blood coughed from the respiratory tract can have several causes, ranging from airway "
-                "irritation or infection to more serious lung or circulation problems. A chat cannot "
-                f"identify the cause, and even a small amount should be medically assessed.{hemoptysis_citation}\n\n"
+                "Possible explanations\n"
+                "Possibilities include irritation after a long or severe cough; an airway or lung "
+                "infection such as bronchitis or pneumonia; or bronchiectasis, where widened airways "
+                "produce extra mucus. Less common but important possibilities include tuberculosis, "
+                "a blood clot in the lung, or lung cancer. These examples do not identify your cause."
+                f"{hemoptysis_citation}\n\n"
+                "Concrete examples\n"
+                "Blood-streaked phlegm after repeated forceful coughing can fit irritation, while blood "
+                "with fever and worsening cough can occur with infection. Blood plus sudden breathing "
+                "difficulty, chest or upper-back pain, or a fast heartbeat is an emergency pattern "
+                f"because a lung blood clot is one possibility.{hemoptysis_citation}\n\n"
                 "What to watch\n"
                 "Note the approximate amount, whether it is bright red or mixed with mucus, how often it "
                 "happens, and whether you have fever, breathlessness, chest pain, dizziness, or take a "
@@ -156,13 +179,43 @@ class MockMedicalModel(ModelProvider):
                 "description cannot identify the cause of a lump. Seek faster care if it is rapidly "
                 "growing, hard/fixed, in the breast or testicle, red/hot, or affects swallowing or "
                 f"breathing.{lump_citation}\n\n"
-                "What this may mean\n"
-                "Lumps have many possible causes, and examination—sometimes imaging or sampling—is "
-                "needed to distinguish them. I cannot tell whether yours is benign or serious."
+                "Possible explanations\n"
+                "Possibilities include a lipoma, skin cyst, abscess, or swollen gland; a less common "
+                "serious growth also has to be considered when features are concerning. These are "
+                f"examples, not a diagnosis.{lump_citation}\n\n"
+                "Concrete examples\n"
+                "A soft, squashy, mobile lump can represent a lipoma; a smooth lump under the skin can "
+                "represent a cyst; and a painful hot swelling with fever can represent an abscess. A "
+                "hard fixed or enlarging lump needs examination and cannot be labelled from one feature."
                 f"{lump_citation}\n\n"
                 "What to watch\n"
                 "Note the location, size, duration, growth, pain, redness/warmth, mobility, fever, night "
                 "sweats, unexplained weight loss, and any swallowing or breathing difficulty."
+            )
+        elif "pregnan" in question and any(
+            term in question for term in ("diet", "eat", "food", "nutrition", "iron")
+        ):
+            answer = (
+                "What to do now\n"
+                "Build meals around varied vegetables and fruit, whole grains, a protein food, and "
+                "dairy or a fortified soy alternative. Use these as general examples and adapt them "
+                f"with your prenatal clinician for allergies or medical conditions.{pregnancy_citation}\n\n"
+                "Concrete examples\n"
+                "Iron-rich foods include lean meat, seafood, poultry, iron-fortified cereals and "
+                "breads, white or kidney beans, lentils, spinach, peas, nuts, and raisins."
+                f"{iron_citation} Practical combinations include iron-fortified cereal with "
+                "strawberries; lentils with tomatoes or sweet peppers; spinach and white beans with "
+                f"broccoli; or lean poultry with peas.{iron_citation}\n\n"
+                "What to watch\n"
+                "Food examples are not a personalized diet or supplement plan. Pregnancy nutrition "
+                "may need adjustment for nausea, diabetes, allergies, anemia, cultural preferences, "
+                "or other conditions. Do not start or dose an iron supplement from a chat response."
+                f"{iron_citation}"
+            )
+            follow_up = (
+                "How far along are you? Do you eat meat, seafood, eggs, or dairy? Do you have anemia, "
+                "diabetes, severe nausea, allergies, or dietary restrictions? Has your prenatal "
+                "clinician recommended a specific supplement?"
             )
         else:
             answer = (
@@ -192,7 +245,7 @@ class MockMedicalModel(ModelProvider):
 
 class OpenAICompatibleModel(ModelProvider):
     _WARMING_STATUS_CODES = frozenset({502, 503, 504})
-    _MAX_ATTEMPTS = 3
+    _MAX_ATTEMPTS = 12
 
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -202,10 +255,10 @@ class OpenAICompatibleModel(ModelProvider):
         retry_after = response.headers.get("Retry-After")
         if retry_after:
             try:
-                return min(max(float(retry_after), 0.0), 5.0)
+                return min(max(float(retry_after), 0.0), 15.0)
             except ValueError:
                 pass
-        return float(retry_number)
+        return float(min(2 ** (retry_number - 1), 10))
 
     def generate(self, system_prompt: str, user_prompt: str) -> str:
         system_prompt, user_prompt = endpoint_messages(

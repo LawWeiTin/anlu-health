@@ -18,7 +18,11 @@ from tests.conftest import csrf_headers
 
 
 def _seed_source() -> None:
-    content = "An unexplained lump should be examined in person. Record growth and pain."
+    content = (
+        "An unexplained lump should be examined in person. Examples of possible patterns include "
+        "a soft mobile lipoma, a smooth skin cyst, a painful hot abscess with fever, or a swollen "
+        "gland. These examples are not a diagnosis. Record growth, pain, warmth, and mobility."
+    )
     vector = get_embedding_provider().embed([content])[0]
     with session_factory()() as db:
         source = KnowledgeSource(
@@ -51,6 +55,8 @@ def _seed_source() -> None:
 def _seed_hemoptysis_source() -> None:
     content = (
         "Coughing up blood or bloody mucus should be medically assessed even without other symptoms. "
+        "Possible causes include irritation after a severe cough, bronchitis, pneumonia, tuberculosis, "
+        "bronchiectasis, a blood clot in the lung, or lung cancer; examples are not a diagnosis. "
         "Get medical help right away for more than a few teaspoons, bleeding that will not stop, "
         "chest pain, dizziness, or severe shortness of breath."
     )
@@ -83,11 +89,54 @@ def _seed_hemoptysis_source() -> None:
         db.commit()
 
 
+def _seed_pregnancy_nutrition_source() -> None:
+    content = (
+        "Pregnancy nutrition can include vegetables, fruit, whole grains, protein foods, and dairy "
+        "or fortified soy. Iron-rich examples include lean meat, seafood, poultry, fortified cereal "
+        "and bread, white beans, lentils, spinach, kidney beans, peas, nuts, and raisins. Vitamin C "
+        "foods such as strawberries, peppers, tomatoes, and broccoli can be paired with plant iron. "
+        "Example combinations include fortified cereal with strawberries and lentils with tomatoes."
+    )
+    vector = get_embedding_provider().embed([content])[0]
+    with session_factory()() as db:
+        source = KnowledgeSource(
+            source_key="test-pregnancy-nutrition",
+            title="Pregnancy diet and iron-rich food examples",
+            publisher="Test public health authority",
+            url="https://example.gov/pregnancy-nutrition",
+            license="Public domain",
+            evidence_tier="government_consumer",
+            topics=["pregnancy_nutrition", "iron_nutrition"],
+            keywords=["pregnancy diet", "iron foods", "lentils", "fortified cereal"],
+            language="en",
+            reviewed_on=date.today(),
+            expires_on=date.today() + timedelta(days=90),
+            checksum_sha256="2" * 64,
+            approved=True,
+        )
+        db.add(source)
+        db.flush()
+        db.add(
+            KnowledgeChunk(
+                source_id=source.id,
+                ordinal=0,
+                content=content,
+                token_count=88,
+                embedding=vector,
+            )
+        )
+        db.commit()
+
+
 def test_emergency_chat_does_not_need_rag(registered_client: TestClient) -> None:
     response = registered_client.post(
         "/api/chat",
         headers=csrf_headers(registered_client),
-        json={"message": "I cannot breathe and my lips are blue", "care_mode": "integrative"},
+        json={
+            "message": "I cannot breathe and my lips are blue",
+            "care_mode": "integrative",
+            "medical_disclaimer_accepted": True,
+        },
     )
     assert response.status_code == 200
     body = response.json()
@@ -102,7 +151,11 @@ def test_non_emergency_abstains_without_sources(registered_client: TestClient) -
     response = registered_client.post(
         "/api/chat",
         headers=csrf_headers(registered_client),
-        json={"message": "How should I prepare for an appointment?", "care_mode": "biomedical"},
+        json={
+            "message": "How should I prepare for an appointment?",
+            "care_mode": "biomedical",
+            "medical_disclaimer_accepted": True,
+        },
     )
     assert response.status_code == 200
     body = response.json()
@@ -115,7 +168,11 @@ def test_lump_answer_has_source_and_escalation(registered_client: TestClient) ->
     response = registered_client.post(
         "/api/chat",
         headers=csrf_headers(registered_client),
-        json={"message": "I found a lump under my arm", "care_mode": "integrative"},
+        json={
+            "message": "I found a lump under my arm",
+            "care_mode": "integrative",
+            "medical_disclaimer_accepted": True,
+        },
     )
     assert response.status_code == 200
     body = response.json()
@@ -123,6 +180,8 @@ def test_lump_answer_has_source_and_escalation(registered_client: TestClient) ->
     assert body["evidence_status"] == "grounded"
     assert body["sources"][0]["id"] == "S1"
     assert "cannot" in body["answer"].casefold()
+    assert "lipoma" in body["answer"].casefold()
+    assert "abscess" in body["answer"].casefold()
     assert body["history_saved"] is False
 
 
@@ -140,7 +199,11 @@ def test_unsafe_model_draft_reports_rejected_evidence_state(
     response = registered_client.post(
         "/api/chat",
         headers=csrf_headers(registered_client),
-        json={"message": "I found a lump under my arm", "care_mode": "biomedical"},
+        json={
+            "message": "I found a lump under my arm",
+            "care_mode": "biomedical",
+            "medical_disclaimer_accepted": True,
+        },
     )
 
     assert response.status_code == 200
@@ -160,6 +223,7 @@ def test_coughing_blood_is_urgent_and_uses_only_relevant_source(
         json={
             "message": "I am coughing blood these past few days. What should I do?",
             "care_mode": "integrative",
+            "medical_disclaimer_accepted": True,
         },
     )
     assert response.status_code == 200
@@ -170,14 +234,43 @@ def test_coughing_blood_is_urgent_and_uses_only_relevant_source(
     assert "coughing up blood" in body["sources"][0]["title"].casefold()
     assert "lump" not in body["answer"].casefold()
     assert "same-day" in body["answer"].casefold()
+    assert "bronchitis" in body["answer"].casefold()
+    assert "blood clot" in body["answer"].casefold()
     assert "traditional chinese medicine perspective" not in body["answer"].casefold()
+
+
+def test_pregnancy_nutrition_answer_names_foods_and_practical_examples(
+    registered_client: TestClient,
+) -> None:
+    _seed_pregnancy_nutrition_source()
+
+    response = registered_client.post(
+        "/api/chat",
+        headers=csrf_headers(registered_client),
+        json={
+            "message": "What diet should I have during pregnancy, including high iron foods?",
+            "care_mode": "biomedical",
+            "medical_disclaimer_accepted": True,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["evidence_status"] == "grounded"
+    assert "lentils" in body["answer"].casefold()
+    assert "fortified cereal with strawberries" in body["answer"].casefold()
+    assert "not a personalized diet" in body["answer"].casefold()
 
 
 def test_small_talk_does_not_trigger_medical_boilerplate(registered_client: TestClient) -> None:
     response = registered_client.post(
         "/api/chat",
         headers=csrf_headers(registered_client),
-        json={"message": "Hello how are you", "care_mode": "integrative"},
+        json={
+            "message": "Hello how are you",
+            "care_mode": "integrative",
+            "medical_disclaimer_accepted": True,
+        },
     )
     assert response.status_code == 200
     body = response.json()
@@ -195,7 +288,11 @@ def test_off_topic_request_is_scoped_without_retrieval_or_model_boilerplate(
     response = registered_client.post(
         "/api/chat",
         headers=csrf_headers(registered_client),
-        json={"message": "Write me a poem about the ocean.", "care_mode": "integrative"},
+        json={
+            "message": "Write me a poem about the ocean.",
+            "care_mode": "integrative",
+            "medical_disclaimer_accepted": True,
+        },
     )
 
     assert response.status_code == 200

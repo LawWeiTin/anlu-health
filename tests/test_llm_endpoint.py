@@ -63,7 +63,26 @@ def test_private_endpoint_honors_bounded_retry_after(monkeypatch) -> None:
     answer = OpenAICompatibleModel(endpoint_settings()).generate("system", "user")
 
     assert answer == "Ready"
-    assert sleeps == [5.0]
+    assert sleeps == [15.0]
+
+
+def test_private_endpoint_cold_start_retry_budget_is_bounded() -> None:
+    assert OpenAICompatibleModel._MAX_ATTEMPTS == 12
+    delays = [
+        OpenAICompatibleModel._retry_delay(
+            httpx.Response(
+                503,
+                request=httpx.Request(
+                    "POST", "https://private-model.example/v1/chat/completions"
+                ),
+            ),
+            retry_number,
+        )
+        for retry_number in range(1, OpenAICompatibleModel._MAX_ATTEMPTS)
+    ]
+
+    assert sum(delays) == 85.0
+    assert max(delays) == 10.0
 
 
 def test_v32_endpoint_uses_training_aligned_evidence_labels() -> None:
@@ -80,9 +99,12 @@ Excerpt: Track growth and arrange an examination.
 </approved_sources>""",
     )
 
-    assert "no more than 110 words" in system
+    assert "180-280 words" in system
+    assert "3-6 possible causes" in system
+    assert "practical meal or snack examples" in system
     assert "<question>" not in user
     assert "Supplied source records:" in user
     assert "User issue: A lump has stayed for 12 days." in user
     assert "[S1] Skin lumps" in user
-    assert 'start with "The supplied source is relevant to"' in user
+    assert '"The supplied source is relevant to"' in user
+    assert "cite every source used" in user

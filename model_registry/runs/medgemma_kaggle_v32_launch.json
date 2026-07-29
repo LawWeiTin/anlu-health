@@ -180,11 +180,55 @@
       "health_text_excluded_from_application_logs": true
     }
   },
+  "chatbot_detail_upgrade": {
+    "completed_at": "2026-07-30T00:22:56.0241463+08:00",
+    "implementation_parent_commit": "3d633bd3b843aa2afc320f10514b372440729484",
+    "response_contract": {
+      "target_length_words": "180-280 when retrieved evidence supports that level of detail",
+      "symptom_answers": "Provide 3-6 source-supported possible explanations and pattern examples, distinguishing common possibilities from important serious possibilities without diagnosing.",
+      "nutrition_answers": "Name concrete foods and provide source-supported meal or snack combinations.",
+      "unsupported_detail_policy": "Do not guess; state when the approved sources do not support a requested detail.",
+      "citation_policy": "Cite every approved source used in the answer."
+    },
+    "participant_acknowledgement": {
+      "required_per_sign_in": true,
+      "scope": "Educational possibilities and examples are not a diagnosis, exclusion of disease, or personalized treatment.",
+      "server_enforced": true,
+      "client_enforced": true
+    },
+    "approved_rag_sources": 15,
+    "approved_rag_chunks": 15,
+    "new_or_replaced_sources": [
+      "nhs-hemoptysis",
+      "nhs-lumps",
+      "fda-pregnancy-nutrition",
+      "nih-iron-foods"
+    ],
+    "retired_from_rag": [
+      "medlineplus-hemoptysis",
+      "medlineplus-skin-lumps"
+    ],
+    "retirement_reason": "Current MedlinePlus A.D.A.M. terms prohibit automated extraction, embedding, and RAG/AI use; the entries remain training-only historical provenance and are excluded from the production index.",
+    "localhost_consent_gate_browser_qa": "pass",
+    "real_v32_detailed_answer_qa": "blocked_provider_capacity"
+  },
+  "latest_endpoint_observation": {
+    "observed_at": "2026-07-30T00:10:00+08:00",
+    "endpoint_name": "anlu-medgemma-v32-private",
+    "status": "Failed",
+    "running": false,
+    "provider_error": "Hardware aws-us-east-1-nvidia-l4-x1 is out of availability. Please use another hardware type or try again later.",
+    "bounded_retry_attempted": true,
+    "retry_result": "same_provider_capacity_error",
+    "hardware_changed": false,
+    "cost_configuration_changed": false,
+    "application_behavior": "fail_closed_without_mock_medical_generation"
+  },
   "local_gate_rerun": {
-    "completed_at": "2026-07-29T23:36:12.8490790+08:00",
+    "completed_at": "2026-07-30T00:22:56.0241463+08:00",
     "pytest": {
-      "passed": 100,
-      "coverage_percent": 85.89,
+      "passed": 104,
+      "coverage_percent": 85.99,
       "minimum_coverage_percent": 75.0
     },
     "ruff": "pass",
@@ -197,8 +241,8 @@
       "citation_validity": 1.0
     },
     "hybrid_rag": {
-      "passed": 17,
-      "total": 17,
+      "passed": 19,
+      "total": 19,
       "expected_source_recall": 1.0,
       "forbidden_source_rate": 0.0,
       "abstention_accuracy": 1.0
@@ -213,7 +257,7 @@
     },
     "source_freshness": {
       "status": "pass",
-      "registry_age_days": 10
+      "registry_age_days": 1
     },
     "tracked_secret_scan": "pass",
     "localhost_browser_qa": {
@@ -224,11 +268,12 @@
       "grounded_source_card_rendered": true,
       "emergency_bypass_notice_rendered": true,
       "no_source_abstention_notice_rendered": true,
+      "medical_acknowledgement_rendered_and_enforced": true,
       "history_storage": "disabled"
     }
   },
   "next_required_gate": "Complete physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety reviews before any production promotion or public deployment. Replace deterministic feature-hash embeddings with a separately approved neural embedding service and rebuild the index before claiming neural semantic RAG.",
   "local_app_changed": true,
   "promotion_allowed": false,
-  "notes": "V32 passed every automated release gate and the local quality, safety, retrieval, behavior-data, source-freshness, and tracked-secret gates were rerun successfully. The real V32 LoRA is now served through a private vLLM endpoint and passed bounded localhost browser QA for grounded generation, deterministic emergency bypass, and no-source abstention. The endpoint was forced to zero replicas after testing. Retrieval is real and source-grounded but localhost semantic vectors remain deterministic feature hashes rather than neural embeddings. Physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety approvals remain pending, so production promotion and public deployment are prohibited."
+  "notes": "V32 passed every automated release gate. The localhost chatbot now requests richer, source-supported explanations and concrete nutrition examples, requires a per-sign-in educational-use acknowledgement, and passed the updated local quality, safety, retrieval, behavior-data, source-freshness, and tracked-secret gates. Historical private endpoint validation remains valid, but the latest bounded wake attempt failed because AWS us-east-1 NVIDIA L4 x1 capacity was unavailable; no different hardware or cost configuration was selected, and the app failed closed. Retrieval is real and source-grounded but localhost semantic vectors remain deterministic feature hashes rather than neural embeddings. Physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety approvals remain pending, so production promotion and public deployment are prohibited."
 }
