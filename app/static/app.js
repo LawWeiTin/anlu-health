@@ -225,7 +225,16 @@ function addAssistantMessage(payload) {
   const body = document.createElement("div");
   body.className = "answer-body";
   renderAnswerText(body, payload.answer);
-  content.append(head, body);
+  const evidence = document.createElement("div");
+  const evidenceStatus = payload.evidence_status || "model_rejected";
+  evidence.className = `evidence-state ${evidenceStatus}`;
+  const evidenceLabel = document.createElement("b");
+  evidenceLabel.textContent = "Evidence check";
+  const evidenceNotice = document.createElement("span");
+  evidenceNotice.textContent =
+    payload.evidence_notice || "The evidence state for this response is unavailable.";
+  evidence.append(evidenceLabel, evidenceNotice);
+  content.append(head, evidence, body);
 
   if (payload.sources?.length) {
     const sources = document.createElement("div");
@@ -296,6 +305,8 @@ async function sendMessage(text) {
     addAssistantMessage({
       answer: `${error.message}. No medical answer was generated. Please try again or contact a qualified clinician.`,
       urgency: "routine",
+      evidence_status: "model_rejected",
+      evidence_notice: "No verified response was produced.",
       sources: [],
       disclaimer: "The service could not produce a verified response.",
     });

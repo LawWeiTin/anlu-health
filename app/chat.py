@@ -11,7 +11,7 @@ from app.models import ChatMessage, Conversation, User, utcnow
 from app.prompts import SYSTEM_PROMPT, build_user_prompt
 from app.rag import RetrievedChunk, Retriever
 from app.safety import SafetyAssessment, assess, emergency_response
-from app.schemas import ChatResponse, SourceOut
+from app.schemas import ChatResponse, EvidenceStatus, SourceOut
 from app.security import Cipher, short_fingerprint
 
 logger = logging.getLogger("anlu.audit")
@@ -24,6 +24,19 @@ UNVERIFIED_MODEL_RESPONSE = (
     "reliable. Please ask a qualified clinician or pharmacist. If symptoms are worsening or you "
     "are worried, seek in-person care."
 )
+EVIDENCE_NOTICES: dict[EvidenceStatus, str] = {
+    "grounded": "Grounded in the reviewed source cards cited below.",
+    "safety_bypass": (
+        "Deterministic safety guidance was used; retrieval and model generation were bypassed."
+    ),
+    "insufficient_sources": (
+        "No approved current source matched this question, so Anlu abstained from answering."
+    ),
+    "model_rejected": (
+        "The generated draft failed evidence or safety validation and was withheld."
+    ),
+    "not_applicable": "No medical claim was generated for this message.",
+}
 _SMALL_TALK = re.compile(
     r"^\s*(?:hello|hi|hey|good (?:morning|afternoon|evening))"
     r"(?:[!,. ]+(?:how are you|how is it going))?[!?. ]*$|"
@@ -146,7 +159,16 @@ class ChatService:
                 "visit, or review medicine and herb safety. This local experimental mode uses "
                 "deterministic mock responses, so it is for testing the workflow—not medical advice."
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "not_applicable",
+                conversation_id,
+            )
 
         if assessment.bypass_model:
             text = emergency_response(
@@ -154,7 +176,16 @@ class ChatService:
                 self.settings.emergency_region,
                 self_harm="self_harm_risk" in assessment.flags,
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "safety_bypass",
+                conversation_id,
+            )
 
         if _is_obviously_off_topic(message):
             text = (
@@ -162,7 +193,16 @@ class ChatService:
                 "so I cannot complete that unrelated request here. If you have a health-related "
                 "question, I can help with that."
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "not_applicable",
+                conversation_id,
+            )
 
         chunks = self.retriever.search(db, message, limit=5)
         if not chunks:
@@ -171,11 +211,23 @@ class ChatService:
                 "reliably. Please ask a qualified clinician or pharmacist. If symptoms are worsening "
                 "or you are worried, seek in-person care."
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "insufficient_sources",
+                conversation_id,
+            )
 
         prompt = build_user_prompt(message, care_mode, assessment, chunks)
         draft = self.model.generate(SYSTEM_PROMPT, prompt)
         validated = guard_generated_answer(draft, chunks)
+        evidence_status: EvidenceStatus = (
+            "grounded" if validated.cited_chunks else "model_rejected"
+        )
         return self._response(
             db,
             user,
@@ -183,6 +235,7 @@ class ChatService:
             validated.text,
             assessment,
             validated.cited_chunks,
+            evidence_status,
             conversation_id,
         )
 
@@ -194,6 +247,7 @@ class ChatService:
         answer: str,
         assessment: SafetyAssessment,
         chunks: list[tuple[str, RetrievedChunk]],
+        evidence_status: EvidenceStatus,
         conversation_id: str | None,
     ) -> ChatResponse:
         saved_id = self._save_history(db, user, question, answer, conversation_id)
@@ -212,6 +266,8 @@ class ChatService:
             answer=answer,
             urgency=assessment.urgency.value,
             safety_flags=list(assessment.flags),
+            evidence_status=evidence_status,
+            evidence_notice=EVIDENCE_NOTICES[evidence_status],
             sources=sources,
             disclaimer=DISCLAIMER,
             conversation_id=saved_id,

@@ -133,6 +133,13 @@ button { color: inherit; }
 .urgency { padding: 4px 7px; border-radius: 20px; background: #e2eadf; color: #567261; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .urgency.urgent, .urgency.emergency { background: #f5dcd5; color: #a24538; }
 .urgency.soon { background: #f1e8cb; color: #846923; }
+.evidence-state { margin: -3px 0 16px; padding: 9px 11px; border: 1px solid #d7e1da; border-radius: 6px; display: flex; gap: 8px; align-items: baseline; color: #52645c; background: #f4f8f4; font-size: 11px; line-height: 1.45; }
+.evidence-state b { flex: 0 0 auto; color: #426255; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; }
+.evidence-state.safety_bypass { border-color: #e5b3a7; color: #7f4b42; background: #fff2ee; }
+.evidence-state.safety_bypass b { color: #963f32; }
+.evidence-state.insufficient_sources, .evidence-state.model_rejected { border-color: #e1d3a8; color: #6f6038; background: #fbf6e7; }
+.evidence-state.insufficient_sources b, .evidence-state.model_rejected b { color: #80691f; }
+.evidence-state.not_applicable { border-color: #e2e4df; color: #737c77; background: #f7f7f3; }
 .answer-body { color: #344641; font-size: 14px; line-height: 1.72; }
 .answer-body h4 { margin: 22px 0 7px; color: var(--forest); font-family: Georgia, serif; font-size: 17px; font-weight: 600; }
 .answer-body h4:first-child { margin-top: 0; }

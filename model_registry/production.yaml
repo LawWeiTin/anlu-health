@@ -9,30 +9,32 @@ candidate_base_model:
   revision: 91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b
   license: HAI-DEF Terms of Use
 latest_candidate_run:
-  status: rejected_automated_gate
-  run_id: 20260718T120911Z
+  status: automated_gate_passed_pending_human_review
+  run_id: 20260728T135714Z
   platform: kaggle
   kernel_id: 127448562
-  version_number: 14
-  source_release_candidate_version: 14
-  script_version_id: "336238082"
-  repository_commit: fd1120c21e464d39a47bded58f3ef6bb34359a5a
-  report: model_registry/runs/medgemma_kaggle_v14_launch.json
+  version_number: 32
+  source_release_candidate_version: 32
+  script_version_id: "338590746"
+  repository_commit: e2bdc337eb5174995cfd6513d791f6ac7b2a2410
+  report: model_registry/runs/medgemma_kaggle_v32_launch.json
+  training_report_sha256: bb87ec7c0d07845febec97d8132a7cdf1876a8febfdf69199905c67f48fd4953
   losses_finite: true
-  baseline_pass_rate: 0.26666666666666666
-  candidate_pass_rate: 0.6666666666666666
+  baseline_pass_rate: 0.3
+  candidate_pass_rate: 1.0
   required_candidate_pass_rate: 1.0
   candidate_at_least_baseline: true
   turn_boundary_stop_rate: 1.0
   required_turn_boundary_stop_rate: 1.0
-  automated_gate_passed: false
-  evaluation_status: failed
+  automated_gate_passed: true
+  evaluation_status: passed
   promotion_allowed: false
-  local_experimental_activation_allowed_after_gate: false
-  disposition: private candidate retained for audit only; localhost remains unchanged
+  local_experimental_activation_allowed_after_gate: true
+  local_experimental_activation_status: not_connected
+  disposition: private candidate retained for localhost-only endpoint testing; production promotion blocked pending human review
 adapter:
-  uri: set-after-reviewed-colab-run
-  sha256: set-after-reviewed-colab-run
+  uri: private-kaggle-output://lawweitin/anlu-health-medgemma-qlora-release-candidate/338590746/anlu-health/medgemma-qlora/20260728T135714Z/adapter
+  sha256: fa75cd09a14b4147b18d69d750dd7811845b25eba386d9f6881e0b6a67aa2ab5
 prompt_version: v1
 embedding_model:
   id: intfloat/multilingual-e5-small

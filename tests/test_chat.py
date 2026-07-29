@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.chat import UNVERIFIED_MODEL_RESPONSE, guard_generated_answer, validate_citations
@@ -86,6 +87,8 @@ def test_emergency_chat_does_not_need_rag(registered_client: TestClient) -> None
     assert response.status_code == 200
     body = response.json()
     assert body["urgency"] == "emergency"
+    assert body["evidence_status"] == "safety_bypass"
+    assert "model generation were bypassed" in body["evidence_notice"]
     assert body["sources"] == []
     assert "995" in body["answer"]
 
@@ -97,7 +100,9 @@ def test_non_emergency_abstains_without_sources(registered_client: TestClient) -
         json={"message": "How should I prepare for an appointment?", "care_mode": "biomedical"},
     )
     assert response.status_code == 200
-    assert "could not find an approved" in response.json()["answer"]
+    body = response.json()
+    assert "could not find an approved" in body["answer"]
+    assert body["evidence_status"] == "insufficient_sources"
 
 
 def test_lump_answer_has_source_and_escalation(registered_client: TestClient) -> None:
@@ -110,9 +115,34 @@ def test_lump_answer_has_source_and_escalation(registered_client: TestClient) ->
     assert response.status_code == 200
     body = response.json()
     assert body["urgency"] == "soon"
+    assert body["evidence_status"] == "grounded"
     assert body["sources"][0]["id"] == "S1"
     assert "cannot" in body["answer"].casefold()
     assert body["history_saved"] is False
+
+
+def test_unsafe_model_draft_reports_rejected_evidence_state(
+    registered_client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class UnsafeModel:
+        def generate(self, system_prompt: str, user_prompt: str) -> str:
+            del system_prompt, user_prompt
+            return "Take 10 mg each morning. [S1]"
+
+    _seed_source()
+    monkeypatch.setattr("app.api.get_model_provider", lambda: UnsafeModel())
+
+    response = registered_client.post(
+        "/api/chat",
+        headers=csrf_headers(registered_client),
+        json={"message": "I found a lump under my arm", "care_mode": "biomedical"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["answer"] == UNVERIFIED_MODEL_RESPONSE
+    assert body["evidence_status"] == "model_rejected"
+    assert body["sources"] == []
 
 
 def test_coughing_blood_is_urgent_and_uses_only_relevant_source(
@@ -147,6 +177,7 @@ def test_small_talk_does_not_trigger_medical_boilerplate(registered_client: Test
     assert response.status_code == 200
     body = response.json()
     assert body["urgency"] == "routine"
+    assert body["evidence_status"] == "not_applicable"
     assert body["sources"] == []
     assert "hello" in body["answer"].casefold()
     assert "local experimental mode" in body["answer"].casefold()
@@ -164,6 +195,7 @@ def test_off_topic_request_is_scoped_without_retrieval_or_model_boilerplate(
 
     assert response.status_code == 200
     body = response.json()
+    assert body["evidence_status"] == "not_applicable"
     assert body["sources"] == []
     assert "focused on health" in body["answer"].casefold()
     assert "what this may mean" not in body["answer"].casefold()
