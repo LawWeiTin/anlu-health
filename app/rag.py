@@ -10,7 +10,7 @@ from datetime import date
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.embeddings import EmbeddingProvider
+from app.embeddings import EmbeddingProvider, MockMultilingualEmbeddings
 from app.models import KnowledgeChunk, KnowledgeSource
 from app.search_text import (
     knowledge_search_text,
@@ -109,6 +109,21 @@ def _keyword_coverage(query: str, document: str) -> float:
         return 0.0
     document_terms = set(search_tokens(document, include_bigrams=False))
     return len(query_terms & document_terms) / len(query_terms)
+
+
+def _source_topic_overlap(query: str, source: KnowledgeSource) -> int:
+    """Count explicit query matches against curated source-topic metadata."""
+
+    query_terms = set(search_tokens(query, include_bigrams=False))
+    topic_text = " ".join(
+        [
+            source.title,
+            *(source.topics or []),
+            *(source.keywords or []),
+        ]
+    )
+    topic_terms = set(search_tokens(topic_text, include_bigrams=False))
+    return len(query_terms & topic_terms)
 
 
 def _postgres_candidates(
@@ -214,6 +229,7 @@ class Retriever:
         retrieval_query = retrieval_query_text(query)
         if not search_tokens(retrieval_query):
             return []
+        supports_semantic_only = type(self.embedding_provider) is not MockMultilingualEmbeddings
         query_embedding = self.embedding_provider.embed(
             [semantic_query_text(retrieval_query)]
         )[0]
@@ -253,10 +269,11 @@ class Retriever:
             )
         }
         max_keyword = max((item.keyword for item in candidates), default=0.0)
-        scored: list[tuple[RetrievedChunk, float]] = []
+        scored: list[tuple[RetrievedChunk, float, int]] = []
         for candidate in candidates:
             document = _chunk_search_text(candidate.chunk, candidate.source)
             coverage = _keyword_coverage(retrieval_query, document)
+            topic_overlap = _source_topic_overlap(retrieval_query, candidate.source)
             semantic = max(0.0, candidate.semantic)
             keyword = candidate.keyword / max_keyword if max_keyword else 0.0
             vector_rrf = 11.0 / (10.0 + semantic_ranking[candidate.chunk.id])
@@ -270,12 +287,28 @@ class Retriever:
                 + _EVIDENCE_BOOST.get(candidate.source.evidence_tier, 0.0)
             )
             has_lexical_support = (
-                candidate.keyword > 0 and coverage >= self.min_keyword_coverage
+                candidate.keyword > 0
+                and (
+                    coverage >= self.min_keyword_coverage
+                    or topic_overlap > 0
+                )
             )
-            if (
-                score >= self.min_score
-                and (has_lexical_support or semantic >= self.strong_semantic_score)
-            ):
+            passes_relevance_gate = (
+                (
+                    score >= self.min_score
+                    and (
+                        has_lexical_support
+                        or semantic >= self.strong_semantic_score
+                    )
+                )
+                or (candidate.keyword > 0 and topic_overlap > 0)
+            )
+            if not supports_semantic_only:
+                # Feature hashing is deterministic test infrastructure, not
+                # evidence of semantic similarity. Require an explicit match
+                # to curated topic metadata in this localhost mode.
+                passes_relevance_gate = candidate.keyword > 0 and topic_overlap > 0
+            if passes_relevance_gate:
                 scored.append(
                     (
                         RetrievedChunk(
@@ -284,16 +317,29 @@ class Retriever:
                             score=score,
                         ),
                         coverage,
+                        topic_overlap,
                     )
                 )
 
-        scored.sort(key=lambda item: (item[0].score, item[1]), reverse=True)
         if not scored:
             return []
+        # Curated topics and keywords are a safer anchor than generic words in
+        # long medical passages, especially while localhost uses deterministic
+        # feature hashing instead of a neural embedding model.
+        if any(topic_overlap for _item, _coverage, topic_overlap in scored):
+            scored = [
+                entry for entry in scored if entry[2] > 0
+            ]
+            scored.sort(
+                key=lambda item: (item[2], item[0].score, item[1]),
+                reverse=True,
+            )
+        else:
+            scored.sort(key=lambda item: (item[0].score, item[1]), reverse=True)
         best_score = scored[0][0].score
         # Suppress weak tail matches that happen to share generic medical vocabulary.
         return [
             item
-            for item, _coverage in scored
+            for item, _coverage, _topic_overlap in scored
             if item.score >= best_score - 0.12
         ][:limit]

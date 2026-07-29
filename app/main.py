@@ -97,6 +97,16 @@ def ready() -> dict[str, object]:
         "status": "ready",
         "approved_sources": approved_sources or 0,
         "runtime_mode": "local_experimental" if local_experimental else "hosted",
+        "model_runtime": (
+            "deterministic_mock"
+            if settings.model_provider == "mock"
+            else "private_openai_compatible_endpoint"
+        ),
+        "embedding_runtime": (
+            "deterministic_mock"
+            if settings.embedding_provider == "mock"
+            else settings.embedding_provider
+        ),
         "history_storage": "enabled" if settings.save_chat_history else "disabled",
     }
 

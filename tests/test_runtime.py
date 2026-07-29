@@ -6,4 +6,6 @@ def test_ready_identifies_offline_experimental_runtime(client: TestClient) -> No
 
     assert response.status_code == 200
     assert response.json()["runtime_mode"] == "local_experimental"
+    assert response.json()["model_runtime"] == "deterministic_mock"
+    assert response.json()["embedding_runtime"] == "deterministic_mock"
     assert response.json()["history_storage"] == "disabled"

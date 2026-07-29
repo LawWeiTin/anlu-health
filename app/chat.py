@@ -75,6 +75,11 @@ _UNSAFE_MODEL_PATTERNS = (
 )
 _CLEAN_MODEL_END = re.compile(r"""[.!?。！？]["'”’)\]]?\s*$""")
 _MAX_MODEL_ANSWER_WORDS = 450
+_EXPLICIT_SINGLE_SOURCE_RELEVANCE = re.compile(
+    r"^\s*(?:the\s+)?(?:(?:supplied|approved)\s+)?"
+    r"(?:source|page|document)\s+(?:is|was)\s+relevant\b",
+    re.I,
+)
 
 
 @dataclass(frozen=True)
@@ -121,6 +126,23 @@ def guard_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> Validat
     return validated
 
 
+def anchor_explicit_single_source(
+    answer: str,
+    chunks: list[RetrievedChunk],
+) -> str:
+    """Add the sole source ID only after V32 explicitly confirms relevance."""
+
+    if re.search(r"\[S\d+\]", answer, re.I) or len(chunks) != 1:
+        return answer
+    if not _EXPLICIT_SINGLE_SOURCE_RELEVANCE.search(answer):
+        return answer
+    cleaned = answer.rstrip()
+    ending = re.search(r"([.!?。！？])\s*$", cleaned)
+    if ending:
+        return f"{cleaned[: ending.start()]} [S1]{ending.group(1)}"
+    return f"{cleaned} [S1]."
+
+
 def _is_obviously_off_topic(message: str) -> bool:
     return bool(_OFF_TOPIC_REQUEST.search(message)) and not bool(_HEALTH_CONTEXT.search(message))
 
@@ -154,11 +176,19 @@ class ChatService:
         )
 
         if _SMALL_TALK.fullmatch(message):
-            text = (
-                "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
-                "visit, or review medicine and herb safety. This local experimental mode uses "
-                "deterministic mock responses, so it is for testing the workflow—not medical advice."
-            )
+            if self.settings.model_provider == "openai_compatible":
+                text = (
+                    "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
+                    "visit, or review medicine and herb safety. The private V32 model is active for "
+                    "this localhost experiment, with deterministic safety checks around its replies."
+                )
+            else:
+                text = (
+                    "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
+                    "visit, or review medicine and herb safety. This local experimental mode uses "
+                    "deterministic mock responses, so it is for testing the workflow—not medical "
+                    "advice."
+                )
             return self._response(
                 db,
                 user,
@@ -224,6 +254,7 @@ class ChatService:
 
         prompt = build_user_prompt(message, care_mode, assessment, chunks)
         draft = self.model.generate(SYSTEM_PROMPT, prompt)
+        draft = anchor_explicit_single_source(draft, chunks)
         validated = guard_generated_answer(draft, chunks)
         evidence_status: EvidenceStatus = (
             "grounded" if validated.cited_chunks else "model_rejected"

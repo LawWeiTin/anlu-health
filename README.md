@@ -18,10 +18,9 @@ clinical evidence.
   descriptions before retrieval or generation.
 - PostgreSQL knowledge store with pgvector HNSW semantic search, indexed full-text keyword search,
   hybrid rank fusion, source approval, evidence tiers, expiry dates, and citation validation.
-- A model-provider interface for a separately hosted open-weight model. The recommended starting
-  fine-tuning point is `google/medgemma-1.5-4b-it`, subject to its terms and only after use-case
-  validation. The hosted baseline uses the open-weight `Qwen/Qwen3.5-9B` behind the same safety and
-  retrieval layers until an approved Anlu adapter is promoted.
+- A model-provider interface for a separately hosted open-weight model. V32 is a private LoRA
+  release candidate over `google/medgemma-1.5-4b-it`; it passed the automated held-out and
+  turn-boundary gates but is limited to private localhost validation pending human approvals.
 - Render Blueprint and Docker deployment; no model weights or large datasets are stored locally.
 - Colab QLoRA notebooks, a pinned open-dataset preparation pipeline, DVC stages, dataset/model cards,
   golden safety cases, CI, and scheduled evaluation workflows.
@@ -51,10 +50,11 @@ docker compose exec app python scripts/ingest.py data/seed_knowledge.jsonl
 
 ## Production inference
 
-Host the tuned model separately on a GPU service using vLLM/TGI or a managed open-model endpoint.
-Configure an OpenAI-compatible chat endpoint and a compatible embedding endpoint using the variables
-in `.env.example`. The production Blueprint is set up for Hugging Face Inference Providers with a
-fine-grained inference-only token supplied as a Render secret.
+Host the tuned model separately on a private GPU service using vLLM/TGI or a managed open-model
+endpoint. Configure its OpenAI-compatible chat URL and a separately approved 384-dimensional
+embedding provider using `.env.example`. A chat endpoint is not automatically an embedding
+endpoint; after changing the embedding provider, rebuild the approved-source index with
+`scripts/ingest.py`.
 
 User questions and retrieved context are transmitted to that configured inference provider. Review
 and document its current data-retention, processing-location, and privacy terms before opening the

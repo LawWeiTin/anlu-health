@@ -3,7 +3,12 @@ from datetime import date, timedelta
 import pytest
 from fastapi.testclient import TestClient
 
-from app.chat import UNVERIFIED_MODEL_RESPONSE, guard_generated_answer, validate_citations
+from app.chat import (
+    UNVERIFIED_MODEL_RESPONSE,
+    anchor_explicit_single_source,
+    guard_generated_answer,
+    validate_citations,
+)
 from app.database import session_factory
 from app.embeddings import get_embedding_provider
 from app.llm import MockMedicalModel, clean_provider_output
@@ -254,6 +259,41 @@ def test_model_output_without_valid_citation_fails_closed() -> None:
 
     assert result.text == UNVERIFIED_MODEL_RESPONSE
     assert result.cited_chunks == []
+
+
+def test_explicit_relevance_can_anchor_only_one_supplied_source() -> None:
+    source = KnowledgeSource(
+        id="source-id",
+        source_key="source-key",
+        title="Source",
+        publisher="Publisher",
+        url="https://example.gov",
+        license="Public domain",
+        evidence_tier="guideline",
+        language="en",
+        reviewed_on=date.today(),
+        expires_on=date.today() + timedelta(days=90),
+        checksum_sha256="0" * 64,
+        approved=True,
+    )
+    chunk = KnowledgeChunk(
+        id="chunk-id", source_id="source-id", ordinal=0, content="text", token_count=1, embedding=[]
+    )
+    retrieved = [RetrievedChunk(chunk, source, 1)]
+
+    anchored = anchor_explicit_single_source(
+        "The supplied source is relevant. Arrange an in-person review soon.",
+        retrieved,
+    )
+
+    assert anchored.endswith("[S1].")
+    assert anchor_explicit_single_source("This answer is unsupported.", retrieved) == (
+        "This answer is unsupported."
+    )
+    assert anchor_explicit_single_source(
+        "The supplied source is relevant.",
+        retrieved * 2,
+    ) == "The supplied source is relevant."
 
 
 def test_numeric_personalized_dose_fails_closed_even_with_valid_citation() -> None:

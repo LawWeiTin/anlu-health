@@ -132,11 +132,59 @@
     "human_review_required": true,
     "promotion_allowed": false
   },
+  "private_endpoint_validation": {
+    "completed_at": "2026-07-29T23:37:46.7827285+08:00",
+    "provider": "Hugging Face Inference Endpoints",
+    "endpoint_name": "anlu-medgemma-v32-private",
+    "endpoint_url": "https://r51qz7nmpoaf0806.us-east-1.aws.endpoints.huggingface.cloud",
+    "visibility": "private",
+    "engine": "vLLM 0.23.0",
+    "hardware": "AWS us-east-1 NVIDIA L4 x1 24 GB",
+    "running_price_usd_per_hour": 0.8,
+    "minimum_replicas": 0,
+    "maximum_replicas": 1,
+    "scale_to_zero_timeout_minutes": 15,
+    "final_endpoint_status": "scaled_to_zero",
+    "final_endpoint_status_verified_in_authenticated_console": true,
+    "base_model": "google/medgemma-1.5-4b-it",
+    "base_model_revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b",
+    "adapter_repository": "lawwt/anlu-health-medgemma-v32-adapter",
+    "adapter_repository_commit": "84fc0a4bcb666edfea69d007a7d26a89f9001146",
+    "adapter_model_sha256": "fa75cd09a14b4147b18d69d750dd7811845b25eba386d9f6881e0b6a67aa2ab5",
+    "served_model_alias": "anlu-v32",
+    "lora_enabled": true,
+    "lora_rank_limit": 16,
+    "maximum_model_length": 4096,
+    "encrypted_secret_binding_count": 1,
+    "secret_value_printed": false,
+    "secret_value_logged": false,
+    "direct_generation": {
+      "http_status": 200,
+      "model": "anlu-v32",
+      "finish_reason": "stop",
+      "original_tailored_generation_observed": true
+    },
+    "localhost_integration": {
+      "url": "http://127.0.0.1:8000",
+      "runtime_mode": "hosted",
+      "model_runtime": "private_openai_compatible_endpoint",
+      "embedding_runtime": "deterministic_mock",
+      "approved_source_count": 13,
+      "history_storage": "disabled",
+      "grounded_generation_passed": true,
+      "grounded_generation_source_key": "medlineplus-skin-lumps",
+      "grounded_generation_preserved_duration": "12 days",
+      "grounded_generation_citation": "S1",
+      "emergency_model_bypass_passed": true,
+      "no_source_abstention_passed": true,
+      "health_text_excluded_from_application_logs": true
+    }
+  },
   "local_gate_rerun": {
-    "completed_at": "2026-07-29T09:56:56.3126853Z",
+    "completed_at": "2026-07-29T23:36:12.8490790+08:00",
     "pytest": {
-      "passed": 88,
-      "coverage_percent": 84.06,
+      "passed": 100,
+      "coverage_percent": 85.89,
       "minimum_coverage_percent": 75.0
     },
     "ruff": "pass",
@@ -169,15 +217,18 @@
     },
     "tracked_secret_scan": "pass",
     "localhost_browser_qa": {
-      "runtime_mode": "local_experimental",
-      "model_provider": "mock",
+      "runtime_mode": "hosted",
+      "model_provider": "private_openai_compatible_endpoint",
+      "embedding_provider": "deterministic_mock",
       "grounded_evidence_notice_rendered": true,
-      "fail_closed_evidence_notice_rendered": true,
+      "grounded_source_card_rendered": true,
+      "emergency_bypass_notice_rendered": true,
+      "no_source_abstention_notice_rendered": true,
       "history_storage": "disabled"
     }
   },
-  "next_required_gate": "Connect V32 only behind a private OpenAI-compatible endpoint for localhost-only safety and UX testing. Production promotion still requires physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety approvals.",
+  "next_required_gate": "Complete physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety reviews before any production promotion or public deployment. Replace deterministic feature-hash embeddings with a separately approved neural embedding service and rebuild the index before claiming neural semantic RAG.",
   "local_app_changed": true,
   "promotion_allowed": false,
-  "notes": "V32 passed every automated release gate and the local quality, safety, retrieval, behavior-data, source-freshness, and tracked-secret gates were rerun successfully. The localhost chatbot now exposes explicit evidence states and passed browser QA in deterministic mock mode. The V32 adapter is not connected because no private inference endpoint is configured. Physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety approvals remain pending, so production promotion is prohibited."
+  "notes": "V32 passed every automated release gate and the local quality, safety, retrieval, behavior-data, source-freshness, and tracked-secret gates were rerun successfully. The real V32 LoRA is now served through a private vLLM endpoint and passed bounded localhost browser QA for grounded generation, deterministic emergency bypass, and no-source abstention. The endpoint was forced to zero replicas after testing. Retrieval is real and source-grounded but localhost semantic vectors remain deterministic feature hashes rather than neural embeddings. Physician, pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety approvals remain pending, so production promotion and public deployment are prohibited."
 }

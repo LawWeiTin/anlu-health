@@ -45,6 +45,18 @@ _ENGLISH_STOPWORDS = {
     "with",
     "you",
 }
+_SOURCE_REFERENCE_MARKERS = (
+    "source",
+    "article",
+    "document",
+    "page",
+    "retrieved",
+    "supplied",
+    "资料",
+    "来源",
+    "文章",
+    "文件",
+)
 
 
 def _is_cjk(character: str) -> bool:
@@ -151,6 +163,8 @@ def semantic_query_text(query: str) -> str:
 def retrieval_query_text(message: str) -> str:
     """Prefer a sufficiently specific final clause in multi-clause user messages."""
 
+    if not any(marker in message.casefold() for marker in _SOURCE_REFERENCE_MARKERS):
+        return message.strip()
     clauses: list[str] = []
     current: list[str] = []
     for character in message:

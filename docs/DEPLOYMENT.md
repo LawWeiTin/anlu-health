@@ -1,25 +1,44 @@
-# Production deployment
+# Deployment
 
-## Selected topology
+## Private V32 localhost validation
 
-- **Web:** Render Docker web service, Singapore region, Starter instance.
-- **Database:** Render Postgres with pgvector, Singapore region, Basic-256mb instance.
-- **Chat inference:** Hugging Face Inference Providers using the open-weight
-  `Qwen/Qwen3.5-9B:cheapest` baseline.
-- **Embeddings:** Hugging Face feature-extraction endpoint using
-  `intfloat/multilingual-e5-small` (384 dimensions).
+The current release-candidate path is deliberately narrower than a production deployment:
+
+- **Web:** localhost-only FastAPI application.
+- **Chat inference:** private Hugging Face Inference Endpoint running
+  `google/medgemma-1.5-4b-it` with the private
+  `lawwt/anlu-health-medgemma-v32-adapter` LoRA, served to the app as `anlu-v32`.
+- **Compute:** one L4 GPU with automatic scale-to-zero.
+- **Retrieval:** the existing approved-source hybrid retriever. A real embedding provider must be
+  configured and the source index rebuilt before claiming neural semantic retrieval.
+- **Artifacts:** private Kaggle output transferred directly to a private Hugging Face model
+  repository; model weights and adapters are not retained on the laptop.
+
+This endpoint is for bounded end-to-end safety and UX testing only. It must remain private, must be
+scaled to zero after testing, and must not be connected to a public site while physician,
+pharmacist, registered TCM practitioner, privacy/security, and retrieval-safety approvals are
+pending.
+
+## Future production topology
+
+- **Web:** Render Docker web service, Singapore region.
+- **Database:** Render Postgres with pgvector, Singapore region.
+- **Chat inference:** a separately approved private open-model endpoint.
+- **Embeddings:** a separately approved 384-dimensional multilingual embedding endpoint.
 - **Training artifacts:** private Google Drive `Anlu Health` hierarchy, additive-only.
 
-At the July 2026 listed prices, the Render web and database plans total USD 13/month before
-bandwidth or other metered usage. Hugging Face inference is separately metered after account credits.
-Do not activate paid resources without the account owner's approval.
+Do not activate additional paid resources without the account owner's explicit approval.
 
 ## Secrets
 
-The Blueprint asks for one `HF_TOKEN`. Create it as a fine-grained Hugging Face token with only the
-permission to call Inference Providers. Do not grant repository write, organization administration,
-or billing administration permissions. Render generates the data-encryption and metrics tokens.
-Never commit any token to Git, Google Drive, screenshots, support tickets, or chat transcripts.
+Use separate fine-grained tokens:
+
+- A short-lived Kaggle transfer token may write only to the selected private V32 adapter repository.
+- The localhost app token may call only the selected private Inference Endpoint.
+
+Do not grant organization administration or billing administration permissions. Never commit any
+token to Git, Google Drive, screenshots, support tickets, or chat transcripts. Revoke the transfer
+token after the adapter repository and its checksums are verified.
 
 The inference provider receives user questions and retrieved source context. Before a public launch,
 record its current retention and training-use terms, complete the intended-jurisdiction privacy
