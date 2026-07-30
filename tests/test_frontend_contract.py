@@ -45,3 +45,11 @@ def test_frontend_requires_explicit_medical_acknowledgement_and_renders_detail_h
     assert '"Possible explanations"' in script
     assert '"Concrete examples"' in script
     assert "Open Government Licence v3.0" in script
+
+
+def test_frontend_wraps_long_grounded_answers_on_narrow_screens() -> None:
+    styles = Path("app/static/styles.css").read_text(encoding="utf-8")
+
+    assert ".assistant-message > div:last-child { min-width: 0; }" in styles
+    assert ".answer-body { overflow-wrap: anywhere;" in styles
+    assert ".source-card > span:first-child { min-width: 0; overflow-wrap: anywhere; }" in styles

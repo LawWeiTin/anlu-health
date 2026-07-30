@@ -10,6 +10,35 @@ clinical evidence.
 > or replace a licensed clinician. Any public launch needs clinical, legal, privacy, security, and
 > accessibility review for the intended country and population.
 
+## See it in action
+
+These screenshots were captured from the running localhost application in its clearly disclosed
+deterministic demo mode. They demonstrate the working chat UI, consent control, approved-source
+retrieval, inline citations, and emergency model bypass. They are not evidence of clinical efficacy
+and do not imply that the private V32 GPU endpoint is currently available.
+
+### Detailed, source-grounded nutrition example
+
+The assistant names specific iron-rich foods, gives practical food combinations, preserves the
+educational boundary, and links the reviewed NIH source used in the answer.
+
+![Anlu Health giving source-grounded pregnancy nutrition examples](docs/images/anlu-pregnancy-nutrition-chat.png)
+
+### Deterministic emergency escalation
+
+High-risk wording bypasses retrieval and model generation. The application immediately displays
+the configured local emergency number and tells the user not to rely on chat.
+
+![Anlu Health emergency safety bypass](docs/images/anlu-emergency-safety-chat.png)
+
+| Capability | Repository evidence |
+| --- | --- |
+| Detailed grounded answers | Concrete food, symptom-pattern, and follow-up examples are constrained to retrieved source excerpts. |
+| Emergency safety | Deterministic safety checks can bypass both RAG and model inference. |
+| Retrieval | Hybrid keyword/vector ranking, approval, freshness, evidence tiers, and citation validation; the localhost vector provider is currently a deterministic feature hash rather than a neural embedding model. |
+| V32 release candidate | 30/30 held-out cases and 30/30 turn-boundary checks passed; see [`model_registry/runs/medgemma_kaggle_v32_launch.json`](model_registry/runs/medgemma_kaggle_v32_launch.json). |
+| Current release posture | Private localhost evaluation only. Clinical, privacy/security, and retrieval-safety reviews remain required before promotion. |
+
 ## What is included
 
 - FastAPI website with email/password authentication, revocable opaque sessions, CSRF protection,
@@ -25,28 +54,76 @@ clinical evidence.
 - Colab QLoRA notebooks, a pinned open-dataset preparation pipeline, DVC stages, dataset/model cards,
   golden safety cases, CI, and scheduled evaluation workflows.
 
-## Run locally
+## Run locally on Windows
+
+### 1. One-time setup
+
+Open PowerShell and run these commands in order:
 
 ```powershell
+git clone https://github.com/LawWeiTin/anlu-health.git
+Set-Location anlu-health
 Copy-Item .env.example .env
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements-dev.txt
-alembic upgrade head
-python scripts/ingest.py data/seed_knowledge.jsonl
-uvicorn app.main:app --reload
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
 ```
 
-Open `http://localhost:8000`. Local mode uses deterministic mock inference and embeddings so the UI,
-auth, safety paths, and tests work without downloading a model. Mock mode is deliberately rejected
-when `APP_ENV=production`.
+If PowerShell blocks virtual-environment activation, run this once in that terminal and activate
+again:
 
-For a PostgreSQL development stack instead:
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\.venv\Scripts\Activate.ps1
+```
+
+### 2. Start the app
+
+From the repository directory:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python -m alembic upgrade head
+python scripts/ingest.py data/seed_knowledge.jsonl
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Keep that terminal open. The final command runs the web server; press `Ctrl+C` there to stop it.
+
+### 3. Open it in your browser
+
+In a second PowerShell window:
+
+```powershell
+Start-Process "http://127.0.0.1:8000"
+```
+
+You can also enter [http://127.0.0.1:8000](http://127.0.0.1:8000) manually.
+
+The default `.env.example` starts the explicit localhost demo with deterministic mock inference and
+embeddings, allowing the UI, authentication, retrieval, citations, and safety paths to run without
+downloading model weights. Mock mode is rejected when `APP_ENV=production`.
+
+If an existing `.env` points to a hosted model and you want a one-session local demo without editing
+that file, set these variables before the `uvicorn` command:
+
+```powershell
+$env:MODEL_PROVIDER = "mock"
+$env:MODEL_API_URL = ""
+$env:MODEL_API_TOKEN = ""
+$env:EMBEDDING_PROVIDER = "mock"
+```
+
+### Docker/PostgreSQL alternative
 
 ```powershell
 docker compose up --build
 docker compose exec app python scripts/ingest.py data/seed_knowledge.jsonl
 ```
+
+Then open [http://127.0.0.1:8000](http://127.0.0.1:8000). Use `docker compose down` to stop the
+stack.
 
 ## Production inference
 
