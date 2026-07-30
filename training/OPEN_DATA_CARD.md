@@ -9,12 +9,17 @@ clinical model and is not intended to learn diagnosis or personalized treatment.
 
 ## Included training sources
 
-- **MedQuAD** (`CC BY 4.0`): a maximum of 1,200 examples from answer-bearing NIH collections.
+- **MedQuAD** (`CC BY 4.0`): a maximum of 600 examples from answer-bearing NIH collections.
   Only lower-risk educational question types are accepted. Treatment, diagnosis, dosing, prognosis,
   procedure, and side-effect targets are not selected for this pilot.
-- **PubMedQA PQA-L** (`MIT`): up to 500 expert-labeled, abstract-conditioned examples. Every PMID in
+- **PubMedQA PQA-L** (`MIT`): up to 150 expert-labeled, abstract-conditioned examples. Every PMID in
   the official test-ground-truth file is excluded from training and remains available for evaluation.
-- **Anlu reviewed safety set**: synthetic project-authored behavior examples. No real user messages.
+- **Anlu authored safety set**: synthetic project-authored behavior examples covering small talk,
+  topic mismatch, citation integrity, red-flag navigation, lump assessment, medicine-herb safety,
+  TCM evidence separation, evidence-state contrasts, and English/Chinese prompts. No real user
+  messages. Clinical review is still pending, so these examples cannot independently authorize
+  production use. During training, this behavior subset receives a sampling weight of twenty-four
+  to keep generic biomedical QA from overwhelming the intended conversational behavior.
 
 MedMCQA is recorded but evaluation-only because entrance-exam multiple-choice responses are not the
 target conversational behavior. Scraped patient consultations, credentialed clinical records, and
@@ -22,11 +27,13 @@ datasets without explicit licensing are excluded.
 
 ## Processing and storage
 
-The source repositories are cloned at exact commit hashes into ephemeral Colab storage. The pipeline
+The source repositories are cloned at exact commit hashes into ephemeral Kaggle storage. The pipeline
 normalizes text, rejects obvious identifiers and medication-like dosing targets, deduplicates by
-question, and splits MedQuAD by focus so one condition does not occur in both train and validation.
-It writes a new UTC-timestamped directory under private Google Drive with JSONL splits, attribution,
-source revisions, filter counts, and SHA-256 checksums. It never overwrites or deletes Drive content.
+question, caps open-data targets at complete source-sentence boundaries, and splits by source group
+so one source group does not occur in both train and validation.
+The private Kaggle run writes only the adapter, progress log, attribution, source revisions, filter
+counts, release evaluation, and SHA-256 checksums to a new UTC-timestamped output directory. It
+never writes base-model weights or source-corpus clones to the laptop.
 
 ## Known limitations
 

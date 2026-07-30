@@ -17,6 +17,7 @@ data/generated/
 mlruns/
 wandb/
 checkpoints/
+.kaggle-release/
 *.safetensors
 *.bin
 *.gguf
@@ -24,5 +25,6 @@ checkpoints/
 *.pth
 .dvc/cache/
 graphify-out/
+.local-run/
 .DS_Store
 Thumbs.db

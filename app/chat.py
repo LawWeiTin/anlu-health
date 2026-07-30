@@ -11,18 +11,74 @@ from app.models import ChatMessage, Conversation, User, utcnow
 from app.prompts import SYSTEM_PROMPT, build_user_prompt
 from app.rag import RetrievedChunk, Retriever
 from app.safety import SafetyAssessment, assess, emergency_response
-from app.schemas import ChatResponse, SourceOut
+from app.schemas import ChatResponse, EvidenceStatus, SourceOut
 from app.security import Cipher, short_fingerprint
 
 logger = logging.getLogger("anlu.audit")
 DISCLAIMER = (
-    "Educational information only—not a diagnosis or treatment plan. For emergencies, contact local "
-    "emergency services; for personal medical decisions, consult a qualified clinician."
+    "Educational information only—not a diagnosis, exclusion of disease, or personalized treatment "
+    "plan. Examples may not apply to you. For emergencies, contact local emergency services; for "
+    "personal medical decisions, consult a qualified clinician."
 )
+UNVERIFIED_MODEL_RESPONSE = (
+    "The model response did not pass the evidence and safety checks, so I will not present it as "
+    "reliable. Please ask a qualified clinician or pharmacist. If symptoms are worsening or you "
+    "are worried, seek in-person care."
+)
+EVIDENCE_NOTICES: dict[EvidenceStatus, str] = {
+    "grounded": "Grounded in the reviewed source cards cited below.",
+    "safety_bypass": (
+        "Deterministic safety guidance was used; retrieval and model generation were bypassed."
+    ),
+    "insufficient_sources": (
+        "No approved current source matched this question, so Anlu abstained from answering."
+    ),
+    "model_rejected": (
+        "The generated draft failed evidence or safety validation and was withheld."
+    ),
+    "not_applicable": "No medical claim was generated for this message.",
+}
 _SMALL_TALK = re.compile(
     r"^\s*(?:hello|hi|hey|good (?:morning|afternoon|evening))"
     r"(?:[!,. ]+(?:how are you|how is it going))?[!?. ]*$|"
     r"^\s*(?:thanks|thank you|bye|goodbye)[!?. ]*$",
+    re.I,
+)
+_OFF_TOPIC_REQUEST = re.compile(
+    r"\b(?:write|compose|create)\b.{0,30}\b(?:poem|story|song|recipe)\b|"
+    r"\b(?:debug|repair|write)\b.{0,30}\b(?:code|javascript|python|program)\b|"
+    r"\b(?:stock|investment|weather|travel itinerary)\b|"
+    r"写.{0,12}(?:诗|故事)|菜谱|股票|天气",
+    re.I,
+)
+_HEALTH_CONTEXT = re.compile(
+    r"\b(?:allerg|blood|breath|clinician|cough|diagnos|diet|doctor|drug|fever|health|"
+    r"herb|lump|medical|medicine|nutrition|pain|pharmacist|pregnan|rash|symptom|tcm)\w*\b|"
+    r"健康|医疗|医生|药|中医|症状|疼痛|咳|肿块|皮疹|怀孕",
+    re.I,
+)
+_UNSAFE_MODEL_PATTERNS = (
+    re.compile(r"^\s*(?:thought|analysis|reasoning|plan)\b", re.I),
+    re.compile(
+        r"\b(?:take|use|start)\s+\d+(?:\.\d+)?\s*(?:mg|mcg|g|ml|tablets?|capsules?)\b",
+        re.I,
+    ),
+    re.compile(r"\byou (?:definitely|certainly) have\b", re.I),
+    re.compile(r"\b(?:the|your) diagnosis is\b", re.I),
+    re.compile(r"\bchoose a non[- ]controversial\b", re.I),
+    re.compile(r"\bthe ai has been instructed\b", re.I),
+    re.compile(r"\bi should up[- ]rise\b", re.I),
+    re.compile(r"\bapproved (?:answer|instruction|list|response|topic)\b", re.I),
+    re.compile(r"\bdoes not map to an approved\b", re.I),
+    re.compile(r"\bquick[- ]recap option\b", re.I),
+    re.compile(r"<(?:start|end)_of_turn>|<eos>|<bos>", re.I),
+    re.compile(r"```"),
+)
+_CLEAN_MODEL_END = re.compile(r"""[.!?。！？]["'”’)\]]?\s*$""")
+_MAX_MODEL_ANSWER_WORDS = 450
+_EXPLICIT_SINGLE_SOURCE_RELEVANCE = re.compile(
+    r"^\s*(?:the\s+)?(?:(?:supplied|approved)\s+)?"
+    r"(?:source|page|document)\s+(?:is|was)\s+relevant\b",
     re.I,
 )
 
@@ -55,6 +111,43 @@ def validate_citations(answer: str, chunks: list[RetrievedChunk]) -> ValidatedAn
     return ValidatedAnswer(cleaned.strip(), cited)
 
 
+def guard_generated_answer(answer: str, chunks: list[RetrievedChunk]) -> ValidatedAnswer:
+    """Fail closed when generation lacks approved evidence or contains unsafe artifacts."""
+
+    validated = validate_citations(answer, chunks)
+    if chunks and not validated.cited_chunks:
+        return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
+    if any(pattern.search(validated.text) for pattern in _UNSAFE_MODEL_PATTERNS):
+        return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
+    if (
+        len(validated.text.split()) > _MAX_MODEL_ANSWER_WORDS
+        or not _CLEAN_MODEL_END.search(validated.text)
+    ):
+        return ValidatedAnswer(UNVERIFIED_MODEL_RESPONSE, [])
+    return validated
+
+
+def anchor_explicit_single_source(
+    answer: str,
+    chunks: list[RetrievedChunk],
+) -> str:
+    """Add the sole source ID only after V32 explicitly confirms relevance."""
+
+    if re.search(r"\[S\d+\]", answer, re.I) or len(chunks) != 1:
+        return answer
+    if not _EXPLICIT_SINGLE_SOURCE_RELEVANCE.search(answer):
+        return answer
+    cleaned = answer.rstrip()
+    ending = re.search(r"([.!?。！？])\s*$", cleaned)
+    if ending:
+        return f"{cleaned[: ending.start()]} [S1]{ending.group(1)}"
+    return f"{cleaned} [S1]."
+
+
+def _is_obviously_off_topic(message: str) -> bool:
+    return bool(_OFF_TOPIC_REQUEST.search(message)) and not bool(_HEALTH_CONTEXT.search(message))
+
+
 class ChatService:
     def __init__(
         self,
@@ -84,12 +177,29 @@ class ChatService:
         )
 
         if _SMALL_TALK.fullmatch(message):
-            text = (
-                "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
-                "visit, or review medicine and herb safety. This local experimental mode uses "
-                "deterministic mock responses, so it is for testing the workflow—not medical advice."
+            if self.settings.model_provider == "openai_compatible":
+                text = (
+                    "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
+                    "visit, or review medicine and herb safety. The private V32 model is active for "
+                    "this localhost experiment, with deterministic safety checks around its replies."
+                )
+            else:
+                text = (
+                    "Hello! I’m ready to help you understand a health concern, prepare for a clinical "
+                    "visit, or review medicine and herb safety. This local experimental mode uses "
+                    "deterministic mock responses, so it is for testing the workflow—not medical "
+                    "advice."
+                )
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "not_applicable",
+                conversation_id,
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
 
         if assessment.bypass_model:
             text = emergency_response(
@@ -97,7 +207,33 @@ class ChatService:
                 self.settings.emergency_region,
                 self_harm="self_harm_risk" in assessment.flags,
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "safety_bypass",
+                conversation_id,
+            )
+
+        if _is_obviously_off_topic(message):
+            text = (
+                "I am focused on health education, symptom navigation, and medicine or herb safety, "
+                "so I cannot complete that unrelated request here. If you have a health-related "
+                "question, I can help with that."
+            )
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "not_applicable",
+                conversation_id,
+            )
 
         chunks = self.retriever.search(db, message, limit=5)
         if not chunks:
@@ -106,11 +242,24 @@ class ChatService:
                 "reliably. Please ask a qualified clinician or pharmacist. If symptoms are worsening "
                 "or you are worried, seek in-person care."
             )
-            return self._response(db, user, message, text, assessment, [], conversation_id)
+            return self._response(
+                db,
+                user,
+                message,
+                text,
+                assessment,
+                [],
+                "insufficient_sources",
+                conversation_id,
+            )
 
         prompt = build_user_prompt(message, care_mode, assessment, chunks)
         draft = self.model.generate(SYSTEM_PROMPT, prompt)
-        validated = validate_citations(draft, chunks)
+        draft = anchor_explicit_single_source(draft, chunks)
+        validated = guard_generated_answer(draft, chunks)
+        evidence_status: EvidenceStatus = (
+            "grounded" if validated.cited_chunks else "model_rejected"
+        )
         return self._response(
             db,
             user,
@@ -118,6 +267,7 @@ class ChatService:
             validated.text,
             assessment,
             validated.cited_chunks,
+            evidence_status,
             conversation_id,
         )
 
@@ -129,6 +279,7 @@ class ChatService:
         answer: str,
         assessment: SafetyAssessment,
         chunks: list[tuple[str, RetrievedChunk]],
+        evidence_status: EvidenceStatus,
         conversation_id: str | None,
     ) -> ChatResponse:
         saved_id = self._save_history(db, user, question, answer, conversation_id)
@@ -139,6 +290,7 @@ class ChatService:
                 publisher=item.source.publisher,
                 url=item.source.url,
                 evidence_tier=item.source.evidence_tier,
+                license=item.source.license,
                 reviewed_on=item.source.reviewed_on,
             )
             for citation_id, item in chunks
@@ -147,6 +299,8 @@ class ChatService:
             answer=answer,
             urgency=assessment.urgency.value,
             safety_flags=list(assessment.flags),
+            evidence_status=evidence_status,
+            evidence_notice=EVIDENCE_NOTICES[evidence_status],
             sources=sources,
             disclaimer=DISCLAIMER,
             conversation_id=saved_id,

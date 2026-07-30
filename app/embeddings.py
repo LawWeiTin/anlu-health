@@ -1,59 +1,20 @@
 import hashlib
 import math
-import re
 from abc import ABC, abstractmethod
 from functools import lru_cache
 
 import httpx
 
 from app.config import Settings, get_settings
+from app.search_text import search_tokens
 
 
 class EmbeddingError(RuntimeError):
     pass
 
 
-_ENGLISH_STOPWORDS = {
-    "a",
-    "am",
-    "an",
-    "and",
-    "are",
-    "do",
-    "for",
-    "how",
-    "i",
-    "in",
-    "is",
-    "it",
-    "me",
-    "my",
-    "of",
-    "or",
-    "should",
-    "the",
-    "these",
-    "this",
-    "to",
-    "what",
-    "with",
-    "you",
-}
-_CJK_SEQUENCE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff]+")
-
-
 def _feature_tokens(text: str) -> list[str]:
-    lowered = text.casefold()
-    words = [
-        token
-        for token in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", lowered)
-        if len(token) >= 2 and token not in _ENGLISH_STOPWORDS
-    ]
-    cjk: list[str] = []
-    for sequence in _CJK_SEQUENCE.findall(lowered):
-        cjk.append(sequence)
-        cjk.extend(sequence[index : index + 2] for index in range(max(0, len(sequence) - 1)))
-    return words + cjk
+    return search_tokens(text)
 
 
 class EmbeddingProvider(ABC):

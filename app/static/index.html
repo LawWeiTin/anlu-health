@@ -205,7 +205,7 @@
             <p id="password-hint" class="field-hint hidden">12+ characters using at least two of uppercase, lowercase, and numbers.</p>
             <label id="terms-row" class="check-row hidden">
               <input id="terms" type="checkbox" />
-              <span id="terms-disclosure">I understand this is educational information, not diagnosis or treatment, and that my question is processed by the configured inference provider.</span>
+              <span id="terms-disclosure">I understand this provides educational possibilities and examples, not a diagnosis or personalized treatment, and that my question is processed by the configured inference provider.</span>
             </label>
             <p id="auth-error" class="form-error" role="alert"></p>
             <button id="auth-submit" class="primary-button" type="submit"><span>Continue securely</span><span aria-hidden="true">&rarr;</span></button>
@@ -261,7 +261,12 @@
             <textarea id="message-input" maxlength="4000" rows="1" placeholder="Describe a symptom, concern, or medicine question..." required></textarea>
             <button id="send-button" type="submit" aria-label="Send message">&uarr;</button>
           </form>
-          <p class="composer-note">Anlu can make mistakes. For severe or rapidly worsening symptoms, call local emergency services.</p>
+          <label class="chat-consent">
+            <input id="medical-disclaimer" type="checkbox" />
+            <span>I agree to use Anlu for educational possibilities and examples—not diagnosis, exclusion of disease, or personalized treatment. I will seek in-person care for urgent, severe, or worsening symptoms.</span>
+          </label>
+          <p id="chat-consent-error" class="composer-consent-error" role="alert"></p>
+          <p class="composer-note">Anlu can make mistakes. A disclaimer does not make a medical conclusion safe; severe or rapidly worsening symptoms need local emergency or in-person care.</p>
         </section>
       </main>
     </div>

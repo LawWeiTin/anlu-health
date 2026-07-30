@@ -1,0 +1,14 @@
+{
+  "code_file": "anlu_medgemma_release_candidate.ipynb",
+  "competition_sources": [],
+  "dataset_sources": [],
+  "enable_gpu": true,
+  "enable_internet": true,
+  "id": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "is_private": true,
+  "kernel_sources": [],
+  "kernel_type": "notebook",
+  "language": "python",
+  "model_sources": [],
+  "title": "Anlu Health - MedGemma QLoRA Release Candidate"
+}

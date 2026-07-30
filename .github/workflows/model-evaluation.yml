@@ -19,10 +19,12 @@ jobs:
           cache: pip
       - run: pip install -r requirements-dev.txt
       - run: python scripts/evaluate.py --strict --output artifacts/eval.json
+      - run: python scripts/evaluate_rag.py --strict --output artifacts/rag_eval.json
       - run: python scripts/check_source_freshness.py
       - uses: actions/upload-artifact@v4
         with:
           name: weekly-medical-safety-report
-          path: artifacts/eval.json
+          path: |
+            artifacts/eval.json
+            artifacts/rag_eval.json
           retention-days: 90
-

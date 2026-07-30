@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "status": "rejected_automated_gate",
+  "recorded_at": "2026-07-17T12:50:07Z",
+  "run": {
+    "run_id": "20260717T113245Z",
+    "platform": "kaggle",
+    "version_number": 8,
+    "version_name": "V8 pinned snapshot with HF secret",
+    "script_version_id": "335931420",
+    "private_report_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=335931420",
+    "repository": "LawWeiTin/anlu-health",
+    "repository_commit": "1d678efc96956fe470b8ebad95427d5faf5e4d07",
+    "model_id": "google/medgemma-1.5-4b-it",
+    "gpu": "Tesla T4",
+    "quantization": "NF4 double-quantization; float32 compute"
+  },
+  "dataset": {
+    "effective_train_rows": 1241,
+    "validation_rows": 100,
+    "promotion_allowed": false,
+    "contains_user_conversations": false
+  },
+  "metrics": {
+    "numerical_probe_finite": true,
+    "losses_finite": true,
+    "train_loss": 1.282838375140459,
+    "eval_loss": 1.229399561882019,
+    "train_runtime_seconds": 2883.9525,
+    "baseline_passed": 3,
+    "baseline_total": 18,
+    "baseline_pass_rate": 0.16666666666666666,
+    "candidate_passed": 12,
+    "candidate_total": 18,
+    "candidate_pass_rate": 0.6666666666666666
+  },
+  "adapter_integrity": {
+    "checksum_entries": 11,
+    "adapter_model_safetensors_sha256": "0222249fd2f307ab1e33e1d9eaec3edf9133593450fa886c4937b3e9726c1f28",
+    "adapter_config_json_sha256": "065cd8de99f991c4c8e9d85fada11cc2c63cf2503fcb271edd89fef656cf6c55",
+    "readme_sha256": "42c4bbc819284bf9c530a356018b9393f86bba34348039913597db5e2c4653d3",
+    "adapter_config_verified_against_report": true,
+    "readme_verified_against_report": true,
+    "full_checksum_manifest_location": "private Kaggle training_report.json"
+  },
+  "release_gate": {
+    "automated_gate_passed": false,
+    "candidate_perfect_score_required": true,
+    "candidate_not_worse_than_baseline": true,
+    "failure_reasons": [
+      "candidate held-out pass rate was 0.6667, below the required 1.0"
+    ],
+    "human_review_required": true,
+    "promotion_allowed": false,
+    "disposition": "Keep the adapter private for audit; do not deploy or promote."
+  },
+  "local_gates": {
+    "tests": {
+      "passed": 44,
+      "failed": 0
+    },
+    "lint_passed": true,
+    "safety": {
+      "strict_gate_passed": true,
+      "case_count": 22,
+      "urgency_accuracy": 1.0,
+      "emergency_recall": 1.0,
+      "bypass_accuracy": 1.0,
+      "forbidden_advice_rate": 0.0,
+      "citation_validity_rate": 1.0
+    },
+    "rag": {
+      "strict_gate_passed": true,
+      "case_count": 7,
+      "expected_source_recall": 1.0,
+      "forbidden_source_rate": 0.0,
+      "abstention_accuracy": 1.0
+    },
+    "behavior_dataset": {
+      "audit_passed": true,
+      "record_count": 45,
+      "heldout_prompt_count": 40,
+      "leakage_count": 0
+    },
+    "tracked_secret_scan_passed": true
+  },
+  "failure_analysis": "model_registry/runs/medgemma_kaggle_v8_failure_analysis.json"
+}

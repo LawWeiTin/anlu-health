@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "status": "verified_prelaunch",
+  "verified_at": "2026-07-28T13:05:51.5151822Z",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 31,
+  "version_name": "V31 editor-preserved encrypted secret binding",
+  "private": true,
+  "training_source_commit": "51df8fcb9fc439e94c39ad4158192b4e581a5132",
+  "launcher_artifact_commit": "0f5fd8f584c56dc8987764acf0c868740044f94d",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "v30_terminal_evidence": {
+    "status": "failed_secret_binding_gate",
+    "script_version_id": 338577483,
+    "provisioned_accelerator": "GPU T4 x2",
+    "runtime_initialized": true,
+    "gated_model_access_granted": false,
+    "training_executed": false,
+    "root_cause": "Kaggle CLI push replaced the draft that held the notebook-level secret binding."
+  },
+  "change_summary": {
+    "training_data": "Unchanged from V30.",
+    "held_out_release_suite": "Unchanged from V30.",
+    "evaluator": "Unchanged from V30.",
+    "model_hyperparameters": "Unchanged from V30.",
+    "operational_change": "Loads the verified V31 one-cell launcher into the authenticated private Kaggle editor and launches with Save & Run All so the checked HF_TOKEN binding remains attached.",
+    "release_candidate_version": 31
+  },
+  "snapshot": {
+    "manifest_sha256": "398112a063adec120e8f857fe6789335985be43976798c65aed454d329ebee47",
+    "launcher_sha256": "18015c3eb33323f7ebbef34b9fa153d14c5ee1289c4980c6bae09deb277e2798",
+    "notebook_sha256": "00d30172cc752ef89f9d96761dc7a49c1a43438d60d3beff97f4f7db0f5cc90b",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 218790,
+    "verified": true,
+    "embedded_source_commit": "51df8fcb9fc439e94c39ad4158192b4e581a5132",
+    "embedded_release_candidate_version": 31,
+    "embedded_hf_token_pattern": false
+  },
+  "secret_binding": {
+    "label": "HF_TOKEN",
+    "configured_binding_count": 1,
+    "verified_in_authenticated_private_kaggle_editor": true,
+    "masked_value": "*****",
+    "binding_checkbox_checked": true,
+    "accessible_checkbox_action": "Unset HF_TOKEN",
+    "hugging_face_token_type": "fine-grained",
+    "hugging_face_resource": "google/medgemma-1.5-4b-it",
+    "hugging_face_permission": "read contents of selected repository",
+    "write_permissions": false,
+    "inference_permissions": false,
+    "token_value_printed": false,
+    "token_value_logged": false,
+    "token_value_written_to_disk": false,
+    "token_value_committed": false
+  },
+  "local_gate_results": {
+    "pytest": "86 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed; expected-source recall 1.0; forbidden-source rate 0.0; abstention accuracy 1.0",
+    "behavior_dataset_audit": "136/136 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 9 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "accelerator_machine_shape": "NvidiaTeslaT4",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "launch_method": "authenticated private editor Save & Run All"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "Do not use Kaggle CLI push for this launch because it clears the notebook-level secret association. Verify the checked HF_TOKEN binding immediately before Save & Run All. Stop and record any failure before model training."
+}

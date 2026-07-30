@@ -3,6 +3,14 @@ from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
+EvidenceStatus = Literal[
+    "grounded",
+    "safety_bypass",
+    "insufficient_sources",
+    "model_rejected",
+    "not_applicable",
+]
+
 
 class RegisterRequest(BaseModel):
     email: EmailStr
@@ -47,6 +55,7 @@ class ChatRequest(BaseModel):
     message: str = Field(min_length=2, max_length=4000)
     care_mode: Literal["biomedical", "integrative"] = "integrative"
     conversation_id: str | None = None
+    medical_disclaimer_accepted: Literal[True]
 
     @field_validator("message")
     @classmethod
@@ -63,6 +72,7 @@ class SourceOut(BaseModel):
     publisher: str
     url: str
     evidence_tier: str
+    license: str
     reviewed_on: date
 
 
@@ -70,6 +80,8 @@ class ChatResponse(BaseModel):
     answer: str
     urgency: Literal["emergency", "urgent", "soon", "routine"]
     safety_flags: list[str]
+    evidence_status: EvidenceStatus
+    evidence_notice: str
     sources: list[SourceOut]
     disclaimer: str
     conversation_id: str | None = None

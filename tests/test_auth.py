@@ -37,9 +37,26 @@ def test_duplicate_registration_is_rejected(client: TestClient) -> None:
 
 def test_authenticated_write_requires_csrf(registered_client: TestClient) -> None:
     response = registered_client.post(
-        "/api/chat", json={"message": "I have a question", "care_mode": "biomedical"}
+        "/api/chat",
+        json={
+            "message": "I have a question",
+            "care_mode": "biomedical",
+            "medical_disclaimer_accepted": True,
+        },
     )
     assert response.status_code == 403
+
+
+def test_chat_requires_explicit_medical_disclaimer_acceptance(
+    registered_client: TestClient,
+) -> None:
+    response = registered_client.post(
+        "/api/chat",
+        headers=csrf_headers(registered_client),
+        json={"message": "I have a question", "care_mode": "biomedical"},
+    )
+
+    assert response.status_code == 422
 
 
 def test_weak_password_is_rejected(client: TestClient) -> None:

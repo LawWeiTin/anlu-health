@@ -19,7 +19,8 @@ flowchart LR
 
 - `dvc.yaml` records preparation and offline evaluation stages.
 - `params.yaml` defines release thresholds.
-- `training/medgemma_qlora_colab.ipynb` trains remotely; no weights are downloaded locally.
+- `training/medgemma_kaggle_qlora.py` trains in a private Kaggle GPU runtime; no weights are
+  downloaded locally.
 - `training/open_datasets.yaml` pins every public dataset revision and license. The Colab preparation
   step keeps PubMedQA's official test IDs out of training, filters MedQuAD to lower-risk educational
   targets, records attribution, and prevents condition-level train/validation leakage.
@@ -31,10 +32,16 @@ flowchart LR
 - MLflow logging is optional and should point to an access-controlled tracking server.
 - The hosted Qwen baseline and an eventual reviewed MedGemma adapter are separate registry entries;
   promoting a candidate never silently changes the deployed endpoint.
+- The remote release suite uses the production-aligned assistant policy, hidden prompts that are
+  leakage-checked against training, negation-aware claim checks, category-specific length limits,
+  clean-termination checks, and rejection of leaked prompt/meta text. A candidate must pass every
+  case and must not regress against its own pre-training baseline.
 
 ## Promotion policy
 
-Candidates never self-promote. A release requires automated gates plus documented sign-off from a
+Candidates never self-promote. A release requires finite training and validation losses, complete
+adapter checksums, a perfect critical-behavior suite, no baseline regression, and documented
+sign-off from a
 medical reviewer, TCM reviewer when applicable, privacy/security owners, and the product owner.
 Canary traffic should contain synthetic probes only until the intended-use review is complete.
 

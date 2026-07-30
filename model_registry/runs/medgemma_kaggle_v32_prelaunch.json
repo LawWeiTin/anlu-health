@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "status": "verified_prelaunch",
+  "verified_at": "2026-07-28T13:53:20.5802723Z",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 32,
+  "version_name": "V32 verified selected-repository token scope",
+  "private": true,
+  "training_source_commit": "e2bdc337eb5174995cfd6513d791f6ac7b2a2410",
+  "launcher_artifact_commit": "a58a5a847ed966abbb46ed10bb832ca1568626ef",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "v31_terminal_evidence": {
+    "status": "cancelled_insufficient_hf_token_scope_gate",
+    "script_version_id": 338586294,
+    "provisioned_accelerator": "GPU T4 x2",
+    "runtime_initialized": true,
+    "encrypted_secret_retrieval_passed": true,
+    "gated_model_access_granted": false,
+    "training_executed": false,
+    "direct_pinned_config_probe_status": 403,
+    "root_cause": "The valid fine-grained token lacked the selected-repository read-content permission."
+  },
+  "change_summary": {
+    "training_data": "Unchanged from V31.",
+    "held_out_release_suite": "Unchanged from V31.",
+    "evaluator": "Unchanged from V31.",
+    "model_hyperparameters": "Unchanged from V31.",
+    "operational_change": "Replaces the HF_TOKEN value with a fine-grained token whose only checked permission is Read contents of selected repos for google/medgemma-1.5-4b-it.",
+    "release_candidate_version": 32
+  },
+  "snapshot": {
+    "manifest_sha256": "f873bac4d60fee6d7c7b99959b13606e6930a182f8cbd655b1c514c7c3416c2d",
+    "launcher_sha256": "23a1ae428add5c38172618166adc9101aa6eb0cc42df6d4898a492112a7740c7",
+    "notebook_sha256": "f778ad37aa32f3b15369dc8fac38f2500c413cb57777fa2247e9a2893d64cddf",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 218790,
+    "verified": true,
+    "embedded_source_commit": "e2bdc337eb5174995cfd6513d791f6ac7b2a2410",
+    "embedded_release_candidate_version": 32,
+    "embedded_hf_token_pattern": false
+  },
+  "secret_binding": {
+    "label": "HF_TOKEN",
+    "configured_binding_count": 1,
+    "verified_in_authenticated_private_kaggle_editor": true,
+    "masked_value": "*****",
+    "binding_checkbox_checked": true,
+    "accessible_checkbox_action": "Unset HF_TOKEN",
+    "hugging_face_token_type": "fine-grained",
+    "hugging_face_resource": "google/medgemma-1.5-4b-it",
+    "checked_permissions": [
+      "Read contents of selected repos"
+    ],
+    "write_permissions": false,
+    "inference_permissions": false,
+    "pinned_config_probe_status": 200,
+    "token_value_printed": false,
+    "token_value_logged": false,
+    "token_value_written_to_disk": false,
+    "token_value_committed": false
+  },
+  "local_gate_results": {
+    "inherited_v31_full_gate_suite": "passed; data, evaluator, and model hyperparameters unchanged",
+    "focused_kaggle_contract": "4 passed",
+    "ruff_changed_python": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, embedded release candidate 32, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "accelerator_machine_shape": "NvidiaTeslaT4",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "launch_method": "authenticated private editor Save & Run All"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "Do not use Kaggle CLI push because it clears the notebook-level secret association. Verify the checked HF_TOKEN binding immediately before Save & Run All."
+}

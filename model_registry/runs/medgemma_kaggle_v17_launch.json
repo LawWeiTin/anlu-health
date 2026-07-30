@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "complete_rejected_automated_gate",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 17,
+  "script_version_id": "337567391",
+  "script_version_id_resolution": "resolved_from_authenticated_private_version_page",
+  "version_name": "V17 explicit RAG mismatch fidelity",
+  "launched_at": "2026-07-24T05:35:00Z",
+  "terminal_state_observed_at": "2026-07-24T08:22:09Z",
+  "private": true,
+  "training_source_commit": "33473740d807baab22be630a706504a793d09b74",
+  "launcher_artifact_commit": "dff990b",
+  "launch_registry_parent_commit": "29b08a2fad8afe27136a04880489805ac440d469",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "b02092d2d49b7d92c8df568144140d72a6ae66f38339a680220168c57a604ef7",
+    "launcher_sha256": "4643406c419c89b6b89db304069c70b4b45660decbb8fd618401b2a74d8da5a1",
+    "notebook_sha256": "003c9cb771aa7757d3294d08868d9c85cf7bed5a45adb55ae3b46d80a93160af",
+    "code_cell_count": 1,
+    "verified": true
+  },
+  "launch_security": {
+    "google_drive_oauth_completed": true,
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "accelerator": "GPU T4 x2",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "read-only",
+    "secret_value_printed": false,
+    "secret_value_written_to_disk": false
+  },
+  "observed_launch_signals": [
+    "Kaggle active event: Anlu Health - MedGemma QLoRA Release Candidate Version #17 with GPU T4 x2 Running",
+    "Save & Run All (Commit) selected",
+    "launcher source commit 33473740d807baab22be630a706504a793d09b74 visible in the one imported code cell"
+  ],
+  "local_gate_results_before_launch": {
+    "pytest": "73 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "79/79 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V17 completed as a private Kaggle commit but failed the mandatory 1.0 candidate held-out gate at 28/30. Its exact private scriptVersionId was resolved after completion. The adapter was not connected to the localhost application."
+}

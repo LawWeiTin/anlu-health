@@ -14,16 +14,22 @@ API, prompt, and evaluation gates all enforce that scope.
    chest, fainting, or fast-heartbeat symptoms bypass generation as an emergency.
    Emergency responses bypass retrieval and generation.
 2. **Approved-source RAG:** chunks carry publisher, URL, license, evidence tier, language, review date,
-   expiry date, checksum, and approval state. Retrieval filters stale/unapproved content and abstains
-   when candidates lack topic overlap or fall below the relevance threshold.
-3. **Bounded generation:** the prompt forbids diagnosis, dosing, fabricated citations, urgency
-   downgrades, and presentation of traditional concepts as established biomedical mechanisms.
-4. **Output validation:** only citations present in the retrieved set survive. Answers without usable
-   evidence explicitly say that reliable support was not found.
+   expiry date, checksum, and approval state. Retrieval fuses pgvector semantic similarity with
+   indexed full-text/BM25 keyword evidence, filters stale or unapproved content, and abstains when
+   candidates lack sufficient lexical or strong semantic support. Regex topic routing does not
+   authorize evidence.
+3. **Bounded generation:** training and inference use the same system/user chat template. Generation
+   stops on Gemma's `<end_of_turn>` token as well as generic EOS; the prompt forbids diagnosis,
+   dosing, fabricated citations, urgency downgrades, and presentation of traditional concepts as
+   established biomedical mechanisms.
+4. **Output validation:** only citations present in the retrieved set survive. Generated answers
+   without a valid approved citation, with personalized numeric dosing, diagnostic certainty, or
+   leaked prompt/meta instructions, overlong answers, or incomplete final sentences fail closed and
+   are replaced by a deterministic abstention.
 5. **Privacy controls:** opaque revocable sessions; no raw health text in logs; history is off by
    default and app-level encrypted when explicitly enabled.
-6. **Release gates:** emergency recall, abstention, citation validity, traditional-medicine separation,
-   security tests, and clinician review.
+6. **Release gates:** emergency recall, abstention, citation validity, traditional-medicine
+   separation, response termination, scope adherence, security tests, and clinician review.
 
 ## Lump questions
 

@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "run_id": "20260724T015113Z",
+  "status": "rejected_automated_gate",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 16,
+  "source_release_candidate_version": 16,
+  "script_version_id": "337535928",
+  "script_version_id_status": "resolved_from_authenticated_private_running_version_page",
+  "version_name": "V16 duration fidelity and one-cell launcher",
+  "private": true,
+  "accelerator": "GPU T4 x2",
+  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=337535928",
+  "launch_observed_at": "2026-07-24T01:51:13Z",
+  "training_source_commit": "ef2700f7a32bbbe5668b6a801ca59f90c4a020a8",
+  "current_integration_commit": "ef2700f7a32bbbe5668b6a801ca59f90c4a020a8",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "7b6461f080c0b60d267fd27a57e08fe96e00ed945f466dc8263b075fbf1da2b1",
+    "launcher_sha256": "61653e2ca2c1cf7809e863cdf3fffdc8151a2a0c1b0e72ce37fc2347625f60e0",
+    "notebook_sha256": "3e48b75f4e3fa035bbed5b89d97de830ae3d29436d0bc699da41fca4f90b1107",
+    "code_cell_count": 1,
+    "verified_before_launch": true
+  },
+  "runtime_security": {
+    "internet_enabled": true,
+    "hugging_face_secret_label": "HF_TOKEN",
+    "hugging_face_secret_label_count": 1,
+    "hugging_face_token_scope": "fine-grained read-only",
+    "hugging_face_token_rotated_in_place": true,
+    "hugging_face_secret_attachment_verified": true,
+    "secret_storage": "Kaggle encrypted secret",
+    "secret_embedded_in_notebook": false,
+    "private_notebook": true,
+    "volatile_browser_token_memory_cleared_after_launch": true
+  },
+  "observed_health": {
+    "kaggle_status": "KernelWorkerStatus.COMPLETE",
+    "version_visible_in_authenticated_active_events": 16,
+    "accelerator_visible_in_authenticated_active_events": "GPU T4 x2",
+    "private_visible_in_authenticated_version_page": true,
+    "runtime_seconds_at_observation": 8063.3,
+    "signals": [
+      "verified_private_snapshot",
+      "runtime_initialized",
+      "gated_model_access_granted",
+      "dataset_bundle_ready",
+      "sft_format_gate_passed",
+      "numerical_precision_gate_passed",
+      "baseline_evaluation_complete",
+      "gradient_flow_gate_passed",
+      "training_and_validation_complete",
+      "candidate_evaluation_complete",
+      "run_complete"
+    ],
+    "dataset_rows": {
+      "train": 739,
+      "effective_train": 2487,
+      "validation": 77,
+      "deduplicated_total": 816
+    },
+    "latest_bounded_signal": "run_complete automated_gate_passed=False"
+  },
+  "terminal_result": {
+    "kaggle_run_successful": true,
+    "output_run_id": "20260724T014918Z",
+    "train_loss": 0.601408595345028,
+    "eval_loss": 1.1441290378570557,
+    "losses_finite": true,
+    "baseline_passed": 7,
+    "baseline_total": 30,
+    "baseline_pass_rate": 0.23333333333333334,
+    "candidate_passed": 27,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.9,
+    "candidate_at_least_baseline": true,
+    "candidate_turn_boundary_stop_rate": 1.0,
+    "automated_gate_passed": false,
+    "adapter_sha256": {
+      "adapter/README.md": "42c4bbc819284bf9c530a356018b9393f86bba34348039913597db5e2c4653d3",
+      "adapter/adapter_config.json": "826010af87ce2e696bbed7d2beee492e19158595b10f3da74909e5f919ccb58c",
+      "adapter/adapter_model.safetensors": "5f3b95057e8f7733090506a3c6c7f37fe5fcf0ab8a11360f3be74789f5212b28",
+      "adapter/added_tokens.json": "50b2f405ba56a26d4913fd772089992252d7f942123cc0a034d96424221ba946",
+      "adapter/chat_template.jinja": "7de1c58e208eda46e9c7f86397df37ec49883aeece39fb961e0a6b24088dd3c4",
+      "adapter/preprocessor_config.json": "5b2f684b616a25f3cd4a700e5e471a07fcaabc5ec07871d2231b7e376e8648ce",
+      "adapter/processor_config.json": "3ffd5f11778dc73e2b69b3c00535e4121e1badf7018136263cd17b5b34fbaa53",
+      "adapter/special_tokens_map.json": "2f7b0adf4fb469770bb1490e3e35df87b1dc578246c5e7e6fc76ecf33213a397",
+      "adapter/tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+      "adapter/tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+      "adapter/tokenizer_config.json": "120c4a25aed6436edaac2e3966c9aa026bc13b5f7d3d9a81fc7afe2569b9e28b"
+    }
+  },
+  "local_gate_rerun": {
+    "pytest": "71 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "76/76 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "human_review_required": true,
+  "promotion_allowed": false,
+  "local_experimental_activation_allowed_after_gate": true,
+  "required_approvals_for_production": [
+    "physician",
+    "pharmacist",
+    "registered_tcm_practitioner",
+    "privacy_security",
+    "retrieval_safety"
+  ],
+  "disposition": "Retain the private adapter and audit report on Kaggle only. Do not activate it in the localhost application because the candidate held-out pass rate was 0.9 instead of the required 1.0.",
+  "notes": "Version 16 completed successfully at the infrastructure and numerical levels and stopped cleanly on every held-out response. It failed three topic-mismatch/abstention checks, so the automated release gate remains closed. Large model and dataset artifacts remain on Kaggle and are not stored on the laptop."
+}

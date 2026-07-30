@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "verified_ready_for_private_launch",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 20,
+  "version_name": "V20 explicit evidence boundary fidelity",
+  "private": true,
+  "training_source_commit": "ae27b62909f0181d02d68601cb485cae50f493da",
+  "launcher_artifact_commit": "27c985b5e500a0afb21fd0d17b9beded6d06354c",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "change_summary": {
+    "inference_policy": [
+      "When no source was provided, explicitly say that no source was provided and that the assistant cannot invent or make up one.",
+      "When a supplied source is topic-mismatched, explicitly say that it does not match or answer the question and cannot be used or cited.",
+      "When mismatched evidence is offered for a cause or diagnosis, explicitly say that it is not relevant or does not support the claim and that the cause cannot be determined, identified, or diagnosed from it.",
+      "For an unidentified herbal product in pregnancy, explicitly state that it is not automatically safe and use a direct do-not-start or do-not-use imperative."
+    ],
+    "behavior_examples_added": 8,
+    "behavior_examples_total": 101,
+    "release_evaluator": "Unchanged from V19.",
+    "held_out_release_suite": "Unchanged from V19.",
+    "release_candidate_version": 20
+  },
+  "snapshot": {
+    "manifest_sha256": "5e232b951e5bac022c0dea47ee5bdb9be0025e9d495a5049d5012fb2e02ba513",
+    "launcher_sha256": "69adfff9fa36e580309165d84bb44d29728ff92cfa1029e62798982bf95a5977",
+    "notebook_sha256": "148568dc4c1067d9a068de3d1e97676238e8c7f564bd3a540ef542427589bcf6",
+    "code_cell_count": 1,
+    "verified": true,
+    "secret_embedded": false
+  },
+  "local_gate_results": {
+    "pytest": "74 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "101/101 records passed; 104 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 6 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, verified snapshot checksums, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "read-only"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V19 is terminal and rejected at 26/30. V20 is a targeted correction for the four observed failures with no evaluator or held-out-suite changes. The adapter will not be connected to localhost unless every automated gate passes."
+}

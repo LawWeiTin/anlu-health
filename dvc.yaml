@@ -6,6 +6,17 @@ stages:
       - training/data/sample_sft.jsonl
     outs:
       - artifacts/train.validated.jsonl
+  audit_behavior_data:
+    cmd: python -m training.audit_behavior_dataset --output artifacts/behavior_data_audit.json
+    deps:
+      - training/audit_behavior_dataset.py
+      - training/data/sample_sft.jsonl
+      - training/data/model_release_cases.jsonl
+      - data/eval/golden_cases.jsonl
+      - data/source_registry.yaml
+    metrics:
+      - artifacts/behavior_data_audit.json:
+          cache: false
   evaluate:
     cmd: python scripts/evaluate.py --strict --output artifacts/eval.json
     deps:
@@ -17,4 +28,19 @@ stages:
     metrics:
       - artifacts/eval.json:
           cache: false
-
+  evaluate_rag:
+    cmd: python scripts/evaluate_rag.py --strict --output artifacts/rag_eval.json
+    deps:
+      - app/rag.py
+      - app/models.py
+      - app/search_text.py
+      - app/embeddings.py
+      - data/source_registry.yaml
+      - data/seed_knowledge.jsonl
+      - data/eval/rag_cases.jsonl
+      - scripts/evaluate_rag.py
+    params:
+      - rag_evaluation
+    metrics:
+      - artifacts/rag_eval.json:
+          cache: false

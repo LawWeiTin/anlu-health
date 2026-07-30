@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "status": "rejected_automated_gate",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_kernel_id": 127448562,
+  "kaggle_version_number": 22,
+  "script_version_id": 338106299,
+  "script_version_id_resolution": "resolved_from_authenticated_private_version_history",
+  "version_name": "V22 source-boundary fidelity",
+  "launched_at": "2026-07-26T15:33:55.613Z",
+  "launched_at_basis": "authenticated Kaggle API last_run_time immediately after Save & Run All",
+  "private": true,
+  "training_source_commit": "46bddd3d685e5b9139cb26080c0337e5265011a2",
+  "launcher_artifact_commit": "27f7b692d68c1da5b4eb0c20ae3914be6e7bbe51",
+  "launch_registry_parent_commit": "eb2495d5ad427d4ecf75d7168a11a93dc9187427",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "2fc01e45a6c952a2f2a708373e6c4b3007072dc8eaa2799e901e496034ffa594",
+    "launcher_sha256": "e4a63017bf5d4625b03ba55646fe67ca0753dd221b57b9a175e808b22fcf6330",
+    "notebook_sha256": "56ba5879f07ae5a2b5527106a7898657847fa717eebb4b5cf8710d2296b9907b",
+    "code_cell_count": 1,
+    "size_bytes": 191934,
+    "verified_before_launch": true,
+    "verified_running_source_commit": "46bddd3d685e5b9139cb26080c0337e5265011a2",
+    "verified_release_candidate_version": 22
+  },
+  "launch_security": {
+    "notebook_visibility": "private",
+    "internet_enabled": true,
+    "accelerator": "GPU T4 x2",
+    "encrypted_secret_bindings": [
+      "HF_TOKEN"
+    ],
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "fine-grained read-only",
+    "secret_masked_in_kaggle_ui": true,
+    "existing_token_rotated_in_authenticated_browser": true,
+    "superseded_token_invalidated": true,
+    "token_value_written_to_disk": false,
+    "token_value_embedded_in_notebook_or_repository": false,
+    "token_working_variable_cleared_after_binding": true
+  },
+  "observed_launch_signals": [
+    "Kaggle active event: Anlu Health - MedGemma QLoRA Release Candidate Version #22 with GPU T4 x2 Running",
+    "Save & Run All (Commit) selected",
+    "authenticated private version history exposed scriptVersionId 338106299",
+    "Kaggle CLI reports KernelWorkerStatus.RUNNING",
+    "runtime_initialized",
+    "gated_model_access_granted",
+    "Pinned private repository snapshot: 46bddd3d685e5b9139cb26080c0337e5265011a2",
+    "dataset_bundle_ready with 776 train, 3375 effective train, and 77 validation rows",
+    "sft_format_gate_passed records=853",
+    "numerical_precision_gate_passed",
+    "baseline held-out evaluation started"
+  ],
+  "local_gate_results_before_launch": {
+    "pytest": "80 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "113/113 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 7 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, verified snapshot checksums, no embedded token"
+  },
+  "terminal_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "full_local_gate_rerun_required": true
+  },
+  "terminal_result": {
+    "observed_at": "2026-07-27T00:35:01.0284493Z",
+    "run_id": "20260726T153407Z",
+    "training_report_sha256": "2471265819f02a009fba5d8708ebeb86cdcf36c87e1bc0b5cce8637f111a5418",
+    "losses_finite": true,
+    "train_loss": 0.48253702495900375,
+    "eval_loss": 1.1517380475997925,
+    "baseline_passed": 5,
+    "baseline_total": 30,
+    "candidate_passed": 28,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.9333333333333333,
+    "candidate_at_least_baseline": true,
+    "candidate_turn_boundary_stop_rate": 1.0,
+    "automated_gate_passed": false,
+    "failed_case_ids": [
+      "release-wrong-rag-topic",
+      "release-citation-negated-claim"
+    ],
+    "kaggle_terminal_status": "KernelWorkerStatus.ERROR",
+    "secondary_kernel_error": "After the V22 run saved its adapter and failed release report, Kaggle executed a stale V21 cell from commit 0287aa65c017aa70eff17e9297e288ae42180ad4. That duplicate cell stopped on the existing dataset output directory with FileExistsError and caused the final PapermillExecutionError.",
+    "heavy_adapter_downloaded_locally": false
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V22 completed training with finite losses but is rejected because the prospective candidate gate reached only 28/30. The later stale-cell infrastructure error did not cause or conceal the release-gate failure. The localhost application remains unchanged."
+}

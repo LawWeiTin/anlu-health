@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "status": "verified_ready_for_private_launch",
+  "verified_at": "2026-07-27T11:59:22.371Z",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 24,
+  "version_name": "V24 explicit evidence-state contrast",
+  "private": true,
+  "training_source_commit": "41e56f4b24ebfedf152e0ec5f7ef1cf93e96462e",
+  "launcher_artifact_commit": "ace578fd017aad00a06c6f071ef7fd5960b0416b",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "v23_terminal_evidence": {
+    "candidate_passed": 29,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.9666666666666667,
+    "turn_boundary_stop_rate": 1.0,
+    "losses_finite": true,
+    "genuine_failure": "release-wrong-rag-topic",
+    "failure_summary": "The prompt supplied a skin-lump source, but the candidate incorrectly described the state as no source supplied and produced malformed citation-refusal polarity."
+  },
+  "change_summary": {
+    "inference_policy": [
+      "The model must distinguish no source, mismatched supplied source, and relevant supplied source before drafting.",
+      "A prompt containing any source card may never be described as having no supplied source.",
+      "A mismatch must name the supplied topic and reject the source before care navigation.",
+      "The model must say it cannot choose, invent, or cite an unretrieved source."
+    ],
+    "behavior_examples_added": 9,
+    "behavior_examples_total": 130,
+    "contrast_sets": 3,
+    "contrast_topics": [
+      "blood-streaked sputum",
+      "warfarin and herbal-product safety",
+      "persistent lump care navigation"
+    ],
+    "held_out_release_suite": "Unchanged from V23.",
+    "release_candidate_version": 24
+  },
+  "snapshot": {
+    "manifest_sha256": "6793d89e5df474d1096684313bd5922a643c7674030acd0b3513a6651fed6084",
+    "launcher_sha256": "ca3a3d4ef66846434477b84c99714710213fca4a3083a3afb2ab6429dd45ee4f",
+    "notebook_sha256": "091bdd351180a2ee07d49accba87d47b8e4ac7b98262dcf1e939beec5af71d1c",
+    "code_cell_count": 1,
+    "snapshot_file_count": 7,
+    "size_bytes": 211218,
+    "verified": true,
+    "embedded_hf_token_pattern": false
+  },
+  "local_gate_results": {
+    "pytest": "83 passed with 83.98% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "130/130 records passed; 52 held-out prompts checked with no leakage",
+    "source_freshness": "passed; registry age 8 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, seven verified snapshot files, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "fine-grained read-only",
+    "import_must_replace_not_append": true
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_passed": 30,
+    "candidate_total": 30,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V24 is the smallest evidence-backed follow-up to V23. No held-out requirement was weakened, no heavy artifact was downloaded, and the localhost candidate remains unchanged."
+}

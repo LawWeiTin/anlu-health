@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "run_id": "20260717T145818Z",
+  "launch_run_id": "20260717T150052Z",
+  "status": "rejected_automated_gate",
+  "platform": "kaggle",
+  "kaggle_version_number": 11,
+  "source_release_candidate_version": 9,
+  "script_version_id": "335974108",
+  "version_name": "V11 verified snapshot with encrypted HF token",
+  "private": true,
+  "accelerator": "GPU T4 x2",
+  "observed_gpu": "Tesla T4",
+  "runtime_seconds": 3887.4,
+  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=335974108",
+  "repository_commit": "ae581f6d44dd56ab47db64e03a9b0ea83eca7ad1",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "snapshot": {
+    "manifest_sha256": "f79e5232d729213c27698a67e19fa068a596b73d43f7083e0aa8cf7c7d222f87",
+    "launcher_sha256": "b00cb6ec371371ee5a5cb13086533aa3e4df27e617364d0076150c37c9998f8f",
+    "training_report_sha256": "fefffe2289d39f69c90b6c41663d78b0388d1fa01fb869dbe7207da2a85bb6c6",
+    "verified_at_startup": true
+  },
+  "startup_checks": {
+    "runtime_initialized": true,
+    "gated_model_access_granted": true,
+    "pinned_repository_commit_verified": true,
+    "dataset_bundle_ready": true,
+    "train_rows": 940,
+    "effective_train_rows": 1611,
+    "validation_rows": 102,
+    "numerical_probe_finite": true
+  },
+  "training_configuration": {
+    "quantization": "NF4 double-quantization; float32 compute",
+    "behavior_sampling_weight": 12,
+    "num_train_epochs": 1,
+    "learning_rate": 0.0001,
+    "max_length": 512
+  },
+  "training_metrics": {
+    "train_loss": 1.0366391085162021,
+    "eval_loss": 1.201258659362793,
+    "losses_finite": true,
+    "train_runtime_seconds": 2671.4755
+  },
+  "evaluation": {
+    "suite_cases": 30,
+    "suite_sha256": "7ac5ad83b09f75467a5e027401b0fb7f08eb88f0179738d5fa57f966ccbede32",
+    "baseline_passed": 0,
+    "baseline_total": 30,
+    "baseline_pass_rate": 0.0,
+    "candidate_passed": 4,
+    "candidate_total": 30,
+    "candidate_pass_rate": 0.13333333333333333,
+    "candidate_at_least_baseline": true,
+    "required_candidate_pass_rate": 1.0,
+    "failure_analysis": "model_registry/runs/medgemma_kaggle_v11_failure_analysis.json"
+  },
+  "adapter_artifact": {
+    "remote_path": "anlu-health/medgemma-qlora/20260717T145818Z/adapter",
+    "storage_policy": "Private Kaggle output; heavy files were not downloaded to the laptop.",
+    "sha256": {
+      "README.md": "42c4bbc819284bf9c530a356018b9393f86bba34348039913597db5e2c4653d3",
+      "adapter_config.json": "3718a96b2af844dc855ea773b7afac07633be4ca28054152695fdba2f5cf0a77",
+      "adapter_model.safetensors": "e9b10cd5a7ade2dc59a1b4619ad14fb74be036e512aa82a1b945e9ff709a9fc2",
+      "added_tokens.json": "50b2f405ba56a26d4913fd772089992252d7f942123cc0a034d96424221ba946",
+      "chat_template.jinja": "7de1c58e208eda46e9c7f86397df37ec49883aeece39fb961e0a6b24088dd3c4",
+      "preprocessor_config.json": "5b2f684b616a25f3cd4a700e5e471a07fcaabc5ec07871d2231b7e376e8648ce",
+      "processor_config.json": "3ffd5f11778dc73e2b69b3c00535e4121e1badf7018136263cd17b5b34fbaa53",
+      "special_tokens_map.json": "2f7b0adf4fb469770bb1490e3e35df87b1dc578246c5e7e6fc76ecf33213a397",
+      "tokenizer.json": "4667f2089529e8e7657cfb6d1c19910ae71ff5f28aa7ab2ff2763330affad795",
+      "tokenizer.model": "1299c11d7cf632ef3b4e11937501358ada021bbdf7c47638d13c0ee982f2e79c",
+      "tokenizer_config.json": "120c4a25aed6436edaac2e3966c9aa026bc13b5f7d3d9a81fc7afe2569b9e28b"
+    }
+  },
+  "local_gates": {
+    "verified_at": "2026-07-17T16:22:17Z",
+    "pytest": "55 passed",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "rag": "10/10 passed",
+    "behavior_dataset_audit": "61/61 records passed; 52 held-out prompts had no leakage",
+    "tracked_secret_scan": "passed"
+  },
+  "superseded_attempts": [
+    {
+      "kaggle_version_number": 9,
+      "script_version_id": "335969030",
+      "status": "cancelled",
+      "reason": "Kaggle browser save committed the previous Version 8 source instead of the verified Version 9 draft."
+    },
+    {
+      "kaggle_version_number": 10,
+      "script_version_id": "335971558",
+      "status": "failed",
+      "reason": "The checksum-verified source started correctly, but the command-line update detached the encrypted HF_TOKEN secret."
+    }
+  ],
+  "evaluation_status": "failed",
+  "automated_gate_passed": false,
+  "human_review_required": true,
+  "promotion_allowed": false,
+  "required_approvals": [
+    "physician",
+    "pharmacist",
+    "registered_tcm_practitioner",
+    "privacy_security",
+    "retrieval_safety"
+  ],
+  "disposition": "Retain privately for audit only. Do not deploy, publish, or promote.",
+  "notes": "Version 11 completed successfully at the infrastructure level and produced finite losses, but it failed 26 of 30 held-out behavior cases. Production remains on the hosted baseline."
+}

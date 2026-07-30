@@ -13,7 +13,7 @@ import html
 import json
 import re
 import shutil
-import subprocess
+import subprocess  # nosec B404
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
@@ -35,12 +35,38 @@ DOSING_PATTERN = re.compile(
     re.I,
 )
 PROHIBITED_CERTAINTY = ("definitely benign", "you have cancer", "this proves you have")
+MEDQUAD_MAX_ANSWER_WORDS = 80
+PUBMEDQA_MAX_ANSWER_WORDS = 75
+SENTENCE_TERMINAL_PATTERN = re.compile(r"""[.!?。！？]["')\]]?$""")
 
 
 def normalize_text(value: object) -> str:
     text = html.unescape(str(value or ""))
     text = TAG_PATTERN.sub(" ", text)
     return WHITESPACE_PATTERN.sub(" ", text).strip()
+
+
+def truncate_to_complete_sentences(text: str, max_words: int) -> str:
+    """Keep source text within budget and normalize a missing terminal punctuation mark."""
+
+    words = text.split()
+    if len(words) <= max_words:
+        result = text.strip()
+    else:
+        sentences = re.split(r"(?<=[.!?。！？])\s+", text)
+        kept: list[str] = []
+        word_count = 0
+        for sentence in sentences:
+            sentence_words = sentence.split()
+            if not sentence_words or word_count + len(sentence_words) > max_words:
+                break
+            kept.append(sentence)
+            word_count += len(sentence_words)
+        result = " ".join(kept).strip()
+
+    if result and not SENTENCE_TERMINAL_PATTERN.search(result):
+        result += "."
+    return result
 
 
 def _record_is_safe(record: dict[str, Any]) -> bool:
@@ -110,6 +136,7 @@ def load_medquad(repo: Path, spec: dict[str, Any]) -> tuple[list[dict[str, Any]]
                 continue
             question = normalize_text(question_element.text if question_element is not None else "")
             answer = normalize_text(answer_element.text if answer_element is not None else "")
+            answer = truncate_to_complete_sentences(answer, MEDQUAD_MAX_ANSWER_WORDS)
             if len(question) < 8 or len(answer) < 40:
                 counters["missing_or_short"] += 1
                 continue
@@ -171,6 +198,7 @@ def load_pubmedqa(repo: Path, spec: dict[str, Any]) -> tuple[list[dict[str, Any]
         contexts = [normalize_text(item) for item in example.get("CONTEXTS", [])]
         context = " ".join(item for item in contexts if item)
         long_answer = normalize_text(example.get("LONG_ANSWER"))
+        long_answer = truncate_to_complete_sentences(long_answer, PUBMEDQA_MAX_ANSWER_WORDS)
         decision = normalize_text(example.get("final_decision")).casefold()
         if decision not in {"yes", "no", "maybe"} or not question or not long_answer or not context:
             counters["incomplete_example"] += 1
@@ -209,6 +237,7 @@ def load_pubmedqa(repo: Path, spec: dict[str, Any]) -> tuple[list[dict[str, Any]
 
 def load_project_behavior(path: Path) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
+    source_revision = f"sha256:{_sha256(path)}"
     for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
@@ -217,14 +246,16 @@ def load_project_behavior(path: Path) -> list[dict[str, Any]]:
         record = {
             "messages": source["messages"],
             "metadata": {
-                "dataset_id": "anlu-reviewed-safety",
-                "source_record_id": f"project-{line_number:04d}",
-                "source_revision": "repository-commit",
+                "dataset_id": "anlu-authored-safety",
+                "source_record_id": source["scenario_id"],
+                "source_revision": source_revision,
                 "license": "project-authored",
                 "dataset_homepage": "private-repository",
                 "task": "safety_behavior",
                 "tags": tags,
-                "group_id": f"anlu:{':'.join(tags) or line_number}",
+                "evidence_source_keys": source.get("evidence_source_keys", []),
+                "authoring_status": "project-authored; clinical review pending",
+                "group_id": f"anlu:{source['scenario_id']}",
                 "force_split": "train",
             },
         }
@@ -276,8 +307,8 @@ def _clone_pinned(spec: dict[str, Any], work_dir: Path) -> Path:
         [git, "-C", str(destination), "checkout", "--quiet", "--detach", "FETCH_HEAD"],
     ]
     for command in commands:
-        subprocess.run(command, check=True)  # noqa: S603
-    actual = subprocess.run(  # noqa: S603
+        subprocess.run(command, check=True)  # noqa: S603  # nosec B603
+    actual = subprocess.run(  # noqa: S603  # nosec B603
         [git, "-C", str(destination), "rev-parse", "HEAD"],
         check=True,
         capture_output=True,
@@ -333,7 +364,7 @@ def prepare_bundle(
 
     behavior = load_project_behavior(behavior_path)
     records.extend(behavior)
-    audit["anlu-reviewed-safety"] = {"selected_for_pilot": len(behavior)}
+    audit["anlu-authored-safety"] = {"selected_for_pilot": len(behavior)}
 
     unique: dict[str, dict[str, Any]] = {}
     for record in records:
@@ -369,6 +400,9 @@ def prepare_bundle(
         "privacy": {
             "contains_user_conversations": False,
             "obvious_identifier_filter_applied": True,
+        },
+        "training_sampling": {
+            "behavior_sampling_weight": int(manifest["behavior_sampling_weight"]),
         },
         "promotion_allowed": False,
     }

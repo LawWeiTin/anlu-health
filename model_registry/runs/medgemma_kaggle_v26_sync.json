@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "complete_sync_only",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "kaggle_version_number": 26,
+  "script_version_id": 338565047,
+  "script_version_id_resolution": "observed_in_authenticated_private_Kaggle_URL_after_Colab_pull",
+  "private": true,
+  "version_type": "Quick Save",
+  "source_commit": "6795795f570d05666d097f738f3ab904d3511ffd",
+  "snapshot": {
+    "manifest_sha256": "39d71446473cf011a952ab979db3e1a808e9ed3e9194c9c400185191789f22f4",
+    "launcher_sha256": "fe6d27accfe10f165b04f01a8b70ef7106c50521115584f41c4205d7c0a73dba",
+    "notebook_sha256": "e8fa8fab26aeab066ae20d9543d816155581f714fa5743f63de5c6b39e6e1bf2",
+    "code_cell_count": 1
+  },
+  "runtime_display": "6s",
+  "training_executed": false,
+  "training_report_produced": false,
+  "adapter_produced": false,
+  "release_candidate": false,
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "Kaggle's linked-Colab pull created this private immutable Quick Save immediately after replacing the notebook from Drive. It only synchronized the verified one-cell launcher; the cell remained unexecuted. Version 26 is recorded as sync-only and is not evaluated or promoted."
+}

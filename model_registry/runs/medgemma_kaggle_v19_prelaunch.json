@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "verified_ready_for_private_launch",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 19,
+  "version_name": "V19 explicit safety and scope fidelity",
+  "private": true,
+  "training_source_commit": "86d68a87269b746aba243d2c4be90001c62fe83d",
+  "launcher_artifact_commit": "582597719b4d7c0acd8dab9ed7ae2855b16e8411",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "change_summary": {
+    "inference_policy": [
+      "Do not perform unrelated requested tasks; return only a brief health-scope redirect in the user's language.",
+      "For warfarin-plus-herb questions, explicitly name possible interaction and bleeding or INR effects.",
+      "For pregnancy with an unlabeled or unidentified herbal product, explicitly state that it is not automatically safe and should not be used or started before review.",
+      "For mismatched evidence, explicitly state that the source is not relevant or does not support the claim and that the cause cannot be determined, identified, or diagnosed from it.",
+      "Preserve user-provided duration in the first sentence."
+    ],
+    "behavior_examples_added": 10,
+    "behavior_examples_total": 93,
+    "release_evaluator": "Unchanged from V18.",
+    "held_out_release_suite": "Unchanged from V18.",
+    "release_candidate_version": 19
+  },
+  "snapshot": {
+    "manifest_sha256": "d5eecbb5d75ca3f674280a9dca0b9543e7aa35c6d1673ae9491f42994d936aae",
+    "launcher_sha256": "617d81bbb849ba730f12687b9bcefd1a4899c419b3308edc3d536ba8f0adfc8e",
+    "notebook_sha256": "adcf1e94696151ce59cbe0d30bb3a57784bea4eeca75df99c18cd8dbf2e1efa3",
+    "code_cell_count": 1,
+    "verified": true,
+    "secret_embedded": false
+  },
+  "local_gate_results": {
+    "pytest": "74 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "93/93 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed",
+    "launcher_contract": "passed; one code cell, pinned source commit, verified snapshot checksums, no embedded token"
+  },
+  "launch_requirements": {
+    "notebook_visibility": "private",
+    "accelerator": "GPU T4 x2",
+    "internet_enabled": true,
+    "encrypted_secret_binding": "HF_TOKEN",
+    "encrypted_secret_binding_count": 1,
+    "hugging_face_token_permission": "read-only"
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "local_app_changed": false,
+  "promotion_allowed": false,
+  "notes": "V18 is terminal and rejected at 25/30. V19 is a targeted correction for the five observed failures with no evaluator or held-out-suite changes. The adapter will not be connected to localhost unless every automated gate passes."
+}

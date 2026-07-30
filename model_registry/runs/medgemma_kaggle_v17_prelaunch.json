@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "awaiting_user_oauth_completion",
+  "platform": "kaggle",
+  "kaggle_kernel_slug": "lawweitin/anlu-health-medgemma-qlora-release-candidate",
+  "planned_kaggle_version_number": 17,
+  "version_name": "V17 explicit RAG mismatch fidelity",
+  "private": true,
+  "training_source_commit": "33473740d807baab22be630a706504a793d09b74",
+  "launcher_artifact_commit": "dff990b",
+  "base_model": {
+    "id": "google/medgemma-1.5-4b-it",
+    "revision": "91850547d9f0b2fdd21aa7c5f4f3d1a8a52c243b"
+  },
+  "change_summary": {
+    "inference_policy": "A topic-mismatched source must be rejected directly before source-independent care navigation.",
+    "behavior_examples_added": 3,
+    "behavior_examples_total": 79,
+    "release_evaluator": "Prospectively accepts the explicit safe variants 'does not answer', 'does not cover', and 'not identified from' while retaining all forbidden-claim checks.",
+    "release_candidate_version": 17
+  },
+  "snapshot": {
+    "manifest_sha256": "b02092d2d49b7d92c8df568144140d72a6ae66f38339a680220168c57a604ef7",
+    "launcher_sha256": "4643406c419c89b6b89db304069c70b4b45660decbb8fd618401b2a74d8da5a1",
+    "notebook_sha256": "003c9cb771aa7757d3294d08868d9c85cf7bed5a45adb55ae3b46d80a93160af",
+    "code_cell_count": 1,
+    "verified": true
+  },
+  "private_drive_handoff": {
+    "file_id": "1bcup2YPIX0dw--g_FpC_TLX7gpRfy5mY",
+    "file_name": "Anlu Health - MedGemma V17 Private Kaggle Launcher.ipynb",
+    "mime_type": "application/x-ipynb+json",
+    "size_bytes": 158030,
+    "shared": false,
+    "source_visibility_status": "not_shared",
+    "parent_folder": "Anlu Health/Colab Notebooks"
+  },
+  "local_gate_results": {
+    "pytest": "73 passed with 83.88% coverage",
+    "ruff": "passed",
+    "bandit": "passed",
+    "deterministic_safety": "22/22 passed",
+    "hybrid_rag": "17/17 passed",
+    "behavior_dataset_audit": "79/79 records passed; 52 held-out prompts had no leakage",
+    "source_freshness": "passed; registry age 5 days",
+    "tracked_secret_scan": "passed"
+  },
+  "launch_blocker": {
+    "reason": "The user explicitly approved linking Kaggle to Google Drive at 2026-07-24T05:17:56Z. Kaggle then attempted to open its Google OAuth authorization window, but that authentication window is not exposed to browser automation and must be completed by the user in the preserved Kaggle tab.",
+    "user_confirmation_received": true,
+    "user_confirmation_received_at": "2026-07-24T05:17:56Z",
+    "oauth_completion_required_from_user": true,
+    "secrets_exposed": false,
+    "local_app_changed": false
+  },
+  "release_gate_requirements": {
+    "losses_finite": true,
+    "candidate_held_out_pass_rate": 1.0,
+    "candidate_at_least_baseline": true,
+    "turn_boundary_stop_rate": 1.0,
+    "local_full_gate_rerun_required": true
+  },
+  "promotion_allowed": false,
+  "notes": "The V16 result is terminal and recorded. V17 is fully prepared but has not been launched. The user only needs to complete the Google authorization opened by Kaggle and then report that it is done; the localhost application remains on its existing experimental configuration."
+}

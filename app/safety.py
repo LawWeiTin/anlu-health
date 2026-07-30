@@ -18,7 +18,9 @@ class SafetyAssessment:
 
 
 _SELF_HARM = re.compile(
-    r"\b(kill myself|end my life|suicid(?:e|al)|hurt myself)\b|自杀|结束生命|伤害自己",
+    r"\b(kill myself|end my life|take my own life|suicid(?:e|al)|"
+    r"hurt myself|harm myself|self[- ]harm|overdose on purpose)\b|"
+    r"自杀|结束生命|伤害自己",
     re.IGNORECASE,
 )
 _DIRECT_EMERGENCY = re.compile(
