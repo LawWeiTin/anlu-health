@@ -6,7 +6,7 @@
     "run_id": "20260716T094417Z",
     "platform": "kaggle",
     "script_version_id": "335685794",
-    "private_report_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=335685794",
+    "private_report_url": "private-kaggle-run://redacted",
     "repository": "LawWeiTin/anlu-health",
     "repository_commit": "e7193e8e2a3535b7ddba8d6610adaa43f47af260",
     "model_id": "google/medgemma-1.5-4b-it",

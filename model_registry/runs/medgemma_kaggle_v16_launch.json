@@ -11,7 +11,7 @@
   "version_name": "V16 duration fidelity and one-cell launcher",
   "private": true,
   "accelerator": "GPU T4 x2",
-  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=337535928",
+  "run_url": "private-kaggle-run://redacted",
   "launch_observed_at": "2026-07-24T01:51:13Z",
   "training_source_commit": "ef2700f7a32bbbe5668b6a801ca59f90c4a020a8",
   "current_integration_commit": "ef2700f7a32bbbe5668b6a801ca59f90c4a020a8",

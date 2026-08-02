@@ -99,7 +99,7 @@ os.environ["WANDB_DISABLED"] = "true"
 
 def install_runtime() -> None:
     packages = [
-        "transformers>=4.53,<5",
+        "transformers>=5.3,<6",
         "accelerate>=1.9,<2",
         "bitsandbytes>=0.46,<1",
         "datasets>=3.6,<5",
@@ -440,6 +440,7 @@ model = AutoModelForImageTextToText.from_pretrained(  # nosec B615
     MODEL_ID,
     revision=MODEL_REVISION,
     token=hf_token,
+    use_safetensors=True,
     quantization_config=quantization,
     torch_dtype=torch.float32,
     device_map={"": 0},

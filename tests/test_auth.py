@@ -1,5 +1,7 @@
 from fastapi.testclient import TestClient
+from starlette.requests import Request
 
+from app.api import _client_key
 from tests.conftest import csrf_headers
 
 
@@ -71,3 +73,28 @@ def test_metrics_are_available_without_token_only_outside_production(client: Tes
     response = client.get("/metrics")
     assert response.status_code == 200
     assert "anlu_http_requests_total" in response.text
+
+
+def test_rate_limit_key_ignores_untrusted_forwarded_header() -> None:
+    request = Request(
+        {
+            "type": "http",
+            "method": "POST",
+            "path": "/api/auth/login",
+            "headers": [(b"x-forwarded-for", b"203.0.113.9")],
+            "client": ("127.0.0.1", 40123),
+        }
+    )
+
+    assert _client_key(request, "login") == "127.0.0.1:login"
+
+
+def test_metrics_collapse_unknown_paths_to_bounded_label(client: TestClient) -> None:
+    assert client.get("/not-found-one").status_code == 404
+    assert client.get("/not-found-two").status_code == 404
+
+    metrics = client.get("/metrics").text
+
+    assert 'path="unmatched",status="404"' in metrics
+    assert "/not-found-one" not in metrics
+    assert "/not-found-two" not in metrics

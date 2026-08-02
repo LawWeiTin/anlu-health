@@ -136,7 +136,7 @@
     "completed_at": "2026-07-29T23:37:46.7827285+08:00",
     "provider": "Hugging Face Inference Endpoints",
     "endpoint_name": "anlu-medgemma-v32-private",
-    "endpoint_url": "https://r51qz7nmpoaf0806.us-east-1.aws.endpoints.huggingface.cloud",
+    "endpoint_url": "private-endpoint-location-redacted",
     "visibility": "private",
     "engine": "vLLM 0.23.0",
     "hardware": "AWS us-east-1 NVIDIA L4 x1 24 GB",

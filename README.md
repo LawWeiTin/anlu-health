@@ -174,3 +174,14 @@ to your risk assessment; the sample plans are starter defaults, not a clinical a
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md),
 [docs/MLOPS.md](docs/MLOPS.md), and [docs/DATA_GOVERNANCE.md](docs/DATA_GOVERNANCE.md).
+
+## Security
+
+The repository runs Ruff, Bandit, pytest, CodeQL, dependency audits, deterministic medical-safety
+evaluation, hybrid-RAG evaluation, and `scripts/check_public_release.py`. The public-release gate
+rejects tracked provider tokens, private keys, credential-bearing URLs, private service locations,
+personal cloud identifiers, and tracked `.env` files. Keep real credentials only in the secret
+manager for the deployment platform; `.env.example` contains names and blank placeholders only.
+
+See [SECURITY.md](SECURITY.md) for responsible disclosure. Do not include real health information,
+access tokens, endpoint credentials, or exploit details in a public issue.

@@ -9,6 +9,7 @@ from starlette.requests import Request
 from app.config import Settings
 
 logger = logging.getLogger("anlu.http")
+UNMATCHED_ROUTE = "unmatched"
 REQUESTS = Counter(
     "anlu_http_requests_total",
     "HTTP requests",
@@ -31,9 +32,11 @@ class SecurityAndMetricsMiddleware(BaseHTTPMiddleware):
         start = time.perf_counter()
         response = await call_next(request)
         elapsed = time.perf_counter() - start
-        path = request.url.path
-        REQUESTS.labels(request.method, path, str(response.status_code)).inc()
-        LATENCY.labels(request.method, path).observe(elapsed)
+        raw_path = request.url.path
+        route = request.scope.get("route")
+        metric_path = getattr(route, "path", UNMATCHED_ROUTE)
+        REQUESTS.labels(request.method, metric_path, str(response.status_code)).inc()
+        LATENCY.labels(request.method, metric_path).observe(elapsed)
 
         response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
@@ -44,14 +47,16 @@ class SecurityAndMetricsMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'; "
             "img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'"
         )
-        response.headers["Cache-Control"] = "no-store" if path.startswith("/api/") else "no-cache"
+        response.headers["Cache-Control"] = (
+            "no-store" if raw_path.startswith("/api/") else "no-cache"
+        )
         if self.settings.cookie_secure:
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         logger.info(
             "request id=%s method=%s path=%s status=%s duration_ms=%.1f",
             request_id,
             request.method,
-            path,
+            metric_path,
             response.status_code,
             elapsed * 1000,
         )

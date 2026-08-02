@@ -36,8 +36,7 @@ router = APIRouter(prefix="/api")
 
 def _client_key(request: Request, action: str) -> str:
     host = request.client.host if request.client else "unknown"
-    forwarded = request.headers.get("X-Forwarded-For", "").split(",")[0].strip()
-    return f"{forwarded or host}:{action}"
+    return f"{host}:{action}"
 
 
 def _limit(request: Request, action: str, limit: int, seconds: int) -> None:

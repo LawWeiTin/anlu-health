@@ -9,7 +9,7 @@
   "version_name": "V13 resilient dependency bootstrap",
   "private": true,
   "accelerator": "GPU T4 x2",
-  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=336227798",
+  "run_url": "private-kaggle-run://redacted",
   "repository_commit": "be3dac8c3e94fc42031889007631ab0d7060192e",
   "base_model": {
     "id": "google/medgemma-1.5-4b-it",
