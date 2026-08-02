@@ -108,3 +108,12 @@ Excerpt: Track growth and arrange an examination.
     assert "[S1] Skin lumps" in user
     assert '"The supplied source is relevant to"' in user
     assert "cite every source used" in user
+
+
+def test_v32_endpoint_handles_repeated_unclosed_tags_without_regex_backtracking() -> None:
+    malformed = "<question>" + "<question>a" * 100_000
+
+    system, user = endpoint_messages("anlu-v32", "generic system prompt", malformed)
+
+    assert "180-280 words" in system
+    assert user == malformed
