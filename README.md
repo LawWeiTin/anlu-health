@@ -19,15 +19,16 @@ and do not imply that the private V32 GPU endpoint is currently available.
 
 ### Detailed, source-grounded nutrition example
 
-The assistant names specific iron-rich foods, gives practical food combinations, preserves the
-educational boundary, and links the reviewed NIH source used in the answer.
+The complete exchange shows the user's question, specific iron-rich foods, practical food
+combinations, safety boundaries, follow-up questions, and the reviewed FDA source used in the answer.
 
 ![Anlu Health giving source-grounded pregnancy nutrition examples](docs/images/anlu-pregnancy-nutrition-chat.png)
 
 ### Deterministic emergency escalation
 
-High-risk wording bypasses retrieval and model generation. The application immediately displays
-the configured local emergency number and tells the user not to rely on chat.
+The complete exchange shows how high-risk wording bypasses retrieval and model generation. The
+application immediately displays the configured local emergency number and tells the user not to
+rely on chat.
 
 ![Anlu Health emergency safety bypass](docs/images/anlu-emergency-safety-chat.png)
 
