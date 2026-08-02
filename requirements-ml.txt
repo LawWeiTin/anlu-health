@@ -2,7 +2,7 @@
 accelerate>=1.9,<2
 bitsandbytes>=0.46,<1
 datasets>=4,<5
-mlflow>=3.1,<4
+mlflow>=3.14.0,<4
 peft>=0.16,<1
 transformers>=5.3,<6
 trl>=0.19,<1
