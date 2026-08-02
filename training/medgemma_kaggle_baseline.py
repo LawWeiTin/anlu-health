@@ -36,7 +36,7 @@ def install_runtime() -> None:
     """Install the minimal, version-bounded baseline runtime."""
 
     packages = [
-        "transformers>=4.53,<5",
+        "transformers>=5.3,<6",
         "accelerate>=1.9,<2",
         "huggingface_hub>=0.33,<1",
         "sentencepiece>=0.2,<1",
@@ -88,6 +88,7 @@ model = AutoModelForImageTextToText.from_pretrained(  # nosec B615
     MODEL_ID,
     revision=MODEL_REVISION,
     token=hf_token,
+    use_safetensors=True,
     # MedGemma's bfloat16 weights overflow to NaN when forced to float16 on T4.
     # FP32 is numerically stable and is split across both 16 GiB T4 devices.
     torch_dtype=torch.float32,

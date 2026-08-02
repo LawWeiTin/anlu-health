@@ -8,7 +8,7 @@
     "version_number": 8,
     "version_name": "V8 pinned snapshot with HF secret",
     "script_version_id": "335931420",
-    "private_report_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=335931420",
+    "private_report_url": "private-kaggle-run://redacted",
     "repository": "LawWeiTin/anlu-health",
     "repository_commit": "1d678efc96956fe470b8ebad95427d5faf5e4d07",
     "model_id": "google/medgemma-1.5-4b-it",

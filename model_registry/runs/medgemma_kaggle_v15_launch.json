@@ -11,7 +11,7 @@
   "version_name": "V15 behavior fidelity and evaluator fixes",
   "private": true,
   "accelerator": "GPU T4 x2",
-  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=336464341",
+  "run_url": "private-kaggle-run://redacted",
   "launch_observed_at": "2026-07-19T13:20:22Z",
   "terminal_observed_at": "2026-07-19T15:58:51Z",
   "training_source_commit": "8d5f23a1ecb872410e5710367e2a89e5e2d51955",

@@ -12,7 +12,7 @@
   "accelerator": "GPU T4 x2",
   "observed_gpu": "Tesla T4",
   "runtime_seconds": 3887.4,
-  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=335974108",
+  "run_url": "private-kaggle-run://redacted",
   "repository_commit": "ae581f6d44dd56ab47db64e03a9b0ea83eca7ad1",
   "base_model": {
     "id": "google/medgemma-1.5-4b-it",

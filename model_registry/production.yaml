@@ -15,7 +15,7 @@ latest_candidate_run:
   kernel_id: 127448562
   version_number: 32
   source_release_candidate_version: 32
-  script_version_id: "338590746"
+  script_version_id: '338590746'
   repository_commit: e2bdc337eb5174995cfd6513d791f6ac7b2a2410
   report: model_registry/runs/medgemma_kaggle_v32_launch.json
   training_report_sha256: bb87ec7c0d07845febec97d8132a7cdf1876a8febfdf69199905c67f48fd4953
@@ -31,7 +31,8 @@ latest_candidate_run:
   promotion_allowed: false
   local_experimental_activation_allowed_after_gate: true
   local_experimental_activation_status: not_connected
-  disposition: private candidate retained for localhost-only endpoint testing; production promotion blocked pending human review
+  disposition: private candidate retained for localhost-only endpoint testing; production
+    promotion blocked pending human review
 adapter:
   uri: private-kaggle-output://lawweitin/anlu-health-medgemma-qlora-release-candidate/338590746/anlu-health/medgemma-qlora/20260728T135714Z/adapter
   sha256: fa75cd09a14b4147b18d69d750dd7811845b25eba386d9f6881e0b6a67aa2ab5
@@ -41,7 +42,7 @@ embedding_model:
   revision: provider-managed
 artifact_storage:
   provider: google-drive
-  root_folder_id: 1QZkoMOmP50f7J4CoKsE0vQ70O7H4Zpkt
+  root_folder_id: redacted-private-folder-id
   write_policy: timestamped-additive-only
 rag_manifest_sha256: set-after-ingestion
 evaluation_report: artifacts/eval.json

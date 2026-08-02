@@ -1,17 +1,30 @@
 # Security policy
 
-This project handles potentially sensitive health text. Do not open a public issue containing health
-information, credentials, logs, or screenshots with personal data.
+## Supported version
 
-## Production requirements
+Security fixes target the current `main` branch. Historical research candidates are retained only
+for reproducibility and are not supported deployments.
 
-- Keep chat retention disabled unless app-level encryption is configured and users explicitly opt in.
-- Use HTTPS-only cookies, a managed secret store, database backups, least-privilege service accounts,
-  dependency scanning, and an incident-response process.
-- Never log prompts, answers, session tokens, passwords, or model/API credentials.
-- Rotate model, database, session, and encryption credentials after any suspected exposure.
-- Run a professional penetration test and privacy/regulatory review before serving real users.
+## Reporting a vulnerability
 
-Report vulnerabilities privately to the repository owner. Include reproduction steps without real
-patient data.
+Use GitHub's private vulnerability reporting for this repository. If that option is unavailable,
+contact the repository owner privately through their GitHub profile. Do not open a public issue
+containing exploit details, credentials, endpoint locations, or real health information.
 
+Include the affected commit, a minimal reproduction using synthetic data, the expected impact, and
+any suggested mitigation. Never test against infrastructure or accounts you do not own or have
+explicit permission to assess.
+
+## Credential handling
+
+- Never commit `.env` files, Hugging Face tokens, API keys, database passwords, private keys, or
+  private endpoint URLs.
+- Use fine-grained, least-privilege credentials in the deployment platform's secret manager.
+- Run `python scripts/check_public_release.py` before publishing or sharing a branch.
+- If a real credential is ever committed, revoke and rotate it immediately. Removing it from the
+  latest commit is not sufficient because Git history and cached pull-request refs may retain it.
+
+## Medical safety boundary
+
+A software-security report is not a channel for medical advice or emergencies. This project is an
+educational prototype and must not be relied on for diagnosis, treatment, or emergency response.

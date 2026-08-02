@@ -18,6 +18,9 @@ flowchart LR
 ## Reproducibility
 
 - `dvc.yaml` records preparation and offline evaluation stages.
+- DVC is intentionally not installed by `requirements-ml.txt` while its transitive `diskcache`
+  dependency has an unfixed published advisory. The declarative stages remain available for
+  inspection; re-enable DVC only after the dependency audit reports a fixed dependency chain.
 - `params.yaml` defines release thresholds.
 - `training/medgemma_kaggle_qlora.py` trains in a private Kaggle GPU runtime; no weights are
   downloaded locally.

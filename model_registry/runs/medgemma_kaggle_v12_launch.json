@@ -9,7 +9,7 @@
   "version_name": "V12 turn-boundary and template alignment",
   "private": true,
   "accelerator": "GPU T4 x2",
-  "run_url": "https://www.kaggle.com/code/lawweitin/anlu-health-medgemma-qlora-release-candidate?scriptVersionId=336222481",
+  "run_url": "private-kaggle-run://redacted",
   "repository_commit": "65a4e9b3d6f5e039a3c8d2aac28a20a365e43ae0",
   "base_model": {
     "id": "google/medgemma-1.5-4b-it",
