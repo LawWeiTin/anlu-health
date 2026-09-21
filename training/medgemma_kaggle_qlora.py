@@ -102,7 +102,7 @@ def install_runtime() -> None:
         "transformers>=5.3,<6",
         "accelerate>=1.9,<2",
         "bitsandbytes>=0.46,<1",
-        "datasets>=3.6,<5",
+        "datasets>=5.0.1,<6",
         "peft>=0.16,<1",
         "sentencepiece>=0.2,<1",
         "defusedxml>=0.7,<1",
